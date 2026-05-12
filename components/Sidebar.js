@@ -15,7 +15,7 @@ export default function Sidebar() {
 
   const navItems = [
     { path: '/overview', label: 'Overview', icon: Eye },
-    { path: '/dashboard', label: 'Huishoudboekje', icon: BarChart3 },
+    { path: '/dashboard', label: 'Household Budget', icon: BarChart3 },
     { path: '/retirement', label: 'Retirement', icon: TrendingUp },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];

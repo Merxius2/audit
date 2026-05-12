@@ -1,5 +1,5 @@
 /**
- * Huishoudboekje Page - Income & Expense Tracking
+ * Household Budget Page - Income & Expense Tracking
  * Main page for tracking monthly finances with median comparisons
  */
 
@@ -121,7 +121,7 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <BarChart3 size={36} className="text-brand-primary" />
-            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Huishoudboekje</h1>
+            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Household Budget</h1>
           </div>
         </div>
       </div>
