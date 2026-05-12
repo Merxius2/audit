@@ -118,29 +118,24 @@ function generateRoastMessage(totalIncome, totalExpenses, expenses) {
     }
   }
   
-  // Check for extreme ratios first
-  if (expenseRatio > 90) {
-    return "You're spending 90%+ of income! The credit card is melting! 🔥🔥🔥";
-  } else if (expenseRatio > 80) {
-    return "80%+ going to expenses? That's financial self-sabotage! 💥";
-  } else if (expenseRatio > 70) {
-    return "70%+ on expenses? Your wallet filed for bankruptcy! 😭";
-  }
-  
-  // Show category-specific roasts if we found a high category
+  // Prioritize category-specific roasts first (more fun variety)
   if (highestCategory && categoryRoasts[highestCategory]) {
-    // Check if that category is notably high relative to income
     const categoryRatio = (highestAmount / totalIncome) * 100;
     
-    if (categoryRatio > 30) {
-      // Very high for this category
-      const roasts = categoryRoasts[highestCategory];
-      return roasts[Math.floor(Math.random() * roasts.length)];
-    } else if (categoryRatio > 20 && expenseRatio > 50) {
-      // Moderately high
+    if (categoryRatio > 25) {
+      // Show category roast for notably high categories
       const roasts = categoryRoasts[highestCategory];
       return roasts[Math.floor(Math.random() * roasts.length)];
     }
+  }
+  
+  // Only show extreme overall spending roasts if REALLY extreme (95%+)
+  if (expenseRatio > 95) {
+    return "You're spending 95%+ of income! The credit card is MELTING! 🔥🔥🔥";
+  } else if (expenseRatio > 85) {
+    return "85%+ going to expenses? That's financial self-sabotage! 💥";
+  } else if (expenseRatio > 75) {
+    return "75%+ on expenses? Your wallet filed for bankruptcy! 😭";
   }
   
   // Generic roasts for general overspending
