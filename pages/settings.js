@@ -91,14 +91,7 @@ export default function SettingsPage() {
                     : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                <Image
-                  src={lang.icon}
-                  alt={lang.name}
-                  width={48}
-                  height={48}
-                  className={`rounded-lg ${language === lang.code ? 'shadow-md' : ''}`}
-                />
-                <span className="text-sm font-semibold">{lang.flag}</span>
+                <span className="text-3xl font-semibold">{lang.flag}</span>
                 <span className="text-xs font-medium text-center">{lang.name}</span>
               </button>
             ))}
@@ -124,8 +117,6 @@ export default function SettingsPage() {
                 }`}
               >
                 <span className="text-4xl font-bold">{curr.symbol}</span>
-                <span className="text-sm font-semibold">{curr.flag}</span>
-                <span className="text-xs font-medium text-center">{curr.name}</span>
               </button>
             ))}
           </div>

@@ -36,13 +36,13 @@ export default function Sidebar() {
     <div className="hidden md:fixed md:left-0 md:top-0 md:flex md:h-screen md:w-64 md:flex-col md:border-r md:border-gray-200 md:bg-white md:p-6 md:shadow-soft dark:border-gray-800 dark:bg-gray-900">
       {/* Logo */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Image src={getLanguageIcon(language)} alt="Audit Logo" width={40} height={40} className="rounded-lg" />
-          <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-3xl font-bold text-transparent">
+        <div className="flex flex-col items-center gap-3 mb-2">
+          <Image src={getLanguageIcon(language)} alt="Audit Logo" width={80} height={80} className="rounded-lg" />
+          <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-3xl font-bold text-transparent text-center">
             Aap-FT
           </h1>
         </div>
-        <p className="mt-1 text-xs font-medium text-gray-500">Financial Tools</p>
+        <p className="mt-1 text-xs font-medium text-gray-500 text-center">Financial Tools</p>
       </div>
 
       {/* Navigation */}
