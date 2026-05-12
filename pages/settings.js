@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { Settings, Trash2, Globe, DollarSign, Moon, Sun, Trophy } from 'lucide-react';
-import { deleteCookie } from '../lib/cookieStorage';
+import { deleteCookie, saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useRouter } from 'next/router';
 import { useLanguage } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
@@ -69,6 +69,11 @@ export default function SettingsPage() {
     try {
       deleteCookie('huishoudboekje_data');
       deleteCookie('retirement_data');
+      
+      // Increment reset counter for achievement
+      const currentResets = parseInt(loadFromCookie('data_reset_count') || '0');
+      saveToCookie('data_reset_count', (currentResets + 1).toString(), 365);
+      
       setResetMessage(t('settings.success'));
       setShowConfirmation(false);
       

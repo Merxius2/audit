@@ -105,7 +105,15 @@ const ACHIEVEMENTS = {
     description: 'Have a net leftover of exactly 420',
     icon: '🍀',
     color: 'from-green-500 to-emerald-600',
-  },};
+  },
+  fresh_start: {
+    id: 'fresh_start',
+    title: 'Fresh Start',
+    description: 'Reset all data once',
+    icon: '🔄',
+    color: 'from-purple-500 to-pink-600',
+  },
+};
 
 export default function Achievements() {
   const { achievementMode, showAchievementsText, roastCount } = useSecretModes();

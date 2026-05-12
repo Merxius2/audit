@@ -115,7 +115,7 @@ export default function Sidebar() {
               <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Badges</span>
             </div>
             <span className="text-xs font-bold bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full">
-              {unlockedAchievements.length}/14
+              {unlockedAchievements.length}/15
             </span>
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -134,6 +134,7 @@ export default function Sidebar() {
               { id: 'car_enthusiast', emoji: '🚗', title: 'Car Enthusiast', desc: 'Spend more on car than house' },
               { id: 'turkish_speaker', emoji: '🌍', title: 'Turkish Speaker', desc: 'Use the app in Turkish' },
               { id: 'lucky_420', emoji: '🍀', title: 'Lucky Number', desc: 'Have a net leftover of exactly 420' },
+              { id: 'fresh_start', emoji: '🔄', title: 'Fresh Start', desc: 'Reset all data once' },
             ].map((achievement) => {
               const isUnlocked = unlockedAchievements.includes(achievement.id);
               const canShowText = isUnlocked || achievementMode;

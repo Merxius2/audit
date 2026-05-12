@@ -108,7 +108,15 @@ const ACHIEVEMENTS = {
     description: 'Have a net leftover of exactly 420',
     icon: '🍀',
     condition: (data) => data.leftover === 420,
-  },};
+  },
+  fresh_start: {
+    id: 'fresh_start',
+    title: 'Fresh Start',
+    description: 'Reset all data once',
+    icon: '🔄',
+    condition: (data) => data.dataResetCount >= 1,
+  },
+};
 
 export function useAchievements(totalIncome, totalExpenses, savingsAmount, roastCount = 0, projectedBalance = 0, expenses = {}) {
   const { achievementMode } = useSecretModes();
@@ -130,6 +138,7 @@ export function useAchievements(totalIncome, totalExpenses, savingsAmount, roast
       secretSettingsDiscovered: secretSettingsDiscovered || false,
       expenses: expenses || {},
       language: language || 'en',
+      dataResetCount: parseInt(loadFromCookie('data_reset_count') || '0'),
     };
 
     // Load previously unlocked achievements
