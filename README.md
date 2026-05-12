@@ -145,6 +145,13 @@ This app is PWA-enabled and can be installed on iOS:
 - [ ] Debt payoff calculator
 - [ ] Multi-currency support
 
+## Development Branches
+
+- **main**: Stable release branch with core features
+- **features/achievements-roasts**: Achievements system and roast mode features
+- **fun-features**: Additional fun and easter egg features
+- **secret-menu-features**: Secret menu and hidden functionality
+
 ## License
 
 MIT License © 2026 Aap Financial Tools
