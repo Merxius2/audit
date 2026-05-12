@@ -6,11 +6,20 @@
 import { useState } from 'react';
 import { useFinancial } from '../context/FinancialContext';
 import MedianBadge from '../components/MedianBadge';
-import { TrendingUp, Wallet } from 'lucide-react';
+import { TrendingUp, Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile } from 'lucide-react';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure'];
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6'];
+
+const CATEGORY_ICONS = {
+  'House': Home,
+  'Car': Car,
+  'Food': UtensilsCrossed,
+  'Utilities': Zap,
+  'Healthcare': Heart,
+  'Leisure': Smile
+};
 
 export default function Dashboard() {
   const { getCurrentMedian, selectedAgeBracket } = useFinancial();
@@ -92,9 +101,12 @@ export default function Dashboard() {
         <div className="card-expenses p-8">
           <h2 className="mb-6 text-xl font-bold text-gray-900">Monthly Expenses</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {EXPENSE_CATEGORIES.map((category) => (
+            {EXPENSE_CATEGORIES.map((category) => {
+              const IconComponent = CATEGORY_ICONS[category];
+              return (
               <div key={category}>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                  <IconComponent size={18} className="text-brand-primary" />
                   {category}
                 </label>
                 <input
@@ -107,7 +119,8 @@ export default function Dashboard() {
                   className="amount w-full"
                 />
               </div>
-            ))}
+            );
+            })}
           </div>
         </div>
 
