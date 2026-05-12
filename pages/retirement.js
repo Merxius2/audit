@@ -7,6 +7,8 @@ import { useState, useEffect, useRef } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from 'lucide-react';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
+import { useCurrency } from '../context/CurrencyContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function RetirementProjection() {
   const [calculationType, setCalculationType] = useState('forward'); // 'forward' or 'backward'
@@ -22,6 +24,8 @@ export default function RetirementProjection() {
 
   const [isLoading, setIsLoading] = useState(true);
   const saveCookieTimeout = useRef(null);
+  const { getSymbol } = useCurrency();
+  const { t } = useLanguage();
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -158,16 +162,16 @@ export default function RetirementProjection() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <TrendingUp size={36} className="text-brand-secondary" />
-            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Retirement Projection</h1>
+            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('retirement.title')}</h1>
           </div>
-          <p className="text-gray-600">Plan your financial future with compound growth</p>
+          <p className="text-gray-600">{t('retirement.subtitle')}</p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Calculation Type Selector */}
         <div className="card p-6">
-          <h2 className="mb-4 text-lg font-bold text-gray-900">Calculation Type</h2>
+          <h2 className="mb-4 text-lg font-bold text-gray-900">{t('retirement.calculationMode')}</h2>
           <div className="flex gap-4">
             <button
               onClick={() => setCalculationType('forward')}
@@ -177,7 +181,7 @@ export default function RetirementProjection() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Forward: Investment → Balance
+              {t('retirement.forward')}
             </button>
             <button
               onClick={() => setCalculationType('backward')}
@@ -187,21 +191,21 @@ export default function RetirementProjection() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Backward: Goal → Investment
+              {t('retirement.backward')}
             </button>
           </div>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {(isForward ? [
-              { label: 'Current Age', value: currentAge, setValue: setCurrentAge, placeholder: '30' },
-              { label: 'Retirement Age', value: retirementAge, setValue: setRetirementAge, placeholder: '65' },
-              { label: 'Monthly Investment', value: monthlyInvestment, setValue: setMonthlyInvestment, placeholder: '1000' },
-              { label: 'Annual Return %', value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
+              { label: t('retirement.currentAge'), value: currentAge, setValue: setCurrentAge, placeholder: '30' },
+              { label: t('retirement.retirementAge'), value: retirementAge, setValue: setRetirementAge, placeholder: '65' },
+              { label: t('retirement.monthlyInvestment'), value: monthlyInvestment, setValue: setMonthlyInvestment, placeholder: '1000' },
+              { label: t('retirement.annualReturn'), value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
             ] : [
-              { label: 'Current Age', value: currentAge, setValue: setCurrentAge, placeholder: '30' },
-              { label: 'Retirement Age', value: retirementAge, setValue: setRetirementAge, placeholder: '65' },
-              { label: 'Goal Balance', value: goalBalance, setValue: setGoalBalance, placeholder: '500000' },
-              { label: 'Annual Return %', value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
+              { label: t('retirement.currentAge'), value: currentAge, setValue: setCurrentAge, placeholder: '30' },
+              { label: t('retirement.retirementAge'), value: retirementAge, setValue: setRetirementAge, placeholder: '65' },
+              { label: t('retirement.goalBalance'), value: goalBalance, setValue: setGoalBalance, placeholder: '500000' },
+              { label: t('retirement.annualReturn'), value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
             ]).map((field, idx) => (
             <div key={idx} className="card p-4">
               <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -234,11 +238,11 @@ export default function RetirementProjection() {
                 <XAxis
                   dataKey="age"
                   stroke="rgba(0,0,0,0.3)"
-                  label={{ value: 'Age', position: 'insideBottomRight', offset: -5 }}
+                  label={{ value: t('retirement.age'), position: 'insideBottomRight', offset: -5 }}
                 />
                 <YAxis
                   stroke="rgba(0,0,0,0.3)"
-                  label={{ value: 'Balance (€)', angle: -90, position: 'insideLeft' }}
+                  label={{ value: `Balance (${getSymbol()})`, angle: -90, position: 'insideLeft' }}
                 />
                 <Tooltip
                   content={({ active, payload }) => {
@@ -246,19 +250,19 @@ export default function RetirementProjection() {
                       const data = payload[0].payload;
                       return (
                         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
-                          <p className="font-semibold text-gray-900 mb-3">Age {data.age}</p>
+                          <p className="font-semibold text-gray-900 mb-3">{t('retirement.age')} {data.age}</p>
                           <div className="space-y-2 text-sm">
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-600">Contributions:</span>
-                              <span className="font-mono font-semibold text-gray-900">€{Math.floor(data.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
+                              <span className="text-gray-600">{t('retirement.yourContributions')}:</span>
+                              <span className="font-mono font-semibold text-gray-900">{getSymbol()}{Math.floor(data.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-600">Investment Gains:</span>
-                              <span className="font-mono font-semibold text-green-600">€{Math.floor(data.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
+                              <span className="text-gray-600">{t('retirement.investmentGains')}:</span>
+                              <span className="font-mono font-semibold text-green-600">{getSymbol()}{Math.floor(data.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
                             </div>
                             <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between items-center">
-                              <span className="font-semibold text-gray-900">Total Balance:</span>
-                              <span className="font-mono font-bold text-brand-primary">€{Math.floor(data.balance).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
+                              <span className="font-semibold text-gray-900">{t('retirement.totalBalance')}:</span>
+                              <span className="font-mono font-bold text-brand-primary">{getSymbol()}{Math.floor(data.balance).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
                             </div>
                           </div>
                         </div>
@@ -277,7 +281,7 @@ export default function RetirementProjection() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-center py-20 text-gray-500">Enter valid ages to see projection</p>
+            <p className="text-center py-20 text-gray-500">{t('retirement.enterValidAges')}</p>
           )}
         </div>
 
@@ -285,14 +289,14 @@ export default function RetirementProjection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Visual Breakdown */}
           <div className="card p-8">
-            <h3 className="mb-6 text-lg font-bold text-gray-900">Balance Composition</h3>
+            <h3 className="mb-6 text-lg font-bold text-gray-900">{t('retirement.balanceComposition')}</h3>
             <div className="space-y-4">
               {/* Contributions Bar */}
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-semibold text-gray-700">Your Contributions</span>
+                  <span className="text-sm font-semibold text-gray-700">{t('retirement.yourContributions')}</span>
                   <span className="text-sm font-bold text-gray-900">
-                    €{Math.floor(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                    {getSymbol()}{Math.floor(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                   </span>
                 </div>
                 <div className="h-3 rounded-full bg-gray-200">
@@ -310,9 +314,9 @@ export default function RetirementProjection() {
               {/* Investment Gains Bar */}
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-semibold text-gray-700">Investment Gains</span>
+                  <span className="text-sm font-semibold text-gray-700">{t('retirement.investmentGains')}</span>
                   <span className="text-sm font-bold text-green-600">
-                    €{Math.floor(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                    {getSymbol()}{Math.floor(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                   </span>
                 </div>
                 <div className="h-3 rounded-full bg-gray-200">
@@ -330,9 +334,9 @@ export default function RetirementProjection() {
               {/* Total Balance */}
               <div className="border-t border-gray-200 pt-4 mt-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-gray-900">Total Balance</span>
+                  <span className="text-lg font-bold text-gray-900">{t('retirement.totalBalance')}</span>
                   <span className="amount-large text-brand-primary">
-                    €{Math.floor(finalBalance).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                    {getSymbol()}{Math.floor(finalBalance).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                   </span>
                 </div>
               </div>
@@ -342,30 +346,30 @@ export default function RetirementProjection() {
           {/* Summary Cards */}
           <div className="space-y-4">
             <div className="card p-6">
-              <p className="text-sm font-medium text-gray-600">Years to Retirement</p>
+              <p className="text-sm font-medium text-gray-600">{t('retirement.yearsToRetirement')}</p>
               <p className="amount-large mt-2 text-gray-900">{yearsToRetirement}</p>
             </div>
 
             <div className="card p-6">
               <p className="text-sm font-medium text-gray-600">
-                {isForward ? 'Monthly Investment' : 'Required Monthly Investment'}
+                {isForward ? t('retirement.monthlyInvestment') : t('retirement.requiredMonthlyInvestment')}
               </p>
               <p className="amount-large mt-2 text-gray-900 font-mono">
-                €{Math.floor(isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                {getSymbol()}{Math.floor(isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly).toLocaleString('en-US', { minimumFractionDigits: 0 })}
               </p>
             </div>
 
             <div className="card p-6">
-              <p className="text-sm font-medium text-gray-600">Total Contributions</p>
+              <p className="text-sm font-medium text-gray-600">{t('retirement.totalContributions')}</p>
               <p className="amount-large mt-2 text-gray-900 font-mono">
-                €{Math.floor(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                {getSymbol()}{Math.floor(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { minimumFractionDigits: 0 })}
               </p>
             </div>
 
             <div className="card p-6">
-              <p className="text-sm font-medium text-gray-600">Investment Gains</p>
+              <p className="text-sm font-medium text-gray-600">{t('retirement.investmentGains')}</p>
               <p className="amount-large mt-2 text-green-600 font-mono">
-                €{Math.floor(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                {getSymbol()}{Math.floor(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
               </p>
             </div>
           </div>

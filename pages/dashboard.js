@@ -7,6 +7,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3 } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
+import { useCurrency } from '../context/CurrencyContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#8B5CF6', '#F97316'];
@@ -34,6 +36,8 @@ export default function Dashboard() {
   );
   const [isLoading, setIsLoading] = useState(true);
   const saveCookieTimeout = useRef(null);
+  const { getSymbol } = useCurrency();
+  const { t } = useLanguage();
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -91,7 +95,15 @@ export default function Dashboard() {
 
   const renderCustomLabel = ({ name, value }) => {
     const percentage = totalPieValue > 0 ? ((value / totalPieValue) * 100).toFixed(1) : 0;
-    return `${name}: €${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })} (${percentage}%)`;
+    let displayName = name;
+    if (name === 'Savings') {
+      displayName = t('dashboard.savings');
+    } else if (name === 'Remaining') {
+      displayName = t('dashboard.remaining');
+    } else {
+      displayName = t(`dashboard.expenseCategories.${name}`);
+    }
+    return `${displayName}: ${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })} (${percentage}%)`;
   };
 
   // Income management functions
@@ -121,7 +133,7 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <BarChart3 size={36} className="text-brand-primary" />
-            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Household Budget</h1>
+            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('dashboard.title')}</h1>
           </div>
         </div>
       </div>
@@ -130,13 +142,13 @@ export default function Dashboard() {
         {/* Income Sources Card */}
         <div className="card-income p-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Monthly Income Sources</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t('dashboard.incomeHeader')}</h2>
             <button
               onClick={addIncome}
               className="flex items-center gap-2 rounded-lg bg-brand-primary text-white px-4 py-2 font-medium hover:bg-brand-primary/90 transition-colors"
             >
               <Plus size={18} />
-              Add Income
+              {t('dashboard.addIncomeBtn')}
             </button>
           </div>
 
@@ -145,32 +157,32 @@ export default function Dashboard() {
               <div key={income.id} className="flex gap-3 items-end">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Source Label
+                    {t('dashboard.sourceLabel')}
                   </label>
                   <input
                     type="text"
                     value={income.label}
                     onChange={(e) => updateIncome(income.id, 'label', e.target.value)}
-                    placeholder="e.g., Salary, Freelance"
+                    placeholder={t('dashboard.placeholder.salaryFreelance')}
                     className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10"
                   />
                 </div>
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount (€)
+                    {t('dashboard.amount')} ({getSymbol()})
                   </label>
                   <input
                     type="number"
                     value={income.amount}
                     onChange={(e) => updateIncome(income.id, 'amount', e.target.value)}
-                    placeholder="0"
+                    placeholder={t('dashboard.placeholder.amount')}
                     className="amount w-full"
                   />
                 </div>
                 <button
                   onClick={() => removeIncome(income.id)}
                   className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Remove income source"
+                  title={t('dashboard.removeIncome')}
                 >
                   <Trash2 size={20} />
                 </button>
@@ -195,19 +207,19 @@ export default function Dashboard() {
                 onChange={(e) => setIncludeSavingsInCalculations(e.target.checked)}
                 className="w-5 h-5 rounded border-gray-300 text-brand-primary focus:ring-2 focus:ring-brand-primary/10"
               />
-              <span className="text-sm font-semibold text-gray-700">Include Savings in Calculations</span>
+              <span className="text-sm font-semibold text-gray-700">{t('dashboard.includeSavingsInCalc')}</span>
             </label>
           </div>
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
               <PiggyBank size={18} className="text-brand-primary" />
-              Current Monthly Savings
+              {t('dashboard.savingsAmount')}
             </label>
             <input
               type="number"
               value={savings}
               onChange={(e) => setSavings(e.target.value)}
-              placeholder="0"
+              placeholder={t('dashboard.placeholder.amount')}
               className="mt-3 amount-large w-full border-0 bg-transparent text-gray-900 focus:ring-0"
             />
             <p className="text-xs text-gray-500 mt-2">
@@ -220,7 +232,7 @@ export default function Dashboard() {
 
         {/* Expenses Card */}
         <div className="card-expenses p-8">
-          <h2 className="mb-6 text-xl font-bold text-gray-900">Monthly Expenses</h2>
+          <h2 className="mb-6 text-xl font-bold text-gray-900">{t('dashboard.subtitle')}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {EXPENSE_CATEGORIES.map((category) => {
               const IconComponent = CATEGORY_ICONS[category];
@@ -228,7 +240,7 @@ export default function Dashboard() {
                 <div key={category}>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
                     <IconComponent size={18} className="text-brand-primary" />
-                    {category}
+                    {t(`dashboard.expenseCategories.${category}`)}
                   </label>
                   <input
                     type="number"
@@ -248,16 +260,16 @@ export default function Dashboard() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="card-summary p-6">
-            <p className="text-sm font-medium text-gray-600">Total Income</p>
+            <p className="text-sm font-medium text-gray-600">{t('dashboard.totalIncome')}</p>
             <p className="amount-large mt-2 text-gray-900">
-              €{Math.floor(totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              {getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-summary p-6">
-            <p className="text-sm font-medium text-gray-600">Total Expenses</p>
+            <p className="text-sm font-medium text-gray-600">{t('dashboard.totalExpenses')}</p>
             <p className="amount-large mt-2 text-gray-900">
-              €{Math.floor(totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              {getSymbol()}{Math.floor(totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
@@ -267,9 +279,9 @@ export default function Dashboard() {
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
                 : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
             }}>
-            <p className="text-sm font-medium text-gray-600">Net Leftover</p>
+            <p className="text-sm font-medium text-gray-600">{t('dashboard.netLeftover')}</p>
             <p className={`amount-large mt-2 ${leftover >= 0 ? 'glow-green text-green-600' : 'text-red-600'}`}>
-              €{Math.floor(leftover).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              {getSymbol()}{Math.floor(leftover).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
         </div>
@@ -277,7 +289,7 @@ export default function Dashboard() {
         {/* Income vs Expenses Pie Chart */}
         {totalIncome > 0 && (
           <div className="card p-8">
-            <h2 className="mb-6 text-xl font-bold text-gray-900">Income vs Expenses</h2>
+            <h2 className="mb-6 text-xl font-bold text-gray-900">{t('dashboard.expenseBreakdown')}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -295,11 +307,19 @@ export default function Dashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => `€${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
+                  formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
                   labelFormatter={(label) => {
                     const item = pieData.find(p => p.name === label);
                     const percentage = totalPieValue > 0 ? ((item.value / totalPieValue) * 100).toFixed(1) : 0;
-                    return `${label}: ${percentage}%`;
+                    let displayLabel = label;
+                    if (label === 'Savings') {
+                      displayLabel = t('dashboard.savings');
+                    } else if (label === 'Remaining') {
+                      displayLabel = t('dashboard.remaining');
+                    } else {
+                      displayLabel = t(`dashboard.expenseCategories.${label}`);
+                    }
+                    return `${displayLabel}: ${percentage}%`;
                   }}
                 />
               </PieChart>

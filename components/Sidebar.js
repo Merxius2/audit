@@ -7,17 +7,29 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { BarChart3, TrendingUp, Eye, Settings } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Sidebar() {
   const router = useRouter();
+  const { t, language } = useLanguage();
 
   const isActive = (path) => router.pathname === path;
 
+  const getLanguageIcon = (lang) => {
+    const iconMap = {
+      en: '/icon-e-192.png',
+      nl: '/icon-n-192.png',
+      ru: '/icon-r-192.png',
+      tr: '/icon-t-192.png',
+    };
+    return iconMap[lang] || '/icon-e-192.png';
+  };
+
   const navItems = [
-    { path: '/overview', label: 'Overview', icon: Eye },
-    { path: '/dashboard', label: 'Household Budget', icon: BarChart3 },
-    { path: '/retirement', label: 'Retirement', icon: TrendingUp },
-    { path: '/settings', label: 'Settings', icon: Settings },
+    { path: '/overview', labelKey: 'navigation.overview', icon: Eye },
+    { path: '/dashboard', labelKey: 'navigation.householdBudget', icon: BarChart3 },
+    { path: '/retirement', labelKey: 'navigation.retirement', icon: TrendingUp },
+    { path: '/settings', labelKey: 'navigation.settings', icon: Settings },
   ];
 
   return (
@@ -25,7 +37,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Image src="/icon-512.png" alt="Audit Logo" width={40} height={40} className="rounded-lg" />
+          <Image src={getLanguageIcon(language)} alt="Audit Logo" width={40} height={40} className="rounded-lg" />
           <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-3xl font-bold text-transparent">
             Aap-FT
           </h1>
@@ -47,7 +59,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Icon size={20} />
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </div>
             </Link>
           );

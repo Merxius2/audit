@@ -7,17 +7,19 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Home, Settings } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function MobileNav() {
   const router = useRouter();
+  const { t } = useLanguage();
 
   const isActive = (path) => router.pathname === path;
 
   const navItems = [
-    { path: '/dashboard', icon: Home, label: 'Household Budget' },
-    { path: '/retirement', icon: Home, label: 'Retirement' },
-    { path: '/overview', icon: Home, label: 'Overview', isPrimary: true },
-    { path: '/settings', icon: Settings, label: 'Settings' },
+    { path: '/dashboard', icon: Home, labelKey: 'navigation.householdBudget' },
+    { path: '/retirement', icon: Home, labelKey: 'navigation.retirement' },
+    { path: '/overview', icon: Home, labelKey: 'navigation.overview', isPrimary: true },
+    { path: '/settings', icon: Settings, labelKey: 'navigation.settings' },
   ];
 
   return (
@@ -40,7 +42,7 @@ export default function MobileNav() {
                   }`}
                 >
                   <Icon size={24} />
-                  <span className="text-xs font-medium">{item.label}</span>
+                  <span className="text-xs font-medium">{t(item.labelKey)}</span>
                 </div>
               )}
             </Link>

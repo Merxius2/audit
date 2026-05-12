@@ -8,6 +8,8 @@ import { useState, useEffect } from 'react';
 import { Wallet, TrendingUp, Eye } from 'lucide-react';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 import { loadFromCookie } from '../lib/cookieStorage';
+import { useCurrency } from '../context/CurrencyContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#06B6D4', '#8B5CF6'];
@@ -23,6 +25,8 @@ export default function Overview() {
     retirementBreakdown: { contributions: 0, gains: 0 },
     monthlyInvestment: 0,
   });
+  const { getSymbol } = useCurrency();
+  const { t } = useLanguage();
 
   const generateForwardProjection = (currentAge, retirementAge, monthlyInvestment, annualReturn) => {
     const current = parseInt(currentAge) || 0;
@@ -173,7 +177,7 @@ export default function Overview() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <Eye size={36} className="text-brand-primary" />
-            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Overview</h1>
+            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('overview.title')}</h1>
           </div>
         </div>
       </div>
@@ -182,36 +186,36 @@ export default function Overview() {
         {/* Retirement Breakdown */}
         {data.retirementProjection > 0 && (
           <div className="card p-8">
-            <h2 className="mb-6 text-xl font-bold text-gray-900">Retirement Projection Breakdown</h2>
+            <h2 className="mb-6 text-xl font-bold text-gray-900">{t('overview.retirementProjectionBreakdown')}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-6">
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-blue-50 to-white">
-                <p className="text-sm font-medium text-gray-600">Your Contributions</p>
+                <p className="text-sm font-medium text-gray-600">{t('overview.breakdown.contributions')}</p>
                 <p className="amount-large mt-3 text-gray-900">
-                  €{Math.floor(data.retirementBreakdown.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                  {getSymbol()}{Math.floor(data.retirementBreakdown.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-green-50 to-white">
-                <p className="text-sm font-medium text-gray-600">Investment Gains</p>
+                <p className="text-sm font-medium text-gray-600">{t('overview.breakdown.investmentGains')}</p>
                 <p className="amount-large mt-3 text-green-600">
-                  €{Math.floor(data.retirementBreakdown.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                  {getSymbol()}{Math.floor(data.retirementBreakdown.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-purple-50 to-white">
-                <p className="text-sm font-medium text-gray-600">Monthly Investment</p>
+                <p className="text-sm font-medium text-gray-600">{t('overview.monthlyInvestment')}</p>
                 <p className="amount-large mt-3 text-purple-600">
-                  €{Math.floor(data.monthlyInvestment).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                  {getSymbol()}{Math.floor(data.monthlyInvestment).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-brand-secondary/10 to-white">
-                <p className="text-sm font-medium text-gray-600">Total Projected Balance</p>
+                <p className="text-sm font-medium text-gray-600">{t('overview.totalProjectedBalance')}</p>
                 <p className="amount-large mt-3 text-brand-secondary">
-                  €{Math.floor(data.retirementProjection).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                  {getSymbol()}{Math.floor(data.retirementProjection).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Contributions</span>
+                <span className="text-sm font-medium text-gray-700">{t('overview.breakdown.contributions')}</span>
                 <span className="text-sm font-semibold text-gray-900">{((data.retirementBreakdown.contributions / data.retirementProjection) * 100).toFixed(1)}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -221,7 +225,7 @@ export default function Overview() {
                 />
               </div>
               <div className="flex items-center justify-between mt-4">
-                <span className="text-sm font-medium text-gray-700">Investment Gains</span>
+                <span className="text-sm font-medium text-gray-700">{t('overview.breakdown.investmentGains')}</span>
                 <span className="text-sm font-semibold text-gray-900">{((data.retirementBreakdown.gains / data.retirementProjection) * 100).toFixed(1)}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -237,23 +241,23 @@ export default function Overview() {
         {/* Key Metrics */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="card-income p-6">
-            <p className="text-sm font-medium text-gray-600">Total Income</p>
+            <p className="text-sm font-medium text-gray-600">{t('overview.cards.totalIncome')}</p>
             <p className="amount-large mt-3 text-gray-900">
-              €{Math.floor(data.totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              {getSymbol()}{Math.floor(data.totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-expenses p-6">
-            <p className="text-sm font-medium text-gray-600">Total Expenses</p>
+            <p className="text-sm font-medium text-gray-600">{t('overview.cards.totalExpenses')}</p>
             <p className="amount-large mt-3 text-gray-900">
-              €{Math.floor(data.totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              {getSymbol()}{Math.floor(data.totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-savings p-6">
-            <p className="text-sm font-medium text-gray-600">Savings Amount</p>
+            <p className="text-sm font-medium text-gray-600">{t('overview.cards.savingsAmount')}</p>
             <p className="amount-large mt-3 text-gray-900">
-              €{Math.floor(data.savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              {getSymbol()}{Math.floor(data.savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
@@ -263,9 +267,9 @@ export default function Overview() {
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
                 : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
             }}>
-            <p className="text-sm font-medium text-gray-600">Net Leftover</p>
+            <p className="text-sm font-medium text-gray-600">{t('overview.cards.netLeftover')}</p>
             <p className={`amount-large mt-3 ${leftover >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              €{Math.floor(leftover).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              {getSymbol()}{Math.floor(leftover).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
         </div>
@@ -278,14 +282,14 @@ export default function Overview() {
           </div>
 
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">Savings Rate</p>
+            <p className="text-xs font-medium text-gray-600 uppercase">{t('overview.savingsRate')}</p>
             <p className="amount-large mt-3 text-gray-900">{savingsRate}%</p>
           </div>
 
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">Retirement Balance</p>
+            <p className="text-xs font-medium text-gray-600 uppercase">{t('overview.retirementBalance')}</p>
             <p className="amount-large mt-3 text-brand-secondary">
-              €{Math.floor(data.retirementProjection || 0).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              {getSymbol()}{Math.floor(data.retirementProjection || 0).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
         </div>
@@ -293,7 +297,7 @@ export default function Overview() {
         {/* Expense Breakdown Chart */}
         {data.totalIncome > 0 && (
           <div className="card p-8">
-            <h2 className="mb-6 text-xl font-bold text-gray-900">Expense Breakdown</h2>
+            <h2 className="mb-6 text-xl font-bold text-gray-900">{t('overview.expenseBreakdown')}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -301,7 +305,10 @@ export default function Overview() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, value }) => `${name}: €${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
+                  label={({ name, value }) => {
+                    const displayName = name === 'Remaining' ? t('dashboard.remaining') : t(`dashboard.expenseCategories.${name}`);
+                    return `${displayName}: ${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
+                  }}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -311,7 +318,13 @@ export default function Overview() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => `€${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
+                  formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
+                  labelFormatter={(label) => {
+                    if (label === 'Remaining') {
+                      return t('dashboard.remaining');
+                    }
+                    return t(`dashboard.expenseCategories.${label}`);
+                  }}
                 />
                 <Legend />
               </PieChart>
