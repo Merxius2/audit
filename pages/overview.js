@@ -23,7 +23,7 @@ export default function Overview() {
     retirementBreakdown: { contributions: 0, gains: 0 },
   });
 
-  const generateRetirementProjection = (currentAge, retirementAge, monthlyInvestment, annualReturn) => {
+  const generateForwardProjection = (currentAge, retirementAge, monthlyInvestment, annualReturn) => {
     const current = parseInt(currentAge) || 0;
     const retirement = parseInt(retirementAge) || 65;
     const monthly = parseFloat(monthlyInvestment) || 0;
@@ -38,6 +38,40 @@ export default function Overview() {
 
     const yearsElapsed = retirement - current;
     const totalContributions = yearsElapsed * 12 * monthly;
+    const gains = Math.round(balance - totalContributions);
+
+    return {
+      finalBalance: Math.round(balance),
+      contributions: Math.round(totalContributions),
+      gains: gains,
+    };
+  };
+
+  const generateBackwardProjection = (currentAge, retirementAge, goalBalance, annualReturn) => {
+    const current = parseInt(currentAge) || 0;
+    const retirement = parseInt(retirementAge) || 65;
+    const goal = parseFloat(goalBalance) || 500000;
+    const rate = (parseFloat(annualReturn) || 7) / 100 / 12;
+    const months = (retirement - current) * 12;
+
+    // Calculate required monthly investment using the future value formula
+    let requiredMonthly = 0;
+    if (rate === 0) {
+      requiredMonthly = months > 0 ? goal / months : 0;
+    } else {
+      const factor = (Math.pow(1 + rate, months) - 1) / rate;
+      requiredMonthly = factor > 0 ? goal / factor : 0;
+    }
+
+    let balance = 0;
+    for (let age = current; age < retirement; age++) {
+      for (let month = 0; month < 12; month++) {
+        balance = balance * (1 + rate) + requiredMonthly;
+      }
+    }
+
+    const yearsElapsed = retirement - current;
+    const totalContributions = yearsElapsed * 12 * requiredMonthly;
     const gains = Math.round(balance - totalContributions);
 
     return {
@@ -62,12 +96,20 @@ export default function Overview() {
 
       let retirementBreakdown = { contributions: 0, gains: 0 };
       if (retirementData) {
-        const projection = generateRetirementProjection(
-          retirementData.currentAge || '30',
-          retirementData.retirementAge || '65',
-          retirementData.monthlyInvestment || '1000',
-          retirementData.annualReturn || '7'
-        );
+        const isBackward = retirementData.calculationType === 'backward';
+        const projection = isBackward
+          ? generateBackwardProjection(
+              retirementData.currentAge || '30',
+              retirementData.retirementAge || '65',
+              retirementData.goalBalance || '500000',
+              retirementData.annualReturn || '7'
+            )
+          : generateForwardProjection(
+              retirementData.currentAge || '30',
+              retirementData.retirementAge || '65',
+              retirementData.monthlyInvestment || '1000',
+              retirementData.annualReturn || '7'
+            );
         retirementBreakdown = {
           contributions: projection.contributions,
           gains: projection.gains,

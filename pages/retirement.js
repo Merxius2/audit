@@ -9,10 +9,17 @@ import { TrendingUp } from 'lucide-react';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 
 export default function RetirementProjection() {
+  const [calculationType, setCalculationType] = useState('forward'); // 'forward' or 'backward'
+  
+  // Forward calculation inputs
   const [currentAge, setCurrentAge] = useState('30');
   const [retirementAge, setRetirementAge] = useState('65');
   const [monthlyInvestment, setMonthlyInvestment] = useState('1000');
   const [annualReturn, setAnnualReturn] = useState('7');
+
+  // Backward calculation inputs
+  const [goalBalance, setGoalBalance] = useState('500000');
+
   const [isLoading, setIsLoading] = useState(true);
   const saveCookieTimeout = useRef(null);
 
@@ -34,12 +41,14 @@ export default function RetirementProjection() {
       clearTimeout(saveCookieTimeout.current);
     }
     saveCookieTimeout.current = setTimeout(() => {
-      const projectionData = generateProjection();
+      const projectionData = isForward ? generateForwardProjection() : generateBackwardProjection();
       const finalBalance = projectionData[projectionData.length - 1]?.balance || 0;
       saveToCookie('retirement_data', {
+        calculationType,
         currentAge,
         retirementAge,
         monthlyInvestment,
+        goalBalance,
         annualReturn,
         finalBalance,
       });
@@ -50,9 +59,10 @@ export default function RetirementProjection() {
     if (!isLoading) {
       debouncedSave();
     }
-  }, [currentAge, retirementAge, monthlyInvestment, annualReturn, isLoading]);
+  }, [currentAge, retirementAge, monthlyInvestment, goalBalance, annualReturn, calculationType, isLoading]);
 
-  const generateProjection = () => {
+  // Forward calculation: input monthly investment, calculate final balance
+  const generateForwardProjection = () => {
     const data = [];
     const current = parseInt(currentAge) || 0;
     const retirement = parseInt(retirementAge) || 65;
@@ -78,11 +88,62 @@ export default function RetirementProjection() {
     return data;
   };
 
-  const projectionData = generateProjection();
+  // Backward calculation: input goal balance, calculate required monthly investment
+  const generateBackwardProjection = () => {
+    const data = [];
+    const current = parseInt(currentAge) || 0;
+    const retirement = parseInt(retirementAge) || 65;
+    const goal = parseFloat(goalBalance) || 500000;
+    const rate = (parseFloat(annualReturn) || 7) / 100 / 12;
+    const months = (retirement - current) * 12;
+
+    // Calculate required monthly investment using the future value formula
+    // FV = PMT * (((1 + r)^n - 1) / r)
+    // PMT = FV / (((1 + r)^n - 1) / r)
+    let requiredMonthly = 0;
+    if (rate === 0) {
+      requiredMonthly = months > 0 ? goal / months : 0;
+    } else {
+      const factor = (Math.pow(1 + rate, months) - 1) / rate;
+      requiredMonthly = factor > 0 ? goal / factor : 0;
+    }
+
+    let balance = 0;
+    for (let age = current; age <= retirement; age++) {
+      for (let month = 0; month < 12; month++) {
+        balance = balance * (1 + rate) + requiredMonthly;
+      }
+      const yearsElapsed = age - current;
+      const totalContributions = yearsElapsed * 12 * requiredMonthly;
+      const gains = Math.round(balance - totalContributions);
+      
+      data.push({ 
+        age, 
+        balance: Math.round(balance),
+        contributions: Math.round(totalContributions),
+        gains: gains,
+      });
+    }
+    return data;
+  };
+
+  const isForward = calculationType === 'forward';
+  const projectionData = isForward ? generateForwardProjection() : generateBackwardProjection();
   const finalBalance = projectionData[projectionData.length - 1]?.balance || 0;
+  
   const currentAgeNum = parseInt(currentAge) || 0;
   const retirementAgeNum = parseInt(retirementAge) || 65;
   const yearsToRetirement = Math.max(0, retirementAgeNum - currentAgeNum);
+  const monthlyForDisplay = isForward ? parseFloat(monthlyInvestment) || 0 : Math.round((parseFloat(goalBalance) || 0) / Math.max(1, (yearsToRetirement * 12)) * 100) / 100;
+  // Better calculation for backward
+  const backwardMonthly = isForward ? 0 : (() => {
+    const months = yearsToRetirement * 12;
+    const rate = (parseFloat(annualReturn) || 7) / 100 / 12;
+    const goal = parseFloat(goalBalance) || 0;
+    if (rate === 0) return months > 0 ? goal / months : 0;
+    const factor = (Math.pow(1 + rate, months) - 1) / rate;
+    return factor > 0 ? goal / factor : 0;
+  })();
 
   if (isLoading) {
     return <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0" />;
@@ -102,14 +163,44 @@ export default function RetirementProjection() {
       </div>
 
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
-        {/* Input Section */}
+        {/* Calculation Type Selector */}
+        <div className="card p-6">
+          <h2 className="mb-4 text-lg font-bold text-gray-900">Calculation Type</h2>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setCalculationType('forward')}
+              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
+                isForward
+                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Forward: Investment → Balance
+            </button>
+            <button
+              onClick={() => setCalculationType('backward')}
+              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
+                !isForward
+                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Backward: Goal → Investment
+            </button>
+          </div>
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { label: 'Current Age', value: currentAge, setValue: setCurrentAge, placeholder: '30' },
-            { label: 'Retirement Age', value: retirementAge, setValue: setRetirementAge, placeholder: '65' },
-            { label: 'Monthly Investment', value: monthlyInvestment, setValue: setMonthlyInvestment, placeholder: '1000' },
-            { label: 'Annual Return %', value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
-          ].map((field, idx) => (
+          {(isForward ? [
+              { label: 'Current Age', value: currentAge, setValue: setCurrentAge, placeholder: '30' },
+              { label: 'Retirement Age', value: retirementAge, setValue: setRetirementAge, placeholder: '65' },
+              { label: 'Monthly Investment', value: monthlyInvestment, setValue: setMonthlyInvestment, placeholder: '1000' },
+              { label: 'Annual Return %', value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
+            ] : [
+              { label: 'Current Age', value: currentAge, setValue: setCurrentAge, placeholder: '30' },
+              { label: 'Retirement Age', value: retirementAge, setValue: setRetirementAge, placeholder: '65' },
+              { label: 'Goal Balance', value: goalBalance, setValue: setGoalBalance, placeholder: '500000' },
+              { label: 'Annual Return %', value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
+            ]).map((field, idx) => (
             <div key={idx} className="card p-4">
               <label className="block text-sm font-semibold text-gray-700 mb-3">
                 {field.label}
@@ -199,7 +290,7 @@ export default function RetirementProjection() {
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-700">Your Contributions</span>
                   <span className="text-sm font-bold text-gray-900">
-                    €{(yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    €{(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </span>
                 </div>
                 <div className="h-3 rounded-full bg-gray-200">
@@ -207,7 +298,7 @@ export default function RetirementProjection() {
                     className="h-3 rounded-full bg-gradient-to-r from-brand-primary to-brand-secondary transition-all"
                     style={{
                       width: finalBalance > 0 
-                        ? `${Math.min(100, ((yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0)) / finalBalance) * 100)}%`
+                        ? `${Math.min(100, ((yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)) / finalBalance) * 100)}%`
                         : '0%'
                     }}
                   />
@@ -219,7 +310,7 @@ export default function RetirementProjection() {
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-700">Investment Gains</span>
                   <span className="text-sm font-bold text-green-600">
-                    €{(finalBalance - (yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    €{(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </span>
                 </div>
                 <div className="h-3 rounded-full bg-gray-200">
@@ -227,7 +318,7 @@ export default function RetirementProjection() {
                     className="h-3 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all"
                     style={{
                       width: finalBalance > 0 
-                        ? `${Math.min(100, ((finalBalance - (yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0))) / finalBalance) * 100)}%`
+                        ? `${Math.min(100, ((finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))) / finalBalance) * 100)}%`
                         : '0%'
                     }}
                   />
@@ -254,23 +345,25 @@ export default function RetirementProjection() {
             </div>
 
             <div className="card p-6">
-              <p className="text-sm font-medium text-gray-600">Monthly Investment</p>
+              <p className="text-sm font-medium text-gray-600">
+                {isForward ? 'Monthly Investment' : 'Required Monthly Investment'}
+              </p>
               <p className="amount-large mt-2 text-gray-900 font-mono">
-                €{(parseFloat(monthlyInvestment) || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                €{(isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly).toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </p>
             </div>
 
             <div className="card p-6">
               <p className="text-sm font-medium text-gray-600">Total Contributions</p>
               <p className="amount-large mt-2 text-gray-900 font-mono">
-                €{(yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                €{(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </p>
             </div>
 
             <div className="card p-6">
               <p className="text-sm font-medium text-gray-600">Investment Gains</p>
               <p className="amount-large mt-2 text-green-600 font-mono">
-                €{(finalBalance - (yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                €{(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </p>
             </div>
           </div>
