@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Head from 'next/head';
 
 export default function Home() {
   const [time, setTime] = useState('');
@@ -8,13 +9,18 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={styles.container}>
+    <>
+      <Head>
+        <title>Hello World App</title>
+      </Head>
+      <div style={styles.container}>
       <h1 style={styles.title}>Hello World! 👋</h1>
       <p style={styles.description}>
         This is a simple Next.js app running on Vercel
       </p>
       {time && <p style={styles.time}>Current time: {time}</p>}
-    </div>
+      </div>
+    </>
   );
 }
 
