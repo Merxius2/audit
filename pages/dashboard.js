@@ -9,6 +9,8 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useFunFeatures } from '../hooks/useFunFeatures';
+import { useAchievements, AchievementNotification, AchievementsDisplay } from '../hooks/useAchievements';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#8B5CF6', '#F97316'];
@@ -36,6 +38,7 @@ export default function Dashboard() {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [newAchievementToDisplay, setNewAchievementToDisplay] = useState(null);
   const saveCookieTimeout = useRef(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
@@ -79,11 +82,13 @@ export default function Dashboard() {
     }, 500);
   };
 
+  // Handle new achievements
   useEffect(() => {
-    if (!isLoading) {
-      debouncedSave();
+    if (newAchievements.length > 0) {
+      // Display the first new achievement
+      setNewAchievementToDisplay(newAchievements[0]);
     }
-  }, [incomes, savings, includeSavingsInCalculations, expenses, isLoading]);
+  }, [newAchievements]);
 
   // Calculate totals
   const totalIncome = incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
@@ -91,6 +96,10 @@ export default function Dashboard() {
   const totalExpenses = Object.values(expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
 
   const leftover = totalIncome - (includeSavingsInCalculations ? savingsNum : 0) - totalExpenses;
+
+  // Fun features hooks
+  const { getRoastMessage } = useFunFeatures(totalIncome, totalExpenses);
+  const { unlockedAchievements, newAchievements } = useAchievements(totalIncome, totalExpenses, savingsNum);
 
   // Pie chart data and custom label
   const pieData = [
@@ -357,6 +366,23 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+        )}
+
+        {/* Roast Mode Message */}
+        {getRoastMessage && (
+          <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-500 p-4 rounded">
+            <p className="text-sm font-semibold text-orange-900 dark:text-orange-100">
+              🔥 {getRoastMessage}
+            </p>
+          </div>
+        )}
+
+        {/* Achievements Display */}
+        <AchievementsDisplay />
+
+        {/* Achievement Notification */}
+        {newAchievementToDisplay && (
+          <AchievementNotification achievement={newAchievementToDisplay} />
         )}
 
         {/* Status Grid */}

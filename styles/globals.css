@@ -158,3 +158,59 @@ html.dark [class*="text-gray-900"] {
   @apply text-gray-100;
 }
 
+/* Dark Soul Mode */
+html.dark-soul-mode {
+  background: linear-gradient(135deg, #1a0000 0%, #330000 100%) !important;
+}
+
+html.dark-soul-mode body {
+  background: linear-gradient(135deg, #1a0000 0%, #330000 100%) !important;
+  color: #ff4444 !important;
+}
+
+html.dark-soul-mode h1,
+html.dark-soul-mode h2,
+html.dark-soul-mode h3,
+html.dark-soul-mode h4,
+html.dark-soul-mode h5,
+html.dark-soul-mode h6 {
+  color: #ff6666 !important;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
+  font-style: italic;
+}
+
+html.dark-soul-mode .card,
+html.dark-soul-mode .card-gradient,
+html.dark-soul-mode .card-income,
+html.dark-soul-mode .card-savings,
+html.dark-soul-mode .card-expenses,
+html.dark-soul-mode .card-summary {
+  background: linear-gradient(135deg, #330000 0%, #1a0000 100%) !important;
+  border-color: #ff4444 !important;
+  color: #ff6666 !important;
+}
+
+html.dark-soul-mode p,
+html.dark-soul-mode span,
+html.dark-soul-mode label,
+html.dark-soul-mode input {
+  color: #ff6666 !important;
+}
+
+/* Confetti Animation */
+@keyframes confetti-fall {
+  to {
+    transform: translateY(100vh) rotateZ(360deg);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  animation: confetti-fall 3s ease-in forwards;
+  z-index: 9999;
+}
+

@@ -1,8 +1,10 @@
 import { X } from 'lucide-react';
 import { useSecretSettings } from '../context/SecretSettingsContext';
+import { useSecretModes } from '../context/SecretModesContext';
 
 export default function SecretSettingsModal() {
   const { isSecretSettingsOpen, closeSecretSettings } = useSecretSettings();
+  const { confettiMode, darkSoulMode, roastMode, achievementMode, toggleConfetti, toggleDarkSoul, toggleRoast, toggleAchievement } = useSecretModes();
 
   if (!isSecretSettingsOpen) return null;
 
@@ -20,19 +22,92 @@ export default function SecretSettingsModal() {
         </div>
 
         <div className="space-y-4">
-          <div className="bg-purple-800/50 border border-purple-400 rounded-lg p-4">
-            <p className="text-purple-100 text-sm font-semibold mb-2">✨ You found the secret settings!</p>
-            <p className="text-purple-200 text-xs">This is a hidden area for fun and experimental features.</p>
+          {/* Confetti Mode */}
+          <div className="bg-purple-800/50 border border-purple-400 rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <p className="text-purple-100 text-sm font-semibold mb-1">🎉 Confetti Mode</p>
+              <p className="text-purple-200 text-xs">Celebrate savings goals with confetti!</p>
+            </div>
+            <button
+              onClick={toggleConfetti}
+              className={`relative flex-shrink-0 h-6 w-11 items-center rounded-full transition-colors inline-flex ${
+                confettiMode
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500'
+                  : 'bg-gray-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                  confettiMode ? 'translate-x-5' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
           </div>
 
-          <div className="bg-indigo-800/50 border border-indigo-400 rounded-lg p-4">
-            <p className="text-indigo-100 text-sm font-semibold mb-2">🚀 Coming Soon</p>
-            <p className="text-indigo-200 text-xs">More fun features will be added here in the future!</p>
+          {/* Dark Soul Mode */}
+          <div className="bg-indigo-800/50 border border-indigo-400 rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <p className="text-indigo-100 text-sm font-semibold mb-1">🌑 Dark Soul Mode</p>
+              <p className="text-indigo-200 text-xs">Embrace the dramatic darkness...</p>
+            </div>
+            <button
+              onClick={toggleDarkSoul}
+              className={`relative flex-shrink-0 h-6 w-11 items-center rounded-full transition-colors inline-flex ${
+                darkSoulMode
+                  ? 'bg-gradient-to-r from-red-700 to-black'
+                  : 'bg-gray-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                  darkSoulMode ? 'translate-x-5' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
           </div>
 
-          <div className="text-center mt-6">
-            <p className="text-purple-300 text-xs mb-2">Easter egg unlocked!</p>
-            <p className="text-purple-400 text-2xl">🎉</p>
+          {/* Roast Mode */}
+          <div className="bg-orange-800/50 border border-orange-400 rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <p className="text-orange-100 text-sm font-semibold mb-1">🔥 Roast Mode</p>
+              <p className="text-orange-200 text-xs">Get critiqued on your spending habits</p>
+            </div>
+            <button
+              onClick={toggleRoast}
+              className={`relative flex-shrink-0 h-6 w-11 items-center rounded-full transition-colors inline-flex ${
+                roastMode
+                  ? 'bg-gradient-to-r from-orange-500 to-red-500'
+                  : 'bg-gray-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                  roastMode ? 'translate-x-5' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Achievement Mode */}
+          <div className="bg-yellow-800/50 border border-yellow-400 rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <p className="text-yellow-100 text-sm font-semibold mb-1">🏆 Achievement Mode</p>
+              <p className="text-yellow-200 text-xs">Unlock badges for financial milestones</p>
+            </div>
+            <button
+              onClick={toggleAchievement}
+              className={`relative flex-shrink-0 h-6 w-11 items-center rounded-full transition-colors inline-flex ${
+                achievementMode
+                  ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+                  : 'bg-gray-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                  achievementMode ? 'translate-x-5' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
           </div>
         </div>
 

@@ -9,16 +9,19 @@ import { LanguageProvider } from '../context/LanguageContext';
 import { CurrencyProvider } from '../context/CurrencyContext';
 import { DarkModeProvider } from '../context/DarkModeContext';
 import { SecretSettingsProvider } from '../context/SecretSettingsContext';
+import { SecretModesProvider } from '../context/SecretModesContext';
 import Sidebar from '../components/Sidebar';
 import MobileNav from '../components/MobileNav';
 import SecretSettingsModal from '../components/SecretSettingsModal';
 import { useRouter } from 'next/router';
 import { useLanguage } from '../context/LanguageContext';
+import { useSecretModes } from '../context/SecretModesContext';
 import { useEffect } from 'react';
 
 function AppContent({ Component, pageProps }) {
   const router = useRouter();
   const { language } = useLanguage();
+  const { darkSoulMode } = useSecretModes();
   const isHomePage = router.pathname === '/' || router.pathname === '/index';
 
   // Dynamically update favicon based on language selection
@@ -49,6 +52,15 @@ function AppContent({ Component, pageProps }) {
     }
   }, [language]);
 
+  // Apply Dark Soul mode
+  useEffect(() => {
+    if (darkSoulMode) {
+      document.documentElement.classList.add('dark-soul-mode');
+    } else {
+      document.documentElement.classList.remove('dark-soul-mode');
+    }
+  }, [darkSoulMode]);
+
   return (
     <DarkModeProvider>
       <LanguageProvider>
@@ -75,8 +87,10 @@ function MyApp({ Component, pageProps }) {
         <CurrencyProvider>
           <FinancialProvider>
             <SecretSettingsProvider>
-              <SecretSettingsModal />
-              <AppContent Component={Component} pageProps={pageProps} />
+              <SecretModesProvider>
+                <SecretSettingsModal />
+                <AppContent Component={Component} pageProps={pageProps} />
+              </SecretModesProvider>
             </SecretSettingsProvider>
           </FinancialProvider>
         </CurrencyProvider>
