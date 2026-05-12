@@ -100,7 +100,7 @@ const ACHIEVEMENTS = {
     id: 'turkish_speaker',
     title: 'Turkish Speaker',
     description: 'Use the app in Turkish',
-    icon: '�',
+    icon: '🌍',
     condition: (data) => data.language === 'tr',
   },  lucky_420: {
     id: 'lucky_420',

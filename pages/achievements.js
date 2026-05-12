@@ -97,7 +97,7 @@ const ACHIEVEMENTS = {
     id: 'turkish_speaker',
     title: 'Turkish Speaker',
     description: 'Use the app in Turkish',
-    icon: '�',
+    icon: '🌍',
     color: 'from-blue-500 to-cyan-600',
   },  lucky_420: {
     id: 'lucky_420',
