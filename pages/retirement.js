@@ -27,9 +27,11 @@ export default function RetirementProjection() {
   useEffect(() => {
     const savedData = loadFromCookie('retirement_data');
     if (savedData) {
+      if (savedData.calculationType) setCalculationType(savedData.calculationType);
       if (savedData.currentAge) setCurrentAge(savedData.currentAge);
       if (savedData.retirementAge) setRetirementAge(savedData.retirementAge);
       if (savedData.monthlyInvestment) setMonthlyInvestment(savedData.monthlyInvestment);
+      if (savedData.goalBalance) setGoalBalance(savedData.goalBalance);
       if (savedData.annualReturn) setAnnualReturn(savedData.annualReturn);
     }
     setIsLoading(false);
@@ -76,12 +78,12 @@ export default function RetirementProjection() {
       }
       const yearsElapsed = age - current;
       const totalContributions = yearsElapsed * 12 * monthly;
-      const gains = Math.round(balance - totalContributions);
+      const gains = Math.floor(balance - totalContributions);
       
       data.push({ 
         age, 
-        balance: Math.round(balance),
-        contributions: Math.round(totalContributions),
+        balance: Math.floor(balance),
+        contributions: Math.floor(totalContributions),
         gains: gains,
       });
     }
@@ -115,12 +117,12 @@ export default function RetirementProjection() {
       }
       const yearsElapsed = age - current;
       const totalContributions = yearsElapsed * 12 * requiredMonthly;
-      const gains = Math.round(balance - totalContributions);
+      const gains = Math.floor(balance - totalContributions);
       
       data.push({ 
         age, 
-        balance: Math.round(balance),
-        contributions: Math.round(totalContributions),
+        balance: Math.floor(balance),
+        contributions: Math.floor(totalContributions),
         gains: gains,
       });
     }
@@ -140,9 +142,9 @@ export default function RetirementProjection() {
     const months = yearsToRetirement * 12;
     const rate = (parseFloat(annualReturn) || 7) / 100 / 12;
     const goal = parseFloat(goalBalance) || 0;
-    if (rate === 0) return months > 0 ? goal / months : 0;
+    if (rate === 0) return months > 0 ? Math.floor(goal / months) : 0;
     const factor = (Math.pow(1 + rate, months) - 1) / rate;
-    return factor > 0 ? goal / factor : 0;
+    return factor > 0 ? Math.floor(goal / factor) : 0;
   })();
 
   if (isLoading) {
@@ -248,15 +250,15 @@ export default function RetirementProjection() {
                           <div className="space-y-2 text-sm">
                             <div className="flex justify-between items-center">
                               <span className="text-gray-600">Contributions:</span>
-                              <span className="font-mono font-semibold text-gray-900">€{data.contributions.toLocaleString()}</span>
+                              <span className="font-mono font-semibold text-gray-900">€{Math.floor(data.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
                             </div>
                             <div className="flex justify-between items-center">
                               <span className="text-gray-600">Investment Gains:</span>
-                              <span className="font-mono font-semibold text-green-600">€{data.gains.toLocaleString()}</span>
+                              <span className="font-mono font-semibold text-green-600">€{Math.floor(data.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
                             </div>
                             <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between items-center">
                               <span className="font-semibold text-gray-900">Total Balance:</span>
-                              <span className="font-mono font-bold text-brand-primary">€{data.balance.toLocaleString()}</span>
+                              <span className="font-mono font-bold text-brand-primary">€{Math.floor(data.balance).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
                             </div>
                           </div>
                         </div>
@@ -290,7 +292,7 @@ export default function RetirementProjection() {
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-700">Your Contributions</span>
                   <span className="text-sm font-bold text-gray-900">
-                    €{(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    €{Math.floor(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                   </span>
                 </div>
                 <div className="h-3 rounded-full bg-gray-200">
@@ -310,7 +312,7 @@ export default function RetirementProjection() {
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-700">Investment Gains</span>
                   <span className="text-sm font-bold text-green-600">
-                    €{(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    €{Math.floor(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                   </span>
                 </div>
                 <div className="h-3 rounded-full bg-gray-200">
@@ -330,7 +332,7 @@ export default function RetirementProjection() {
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-bold text-gray-900">Total Balance</span>
                   <span className="amount-large text-brand-primary">
-                    €{finalBalance.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    €{Math.floor(finalBalance).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                   </span>
                 </div>
               </div>
@@ -349,21 +351,21 @@ export default function RetirementProjection() {
                 {isForward ? 'Monthly Investment' : 'Required Monthly Investment'}
               </p>
               <p className="amount-large mt-2 text-gray-900 font-mono">
-                €{(isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                €{Math.floor(isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly).toLocaleString('en-US', { minimumFractionDigits: 0 })}
               </p>
             </div>
 
             <div className="card p-6">
               <p className="text-sm font-medium text-gray-600">Total Contributions</p>
               <p className="amount-large mt-2 text-gray-900 font-mono">
-                €{(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                €{Math.floor(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { minimumFractionDigits: 0 })}
               </p>
             </div>
 
             <div className="card p-6">
               <p className="text-sm font-medium text-gray-600">Investment Gains</p>
               <p className="amount-large mt-2 text-green-600 font-mono">
-                €{(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                €{Math.floor(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
               </p>
             </div>
           </div>

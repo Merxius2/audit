@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { BarChart3, TrendingUp, Settings, ArrowRight } from 'lucide-react';
 
 export default function Home() {
@@ -32,6 +33,9 @@ export default function Home() {
         <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
           <div className="max-w-2xl text-center">
             {/* Logo */}
+            <div className="mb-8 flex justify-center">
+              <Image src="/icon-512.png" alt="Aap-FT Logo" width={120} height={120} className="rounded-3xl shadow-lg" />
+            </div>
             <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-6xl font-bold text-transparent md:text-7xl">
               Aap-FT
             </h1>
@@ -41,7 +45,7 @@ export default function Home() {
             </p>
 
             {/* Features Grid */}
-            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="card p-6">
                 <BarChart3 className="mx-auto mb-3 text-brand-primary" size={32} />
                 <h3 className="font-semibold text-gray-900">Huishoudboekje</h3>
@@ -52,12 +56,6 @@ export default function Home() {
                 <TrendingUp className="mx-auto mb-3 text-brand-secondary" size={32} />
                 <h3 className="font-semibold text-gray-900">Retirement</h3>
                 <p className="mt-2 text-sm text-gray-600">Project your financial future</p>
-              </div>
-
-              <div className="card p-6">
-                <Settings className="mx-auto mb-3 text-brand-accent" size={32} />
-                <h3 className="font-semibold text-gray-900">Settings</h3>
-                <p className="mt-2 text-sm text-gray-600">Customize benchmark data</p>
               </div>
             </div>
 

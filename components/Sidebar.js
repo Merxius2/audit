@@ -6,7 +6,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { BarChart3, TrendingUp, Eye } from 'lucide-react';
+import { BarChart3, TrendingUp, Eye, Settings } from 'lucide-react';
 
 export default function Sidebar() {
   const router = useRouter();
@@ -17,6 +17,7 @@ export default function Sidebar() {
     { path: '/overview', label: 'Overview', icon: Eye },
     { path: '/dashboard', label: 'Huishoudboekje', icon: BarChart3 },
     { path: '/retirement', label: 'Retirement', icon: TrendingUp },
+    { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
   return (

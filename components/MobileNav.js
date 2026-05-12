@@ -6,7 +6,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Home } from 'lucide-react';
+import { Home, Settings } from 'lucide-react';
 
 export default function MobileNav() {
   const router = useRouter();
@@ -17,6 +17,7 @@ export default function MobileNav() {
     { path: '/dashboard', icon: Home, label: 'Huishoudboekje' },
     { path: '/retirement', icon: Home, label: 'Retirement' },
     { path: '/overview', icon: Home, label: 'Overview', isPrimary: true },
+    { path: '/settings', icon: Settings, label: 'Settings' },
   ];
 
   return (

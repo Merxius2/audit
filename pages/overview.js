@@ -21,6 +21,7 @@ export default function Overview() {
     expenses: {},
     retirementProjection: 0,
     retirementBreakdown: { contributions: 0, gains: 0 },
+    monthlyInvestment: 0,
   });
 
   const generateForwardProjection = (currentAge, retirementAge, monthlyInvestment, annualReturn) => {
@@ -38,11 +39,11 @@ export default function Overview() {
 
     const yearsElapsed = retirement - current;
     const totalContributions = yearsElapsed * 12 * monthly;
-    const gains = Math.round(balance - totalContributions);
+    const gains = Math.floor(balance - totalContributions);
 
     return {
-      finalBalance: Math.round(balance),
-      contributions: Math.round(totalContributions),
+      finalBalance: Math.floor(balance),
+      contributions: Math.floor(totalContributions),
       gains: gains,
     };
   };
@@ -72,11 +73,11 @@ export default function Overview() {
 
     const yearsElapsed = retirement - current;
     const totalContributions = yearsElapsed * 12 * requiredMonthly;
-    const gains = Math.round(balance - totalContributions);
+    const gains = Math.floor(balance - totalContributions);
 
     return {
-      finalBalance: Math.round(balance),
-      contributions: Math.round(totalContributions),
+      finalBalance: Math.floor(balance),
+      contributions: Math.floor(totalContributions),
       gains: gains,
     };
   };
@@ -95,6 +96,7 @@ export default function Overview() {
       const totalExpenses = Object.values(expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
 
       let retirementBreakdown = { contributions: 0, gains: 0 };
+      let monthlyInvest = 0;
       if (retirementData) {
         const isBackward = retirementData.calculationType === 'backward';
         const projection = isBackward
@@ -114,6 +116,23 @@ export default function Overview() {
           contributions: projection.contributions,
           gains: projection.gains,
         };
+        
+        // Calculate monthly investment
+        if (isBackward) {
+          const current = parseInt(retirementData.currentAge) || 0;
+          const retirement = parseInt(retirementData.retirementAge) || 65;
+          const goal = parseFloat(retirementData.goalBalance) || 500000;
+          const rate = (parseFloat(retirementData.annualReturn) || 7) / 100 / 12;
+          const months = (retirement - current) * 12;
+          if (rate === 0) {
+            monthlyInvest = months > 0 ? Math.floor(goal / months) : 0;
+          } else {
+            const factor = (Math.pow(1 + rate, months) - 1) / rate;
+            monthlyInvest = factor > 0 ? Math.floor(goal / factor) : 0;
+          }
+        } else {
+          monthlyInvest = Math.floor(parseFloat(retirementData.monthlyInvestment) || 0);
+        }
       }
 
       setData({
@@ -124,6 +143,7 @@ export default function Overview() {
         expenses,
         retirementProjection: retirementData?.finalBalance || 0,
         retirementBreakdown,
+        monthlyInvestment: monthlyInvest,
       });
     }
   }, []);
@@ -163,23 +183,29 @@ export default function Overview() {
         {data.retirementProjection > 0 && (
           <div className="card p-8">
             <h2 className="mb-6 text-xl font-bold text-gray-900">Retirement Projection Breakdown</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-6">
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-blue-50 to-white">
                 <p className="text-sm font-medium text-gray-600">Your Contributions</p>
                 <p className="amount-large mt-3 text-gray-900">
-                  €{data.retirementBreakdown.contributions.toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                  €{Math.floor(data.retirementBreakdown.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-green-50 to-white">
                 <p className="text-sm font-medium text-gray-600">Investment Gains</p>
                 <p className="amount-large mt-3 text-green-600">
-                  €{data.retirementBreakdown.gains.toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                  €{Math.floor(data.retirementBreakdown.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-purple-50 to-white">
+                <p className="text-sm font-medium text-gray-600">Monthly Investment</p>
+                <p className="amount-large mt-3 text-purple-600">
+                  €{Math.floor(data.monthlyInvestment).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-brand-secondary/10 to-white">
                 <p className="text-sm font-medium text-gray-600">Total Projected Balance</p>
                 <p className="amount-large mt-3 text-brand-secondary">
-                  €{data.retirementProjection.toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                  €{Math.floor(data.retirementProjection).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
             </div>
@@ -213,21 +239,21 @@ export default function Overview() {
           <div className="card-income p-6">
             <p className="text-sm font-medium text-gray-600">Total Income</p>
             <p className="amount-large mt-3 text-gray-900">
-              €{data.totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{Math.floor(data.totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-expenses p-6">
             <p className="text-sm font-medium text-gray-600">Total Expenses</p>
             <p className="amount-large mt-3 text-gray-900">
-              €{data.totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{Math.floor(data.totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-savings p-6">
             <p className="text-sm font-medium text-gray-600">Savings Amount</p>
             <p className="amount-large mt-3 text-gray-900">
-              €{data.savingsAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{Math.floor(data.savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
@@ -239,7 +265,7 @@ export default function Overview() {
             }}>
             <p className="text-sm font-medium text-gray-600">Net Leftover</p>
             <p className={`amount-large mt-3 ${leftover >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              €{leftover.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{Math.floor(leftover).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
         </div>
@@ -259,7 +285,7 @@ export default function Overview() {
           <div className="card p-4">
             <p className="text-xs font-medium text-gray-600 uppercase">Retirement Balance</p>
             <p className="amount-large mt-3 text-brand-secondary">
-              €{(data.retirementProjection || 0).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              €{Math.floor(data.retirementProjection || 0).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
         </div>
@@ -275,7 +301,7 @@ export default function Overview() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, value }) => `${name}: €${value.toLocaleString()}`}
+                  label={({ name, value }) => `${name}: €${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -285,7 +311,7 @@ export default function Overview() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => `€${value.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+                  formatter={(value) => `€${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
                 />
                 <Legend />
               </PieChart>

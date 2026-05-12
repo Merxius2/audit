@@ -91,7 +91,7 @@ export default function Dashboard() {
 
   const renderCustomLabel = ({ name, value }) => {
     const percentage = totalPieValue > 0 ? ((value / totalPieValue) * 100).toFixed(1) : 0;
-    return `${name}: €${value.toLocaleString()} (${percentage}%)`;
+    return `${name}: €${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })} (${percentage}%)`;
   };
 
   // Income management functions
@@ -250,14 +250,14 @@ export default function Dashboard() {
           <div className="card-summary p-6">
             <p className="text-sm font-medium text-gray-600">Total Income</p>
             <p className="amount-large mt-2 text-gray-900">
-              €{totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{Math.floor(totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-summary p-6">
             <p className="text-sm font-medium text-gray-600">Total Expenses</p>
             <p className="amount-large mt-2 text-gray-900">
-              €{totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{Math.floor(totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
@@ -269,7 +269,7 @@ export default function Dashboard() {
             }}>
             <p className="text-sm font-medium text-gray-600">Net Leftover</p>
             <p className={`amount-large mt-2 ${leftover >= 0 ? 'glow-green text-green-600' : 'text-red-600'}`}>
-              €{leftover.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{Math.floor(leftover).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
         </div>
@@ -295,7 +295,7 @@ export default function Dashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => `€${value.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+                  formatter={(value) => `€${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
                   labelFormatter={(label) => {
                     const item = pieData.find(p => p.name === label);
                     const percentage = totalPieValue > 0 ? ((item.value / totalPieValue) * 100).toFixed(1) : 0;
