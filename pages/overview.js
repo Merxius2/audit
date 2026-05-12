@@ -369,7 +369,7 @@ export default function Overview() {
         {/* Information Card */}
         <div className="card p-6 border-brand-primary/20 bg-brand-primary/5">
           <p className="text-sm text-gray-700 dark:text-gray-300">
-            <span className="font-semibold">💡 Tip:</span> This overview shows a summary of your financial data from all pages. Visit the Household Budget page to enter detailed income and expenses, or check Retirement to plan your financial future.
+            <span className="font-semibold">💡 Tip:</span> {t('overview.tip')}
           </p>
         </div>
       </div>
