@@ -6,13 +6,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { BarChart3, TrendingUp, Settings, Eye } from 'lucide-react';
-import { useFinancial } from '../context/FinancialContext';
+import { BarChart3, TrendingUp, Eye } from 'lucide-react';
 
 export default function Sidebar() {
   const router = useRouter();
-  const { selectedAgeBracket, setSelectedAgeBracket } = useFinancial();
-  const ageBrackets = ['18-29', '30-44', '45-59', '60+'];
 
   const isActive = (path) => router.pathname === path;
 
@@ -20,7 +17,6 @@ export default function Sidebar() {
     { path: '/overview', label: 'Overview', icon: Eye },
     { path: '/dashboard', label: 'Huishoudboekje', icon: BarChart3 },
     { path: '/retirement', label: 'Retirement', icon: TrendingUp },
-    { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
   return (
@@ -34,24 +30,6 @@ export default function Sidebar() {
           </h1>
         </div>
         <p className="mt-1 text-xs font-medium text-gray-500">Financial Tools</p>
-      </div>
-
-      {/* Age Bracket Selector */}
-      <div className="mb-8">
-        <label className="mb-3 block text-sm font-semibold text-gray-700">
-          Age Bracket
-        </label>
-        <select
-          value={selectedAgeBracket}
-          onChange={(e) => setSelectedAgeBracket(e.target.value)}
-          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10"
-        >
-          {ageBrackets.map((bracket) => (
-            <option key={bracket} value={bracket}>
-              {bracket}
-            </option>
-          ))}
-        </select>
       </div>
 
       {/* Navigation */}

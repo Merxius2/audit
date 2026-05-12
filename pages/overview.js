@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useFinancial } from '../context/FinancialContext';
+
 import { Wallet, TrendingUp, Eye } from 'lucide-react';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 import { loadFromCookie } from '../lib/cookieStorage';
@@ -13,7 +13,6 @@ const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', '
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#06B6D4', '#8B5CF6'];
 
 export default function Overview() {
-  const { selectedAgeBracket } = useFinancial();
   const [data, setData] = useState({
     totalIncome: 0,
     totalExpenses: 0,
@@ -113,10 +112,6 @@ export default function Overview() {
           <div className="flex items-center gap-3 mb-4">
             <Eye size={36} className="text-brand-primary" />
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Overview</h1>
-          </div>
-          <div className="inline-flex items-center space-x-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2">
-            <Wallet size={16} className="text-brand-primary" />
-            <span className="text-sm font-semibold text-gray-700">Age: {selectedAgeBracket}</span>
           </div>
         </div>
       </div>

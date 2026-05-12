@@ -4,10 +4,8 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { useFinancial } from '../context/FinancialContext';
-import MedianBadge from '../components/MedianBadge';
 import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3 } from 'lucide-react';
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
@@ -27,8 +25,6 @@ const CATEGORY_ICONS = {
 };
 
 export default function Dashboard() {
-  const { getCurrentMedian, selectedAgeBracket } = useFinancial();
-  const currentMedian = getCurrentMedian();
 
   const [incomes, setIncomes] = useState([]);
   const [savings, setSavings] = useState('');
@@ -81,6 +77,23 @@ export default function Dashboard() {
 
   const leftover = totalIncome - (includeSavingsInCalculations ? savingsNum : 0) - totalExpenses;
 
+  // Pie chart data and custom label
+  const pieData = [
+    ...EXPENSE_CATEGORIES.map((cat) => ({
+      name: cat,
+      value: parseFloat(expenses[cat]) || 0
+    })).filter(item => item.value > 0),
+    ...(includeSavingsInCalculations && savingsNum > 0 ? [{ name: 'Savings', value: savingsNum }] : []),
+    { name: 'Remaining', value: Math.max(leftover, 0) }
+  ];
+
+  const totalPieValue = pieData.reduce((sum, item) => sum + item.value, 0);
+
+  const renderCustomLabel = ({ name, value }) => {
+    const percentage = totalPieValue > 0 ? ((value / totalPieValue) * 100).toFixed(1) : 0;
+    return `${name}: €${value.toLocaleString()} (${percentage}%)`;
+  };
+
   // Income management functions
   const addIncome = () => {
     const newId = Date.now().toString();
@@ -109,10 +122,6 @@ export default function Dashboard() {
           <div className="flex items-center gap-3 mb-4">
             <BarChart3 size={36} className="text-brand-primary" />
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Huishoudboekje</h1>
-          </div>
-          <div className="inline-flex items-center space-x-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2">
-            <Wallet size={16} className="text-brand-primary" />
-            <span className="text-sm font-semibold text-gray-700">Age: {selectedAgeBracket}</span>
           </div>
         </div>
       </div>
@@ -272,37 +281,27 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={[
-                    ...EXPENSE_CATEGORIES.map((cat) => ({
-                      name: cat,
-                      value: parseFloat(expenses[cat]) || 0
-                    })).filter(item => item.value > 0),
-                    ...(includeSavingsInCalculations && savingsNum > 0 ? [{ name: 'Savings', value: savingsNum }] : []),
-                    { name: 'Remaining', value: Math.max(leftover, 0) }
-                  ]}
+                  data={pieData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, value }) => `${name}: €${value.toLocaleString()}`}
+                  label={renderCustomLabel}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {[
-                    ...EXPENSE_CATEGORIES.map((cat) => ({
-                      name: cat,
-                      value: parseFloat(expenses[cat]) || 0
-                    })).filter(item => item.value > 0),
-                    ...(includeSavingsInCalculations && savingsNum > 0 ? [{ name: 'Savings', value: savingsNum }] : []),
-                    { name: 'Remaining', value: Math.max(leftover, 0) }
-                  ].map((entry, index) => (
+                  {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip
                   formatter={(value) => `€${value.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+                  labelFormatter={(label) => {
+                    const item = pieData.find(p => p.name === label);
+                    const percentage = totalPieValue > 0 ? ((item.value / totalPieValue) * 100).toFixed(1) : 0;
+                    return `${label}: ${percentage}%`;
+                  }}
                 />
-                <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>
