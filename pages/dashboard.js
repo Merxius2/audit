@@ -35,9 +35,20 @@ export default function Dashboard() {
     EXPENSE_CATEGORIES.reduce((acc, cat) => ({ ...acc, [cat]: '' }), {})
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const saveCookieTimeout = useRef(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
+
+  // Detect mobile screen size
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -297,7 +308,7 @@ export default function Dashboard() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={renderCustomLabel}
+                  label={!isMobile ? renderCustomLabel : false}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -324,6 +335,27 @@ export default function Dashboard() {
                 />
               </PieChart>
             </ResponsiveContainer>
+            {isMobile && (
+              <div className="mt-6 space-y-2">
+                {pieData.map((entry, index) => {
+                  const percentage = totalPieValue > 0 ? ((entry.value / totalPieValue) * 100).toFixed(1) : 0;
+                  let displayName = entry.name;
+                  if (entry.name === 'Savings') {
+                    displayName = t('dashboard.savings');
+                  } else if (entry.name === 'Remaining') {
+                    displayName = t('dashboard.remaining');
+                  } else {
+                    displayName = t(`dashboard.expenseCategories.${entry.name}`);
+                  }
+                  return (
+                    <div key={`legend-${index}`} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                      <div className="w-3 h-3 rounded-full" style={{backgroundColor: CHART_COLORS[index % CHART_COLORS.length]}} />
+                      <span>{displayName}: {getSymbol()}{Math.floor(entry.value).toLocaleString('en-US', { minimumFractionDigits: 0 })} ({percentage}%)</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 

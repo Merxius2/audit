@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 
 import { Wallet, TrendingUp, Eye } from 'lucide-react';
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -25,8 +25,19 @@ export default function Overview() {
     retirementBreakdown: { contributions: 0, gains: 0 },
     monthlyInvestment: 0,
   });
+  const [isMobile, setIsMobile] = useState(false);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
+
+  // Detect mobile screen size
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const generateForwardProjection = (currentAge, retirementAge, monthlyInvestment, annualReturn) => {
     const current = parseInt(currentAge) || 0;
@@ -170,6 +181,14 @@ export default function Overview() {
     { name: 'Remaining', value: Math.max(leftover, 0) }
   ];
 
+  const totalPieValue = pieData.reduce((sum, item) => sum + item.value, 0);
+
+  const renderCustomLabel = ({ name, value }) => {
+    const percentage = totalPieValue > 0 ? ((value / totalPieValue) * 100).toFixed(1) : 0;
+    const displayName = name === 'Remaining' ? t('dashboard.remaining') : t(`dashboard.expenseCategories.${name}`);
+    return `${displayName}: ${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })} (${percentage}%)`;
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 pb-32 md:ml-64 md:pb-0">
       {/* Header */}
@@ -305,10 +324,7 @@ export default function Overview() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, value }) => {
-                    const displayName = name === 'Remaining' ? t('dashboard.remaining') : t(`dashboard.expenseCategories.${name}`);
-                    return `${displayName}: ${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
-                  }}
+                  label={!isMobile ? renderCustomLabel : false}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -320,15 +336,33 @@ export default function Overview() {
                 <Tooltip
                   formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
                   labelFormatter={(label) => {
+                    const item = pieData.find(p => p.name === label);
+                    const percentage = totalPieValue > 0 ? ((item.value / totalPieValue) * 100).toFixed(1) : 0;
+                    let displayLabel = label;
                     if (label === 'Remaining') {
-                      return t('dashboard.remaining');
+                      displayLabel = t('dashboard.remaining');
+                    } else {
+                      displayLabel = t(`dashboard.expenseCategories.${label}`);
                     }
-                    return t(`dashboard.expenseCategories.${label}`);
+                    return `${displayLabel}: ${percentage}%`;
                   }}
                 />
-                <Legend />
               </PieChart>
             </ResponsiveContainer>
+            {isMobile && (
+              <div className="mt-6 space-y-2">
+                {pieData.map((entry, index) => {
+                  const percentage = totalPieValue > 0 ? ((entry.value / totalPieValue) * 100).toFixed(1) : 0;
+                  const displayName = entry.name === 'Remaining' ? t('dashboard.remaining') : t(`dashboard.expenseCategories.${entry.name}`);
+                  return (
+                    <div key={`legend-${index}`} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                      <div className="w-3 h-3 rounded-full" style={{backgroundColor: CHART_COLORS[index % CHART_COLORS.length]}} />
+                      <span>{displayName}: {getSymbol()}{Math.floor(entry.value).toLocaleString('en-US', { minimumFractionDigits: 0 })} ({percentage}%)</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
