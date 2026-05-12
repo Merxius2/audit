@@ -54,7 +54,7 @@ export default function Home() {
         />
 
         {/* Language Selector */}
-        <div className="fixed top-6 right-6">
+        <div className="hidden md:fixed md:top-6 md:right-6">
           <div className="flex gap-2">
             {LANGUAGES.map((lang) => (
               <button
@@ -99,6 +99,26 @@ export default function Home() {
                 <TrendingUp className="mx-auto mb-3 text-brand-secondary" size={32} />
                 <h3 className="font-semibold text-gray-900">{t('landing.retirementLabel')}</h3>
                 <p className="mt-2 text-sm text-gray-600">{t('landing.retirementDesc')}</p>
+              </div>
+            </div>
+
+            {/* Language Selector - Mobile */}
+            <div className="mt-8 md:hidden">
+              <div className="flex gap-2 justify-center">
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className={`flex items-center justify-center w-12 h-12 rounded-full transition-all ${
+                      language === lang.code
+                        ? 'bg-gradient-to-r from-brand-primary to-brand-secondary shadow-lg'
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                    title={lang.name}
+                  >
+                    <span className="text-2xl">{lang.flag}</span>
+                  </button>
+                ))}
               </div>
             </div>
 

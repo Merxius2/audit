@@ -164,7 +164,7 @@ export default function SettingsPage() {
 
       {/* Confirmation Modal */}
       {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99]">
           <div className="card p-8 max-w-md mx-auto">
             <h3 className="text-xl font-bold text-gray-900 mb-4">{t('settings.confirm')}</h3>
             <p className="text-gray-600 mb-6">
