@@ -77,9 +77,9 @@ export default function SettingsPage() {
         <div className="card p-8">
           <div className="flex items-center gap-3 mb-6">
             <Globe size={28} className="text-brand-primary" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Language</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.language')}</h2>
           </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">Select your preferred language:</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">{t('settings.languageDesc')}</p>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {LANGUAGES.map((lang) => (
               <button
@@ -109,9 +109,9 @@ export default function SettingsPage() {
         <div className="card p-8">
           <div className="flex items-center gap-3 mb-6">
             <DollarSign size={28} className="text-brand-primary" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Currency</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.currency')}</h2>
           </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">Select your preferred currency:</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">{t('settings.currencyDesc')}</p>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
             {CURRENCY_OPTIONS.map((curr) => (
               <button
