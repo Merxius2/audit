@@ -1,6 +1,6 @@
 {
-  "name": "Aap audit",
-  "short_name": "Aap audit",
+  "name": "Aap-FT",
+  "short_name": "Aap-FT",
   "description": "A simple audit app for Vercel",
   "start_url": "/",
   "display": "standalone",

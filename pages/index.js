@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Aap audit</title>
+        <title>Aap-FT</title>
       </Head>
       <div style={styles.container}>
       <h1 style={styles.title}>Hello World! 👋</h1>
