@@ -141,11 +141,11 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Income Sources Card */}
         <div className="card-income p-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">{t('dashboard.incomeHeader')}</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.incomeHeader')}</h2>
             <button
               onClick={addIncome}
-              className="flex items-center gap-2 rounded-lg bg-brand-primary text-white px-4 py-2 font-medium hover:bg-brand-primary/90 transition-colors"
+              className="flex items-center gap-2 rounded-lg bg-brand-primary text-white px-4 py-2 font-medium hover:bg-brand-primary/90 transition-colors w-full sm:w-auto justify-center sm:justify-start"
             >
               <Plus size={18} />
               {t('dashboard.addIncomeBtn')}
