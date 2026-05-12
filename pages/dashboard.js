@@ -37,7 +37,9 @@ export default function Dashboard() {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [displayedRoast, setDisplayedRoast] = useState(null);
   const saveCookieTimeout = useRef(null);
+  const roastTimeout = useRef(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
 
@@ -90,7 +92,26 @@ export default function Dashboard() {
   // Fun features hooks
   const { roastMessage } = useFunFeatures(totalIncome, totalExpenses, expenses);
 
-  // Pie chart data and custom label
+  // Handle roast message display with auto-dismiss
+  useEffect(() => {
+    if (roastMessage) {
+      setDisplayedRoast(roastMessage);
+      
+      if (roastTimeout.current) {
+        clearTimeout(roastTimeout.current);
+      }
+      
+      roastTimeout.current = setTimeout(() => {
+        setDisplayedRoast(null);
+      }, 3000);
+    }
+    
+    return () => {
+      if (roastTimeout.current) {
+        clearTimeout(roastTimeout.current);
+      }
+    };
+  }, [roastMessage]);
   const pieData = [
     ...EXPENSE_CATEGORIES.map((cat) => ({
       name: cat,
@@ -358,11 +379,11 @@ export default function Dashboard() {
         )}
 
         {/* Roast Mode Message - Prominent Floating Display */}
-        {roastMessage && (
-          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-40 max-w-2xl w-4/5 md:w-auto px-4">
+        {displayedRoast && (
+          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-40 max-w-2xl w-4/5 md:w-auto px-4 animate-fadeout">
             <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-2xl rounded-lg p-4 border-2 border-red-600 animate-pulse">
               <p className="text-center font-bold text-lg md:text-xl">
-                🔥 {roastMessage}
+                🔥 {displayedRoast}
               </p>
             </div>
           </div>
