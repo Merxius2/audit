@@ -330,23 +330,23 @@ export default function Dashboard() {
         {/* Status Grid */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">Expense Ratio</p>
+            <p className="text-xs font-medium text-gray-600 uppercase">{t('dashboard.expenseRatio')}</p>
             <p className="amount-large mt-2 text-gray-900">
               {totalIncome > 0 ? ((totalExpenses / totalIncome) * 100).toFixed(1) : '0'}%
             </p>
           </div>
 
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">Savings Rate</p>
+            <p className="text-xs font-medium text-gray-600 uppercase">{t('dashboard.savingsRate')}</p>
             <p className="amount-large mt-2 text-gray-900">
               {totalIncome > 0 ? ((savingsNum / totalIncome) * 100).toFixed(1) : '0'}%
             </p>
           </div>
 
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">Monthly Status</p>
+            <p className="text-xs font-medium text-gray-600 uppercase">{t('dashboard.monthlyStatus')}</p>
             <p className={`amount-large mt-2 ${leftover >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {leftover >= 0 ? '✓ Balanced' : '✗ Deficit'}
+              {leftover >= 0 ? t('dashboard.balanced') : t('dashboard.deficit')}
             </p>
           </div>
         </div>
