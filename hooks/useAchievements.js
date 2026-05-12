@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSecretModes } from '../context/SecretModesContext';
+import { useSecretSettings } from '../context/SecretSettingsContext';
+import { useLanguage } from '../context/LanguageContext';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 
 const ACHIEVEMENTS = {
@@ -55,10 +57,63 @@ const ACHIEVEMENTS = {
     icon: '🔥',
     condition: (data) => data.roastCount >= 100,
   },
-};
+  overspender: {
+    id: 'overspender',
+    title: 'Overspender',
+    description: 'Spend more than you earn',
+    icon: '💸',
+    condition: (data) => data.totalExpenses > data.totalIncome && data.totalIncome > 0,
+  },
+  all_spent: {
+    id: 'all_spent',
+    title: 'All Spent',
+    description: 'Spend everything, save nothing',
+    icon: '💰',
+    condition: (data) => data.savingsAmount === 0 && data.leftover === 0 && data.totalIncome > 0,
+  },
+  millionaire: {
+    id: 'millionaire',
+    title: 'Millionaire',
+    description: 'Reach 1,000,000 in projected balance',
+    icon: '💎',
+    condition: (data) => data.projectedBalance >= 1000000,
+  },
+  secret_discoverer: {
+    id: 'secret_discoverer',
+    title: 'Secret Discoverer',
+    description: 'Find the secret menu',
+    icon: '🔓',
+    condition: (data) => data.secretSettingsDiscovered,
+  },
+  car_enthusiast: {
+    id: 'car_enthusiast',
+    title: 'Car Enthusiast',
+    description: 'Spend more on car than house',
+    icon: '🚗',
+    condition: (data) => {
+      const carSpend = parseFloat(data.expenses?.Car) || 0;
+      const houseSpend = parseFloat(data.expenses?.House) || 0;
+      return carSpend > 0 && houseSpend > 0 && carSpend > houseSpend;
+    },
+  },
+  turkish_speaker: {
+    id: 'turkish_speaker',
+    title: 'Turkish Speaker',
+    description: 'Use the app in Turkish',
+    icon: '�',
+    condition: (data) => data.language === 'tr',
+  },  lucky_420: {
+    id: 'lucky_420',
+    title: 'Lucky Number',
+    description: 'Have a net leftover of exactly 420',
+    icon: '🍀',
+    condition: (data) => data.leftover === 420,
+  },};
 
-export function useAchievements(totalIncome, totalExpenses, savingsAmount, roastCount = 0) {
+export function useAchievements(totalIncome, totalExpenses, savingsAmount, roastCount = 0, projectedBalance = 0, expenses = {}) {
   const { achievementMode } = useSecretModes();
+  const { secretSettingsDiscovered } = useSecretSettings();
+  const { language } = useLanguage();
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
   const [newAchievements, setNewAchievements] = useState([]);
 
@@ -71,6 +126,10 @@ export function useAchievements(totalIncome, totalExpenses, savingsAmount, roast
       savingsAmount: savingsAmount || 0,
       leftover: (totalIncome || 0) - (totalExpenses || 0),
       roastCount: roastCount || 0,
+      projectedBalance: projectedBalance || 0,
+      secretSettingsDiscovered: secretSettingsDiscovered || false,
+      expenses: expenses || {},
+      language: language || 'en',
     };
 
     // Load previously unlocked achievements

@@ -58,10 +58,57 @@ const ACHIEVEMENTS = {
     icon: '🔥',
     color: 'from-red-500 to-red-600',
   },
-};
+  overspender: {
+    id: 'overspender',
+    title: 'Overspender',
+    description: 'Spend more than you earn',
+    icon: '💸',
+    color: 'from-red-500 to-pink-600',
+  },
+  all_spent: {
+    id: 'all_spent',
+    title: 'All Spent',
+    description: 'Spend everything, save nothing',
+    icon: '💰',
+    color: 'from-amber-500 to-orange-600',
+  },
+  millionaire: {
+    id: 'millionaire',
+    title: 'Millionaire',
+    description: 'Reach 1,000,000 in projected balance',
+    icon: '💎',
+    color: 'from-blue-500 to-purple-600',
+  },
+  secret_discoverer: {
+    id: 'secret_discoverer',
+    title: 'Secret Discoverer',
+    description: 'Find the secret menu',
+    icon: '🔓',
+    color: 'from-indigo-500 to-purple-600',
+  },
+  car_enthusiast: {
+    id: 'car_enthusiast',
+    title: 'Car Enthusiast',
+    description: 'Spend more on car than house',
+    icon: '🚗',
+    color: 'from-red-500 to-orange-600',
+  },
+  turkish_speaker: {
+    id: 'turkish_speaker',
+    title: 'Turkish Speaker',
+    description: 'Use the app in Turkish',
+    icon: '�',
+    color: 'from-blue-500 to-cyan-600',
+  },  lucky_420: {
+    id: 'lucky_420',
+    title: 'Lucky Number',
+    description: 'Have a net leftover of exactly 420',
+    icon: '🍀',
+    color: 'from-green-500 to-emerald-600',
+  },};
 
 export default function Achievements() {
-  const { achievementMode } = useSecretModes();
+  const { achievementMode, showAchievementsText, roastCount } = useSecretModes();
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useLanguage();
@@ -73,13 +120,13 @@ export default function Achievements() {
     setIsLoading(false);
   }, []);
 
-  if (!achievementMode) {
+  if (!showAchievementsText) {
     return (
       <div className="md:hidden min-h-screen bg-white pb-32 flex items-center justify-center">
         <div className="text-center px-4">
           <Trophy size={48} className="mx-auto text-gray-400 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Achievement Mode Disabled</h2>
-          <p className="text-gray-600 dark:text-gray-400">Enable Achievement Mode in the secret settings to unlock badges.</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Achievements Disabled</h2>
+          <p className="text-gray-600 dark:text-gray-400">Enable Show Achievements in settings to view badges.</p>
         </div>
       </div>
     );
@@ -121,6 +168,9 @@ export default function Achievements() {
                     <span className="text-5xl mb-3">{achievement.icon}</span>
                     <p className="font-bold text-lg">{achievement.title}</p>
                     <p className="text-sm opacity-90 mt-1">{achievement.description}</p>
+                    {id === 'roasted_100x' && (
+                      <p className="text-sm opacity-90 mt-2 font-semibold">🔥 {roastCount}/100</p>
+                    )}
                   </div>
                 ) : null;
               })}
@@ -141,8 +191,15 @@ export default function Achievements() {
                   className="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl shadow opacity-50 flex flex-col items-center text-center"
                 >
                   <span className="text-5xl mb-3 grayscale">{achievement.icon}</span>
-                  <p className="font-bold text-lg text-gray-600 dark:text-gray-400">{achievement.title}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">{achievement.description}</p>
+                  {achievementMode && (
+                    <>
+                      <p className="font-bold text-lg text-gray-600 dark:text-gray-400">{achievement.title}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">{achievement.description}</p>
+                      {achievement.id === 'roasted_100x' && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 font-semibold">🔥 {roastCount}/100</p>
+                      )}
+                    </>
+                  )}
                 </div>
               );
             })}

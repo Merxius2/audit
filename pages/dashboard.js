@@ -95,7 +95,7 @@ export default function Dashboard() {
 
   // Fun features hooks
   const { applicableRoasts } = useFunFeatures(totalIncome, totalExpenses, expenses);
-  const { newAchievements } = useAchievements(totalIncome, totalExpenses, savingsNum, roastCount);
+  const { newAchievements } = useAchievements(totalIncome, totalExpenses, savingsNum, roastCount, 0, expenses);
   
   // Create a key for tracking when expenses change to trigger roasts even if message is same
   const expensesKey = JSON.stringify(Object.values(expenses));

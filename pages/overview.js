@@ -37,7 +37,7 @@ export default function Overview() {
   const roastTimeout = useRef(null);
   
   // Get achievements
-  const { newAchievements } = useAchievements(data.totalIncome, data.totalExpenses, data.savingsAmount, roastCount);
+  const { newAchievements } = useAchievements(data.totalIncome, data.totalExpenses, data.savingsAmount, roastCount, 0, data.expenses);
   
   // Get roast message
   const applicableRoasts = useOverviewRoasts(data.totalIncome, data.totalExpenses, data.savingsAmount, data.retirementProjection);

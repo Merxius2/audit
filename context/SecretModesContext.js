@@ -8,6 +8,7 @@ export function SecretModesProvider({ children }) {
   const [darkSoulMode, setDarkSoulMode] = useState(false);
   const [roastMode, setRoastMode] = useState(false);
   const [achievementMode, setAchievementMode] = useState(false);
+  const [showAchievementsText, setShowAchievementsText] = useState(false);
   const [roastCount, setRoastCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -17,12 +18,14 @@ export function SecretModesProvider({ children }) {
     const savedDarkSoul = loadFromCookie('secret_darksoul_mode');
     const savedRoast = loadFromCookie('secret_roast_mode');
     const savedAchievement = loadFromCookie('secret_achievement_mode');
+    const savedShowAchievementsText = loadFromCookie('show_achievements_text');
     const savedRoastCount = loadFromCookie('roast_count');
 
     if (savedConfetti !== null) setConfettiMode(savedConfetti === 'true');
     if (savedDarkSoul !== null) setDarkSoulMode(savedDarkSoul === 'true');
     if (savedRoast !== null) setRoastMode(savedRoast === 'true');
     if (savedAchievement !== null) setAchievementMode(savedAchievement === 'true');
+    if (savedShowAchievementsText !== null) setShowAchievementsText(savedShowAchievementsText === 'true');
     if (savedRoastCount !== null) setRoastCount(parseInt(savedRoastCount) || 0);
     setIsLoading(false);
   }, []);
@@ -51,6 +54,12 @@ export function SecretModesProvider({ children }) {
     saveToCookie('secret_achievement_mode', newValue, 365);
   };
 
+  const toggleShowAchievementsText = () => {
+    const newValue = !showAchievementsText;
+    setShowAchievementsText(newValue);
+    saveToCookie('show_achievements_text', newValue, 365);
+  };
+
   const incrementRoastCount = () => {
     const newCount = roastCount + 1;
     setRoastCount(newCount);
@@ -64,11 +73,13 @@ export function SecretModesProvider({ children }) {
         darkSoulMode,
         roastMode,
         achievementMode,
+        showAchievementsText,
         roastCount,
         toggleConfetti,
         toggleDarkSoul,
         toggleRoast,
         toggleAchievement,
+        toggleShowAchievementsText,
         incrementRoastCount,
         isLoading,
       }}

@@ -155,8 +155,7 @@ export default function RetirementProjection() {
   const applicableRoasts = useRetirementRoasts(currentAgeNum, retirementAgeNum, monthlyNum, returnNum, finalBalance, parseFloat(goalBalance) || 500000);
   
   // Get achievements
-  const { newAchievements } = useAchievements(0, 0, 0, roastCount);
-  const yearsToRetirement = Math.max(0, retirementAgeNum - currentAgeNum);
+  const { newAchievements } = useAchievements(0, 0, 0, roastCount, finalBalance, {});
   
   // Handle roast message display with auto-dismiss
   useEffect(() => {

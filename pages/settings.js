@@ -4,13 +4,14 @@
  */
 
 import { useState } from 'react';
-import { Settings, Trash2, Globe, DollarSign, Moon, Sun } from 'lucide-react';
+import { Settings, Trash2, Globe, DollarSign, Moon, Sun, Trophy } from 'lucide-react';
 import { deleteCookie } from '../lib/cookieStorage';
 import { useRouter } from 'next/router';
 import { useLanguage } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useSecretSettings } from '../context/SecretSettingsContext';
+import { useSecretModes } from '../context/SecretModesContext';
 import Image from 'next/image';
 
 const LANGUAGES = [
@@ -44,6 +45,7 @@ export default function SettingsPage() {
   const { currency, changeCurrency } = useCurrency();
   const { isDarkMode, toggleDarkMode, isAutoMode, toggleAutoMode } = useDarkMode();
   const { openSecretSettings } = useSecretSettings();
+  const { achievementMode, showAchievementsText, toggleShowAchievementsText } = useSecretModes();
 
   const handleResetData = () => {
     setShowConfirmation(true);
@@ -201,6 +203,33 @@ export default function SettingsPage() {
               <span
                 className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
                   isAutoMode ? 'translate-x-7' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Show Achievements Toggle Section */}
+        <div className="card p-8">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <Trophy size={28} className="text-brand-primary flex-shrink-0" />
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Show Achievements</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Display achievement badges. Locked badges show details only when Achievement Mode is active.</p>
+              </div>
+            </div>
+            <button
+              onClick={toggleShowAchievementsText}
+              className={`relative flex-shrink-0 h-8 w-14 items-center rounded-full transition-colors inline-flex ${
+                showAchievementsText
+                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
+                  : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                  showAchievementsText ? 'translate-x-7' : 'translate-x-1'
                 }`}
               />
             </button>
