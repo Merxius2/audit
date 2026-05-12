@@ -1,9 +1,11 @@
 import { X, RotateCcw } from 'lucide-react';
+import { useRouter } from 'next/router';
 import { useSecretSettings } from '../context/SecretSettingsContext';
 import { useSecretModes } from '../context/SecretModesContext';
 import { deleteCookie } from '../lib/cookieStorage';
 
 export default function SecretSettingsModal() {
+  const router = useRouter();
   const { isSecretSettingsOpen, closeSecretSettings } = useSecretSettings();
   const { confettiMode, darkSoulMode, roastMode, achievementMode, toggleConfetti, toggleDarkSoul, toggleRoast, toggleAchievement } = useSecretModes();
 
@@ -11,7 +13,7 @@ export default function SecretSettingsModal() {
     deleteCookie('unlocked_achievements');
     deleteCookie('data_reset_count');
     alert('🏆 All achievements have been reset!');
-    window.location.reload();
+    router.push(router.asPath);
   };
 
   if (!isSecretSettingsOpen) return null;
