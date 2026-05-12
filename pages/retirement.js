@@ -183,6 +183,43 @@ export default function RetirementProjection() {
       }
     };
   }, [currentAgeNum, retirementAgeNum, monthlyNum, returnNum, finalBalance, goalBalance]);
+
+  // Periodic roasts when idle (show a new random roast every 7 seconds if no roast is displayed)
+  useEffect(() => {
+    if (!applicableRoasts || applicableRoasts.length === 0 || displayedRoast) {
+      return; // Don't set interval if no roasts or roast already showing
+    }
+
+    const intervalId = setInterval(() => {
+      // Pick a random roast that's different from the last one shown
+      let newIndex;
+      if (applicableRoasts.length === 1) {
+        newIndex = 0;
+      } else {
+        do {
+          newIndex = Math.floor(Math.random() * applicableRoasts.length);
+        } while (newIndex === lastRoastIndex && applicableRoasts.length > 1);
+      }
+
+      setLastRoastIndex(newIndex);
+      setDisplayedRoast(applicableRoasts[newIndex]);
+
+      if (roastTimeout.current) {
+        clearTimeout(roastTimeout.current);
+      }
+
+      roastTimeout.current = setTimeout(() => {
+        setDisplayedRoast(null);
+      }, 3000);
+    }, 7000); // Show a new roast every 7 seconds
+
+    return () => {
+      clearInterval(intervalId);
+      if (roastTimeout.current) {
+        clearTimeout(roastTimeout.current);
+      }
+    };
+  }, [applicableRoasts, displayedRoast, lastRoastIndex]);
   
   const yearsToRetirement = Math.max(0, retirementAgeNum - currentAgeNum);
   const monthlyForDisplay = isForward ? parseFloat(monthlyInvestment) || 0 : Math.round((parseFloat(goalBalance) || 0) / Math.max(1, (yearsToRetirement * 12)) * 100) / 100;
