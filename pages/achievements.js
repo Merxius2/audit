@@ -113,6 +113,13 @@ const ACHIEVEMENTS = {
     icon: '🔄',
     color: 'from-purple-500 to-pink-600',
   },
+  night_owl: {
+    id: 'night_owl',
+    title: 'Night Owl',
+    description: 'Use the app between midnight and 4 AM',
+    icon: '🌙',
+    color: 'from-indigo-600 to-blue-900',
+  },
 };
 
 export default function Achievements() {

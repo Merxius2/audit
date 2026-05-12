@@ -116,6 +116,13 @@ const ACHIEVEMENTS = {
     icon: '🔄',
     condition: (data) => data.dataResetCount >= 1,
   },
+  night_owl: {
+    id: 'night_owl',
+    title: 'Night Owl',
+    description: 'Use the app between midnight and 4 AM',
+    icon: '🌙',
+    condition: (data) => data.currentHour >= 0 && data.currentHour < 4,
+  },
 };
 
 export function useAchievements(totalIncome, totalExpenses, savingsAmount, roastCount = 0, projectedBalance = 0, expenses = {}) {
@@ -139,6 +146,7 @@ export function useAchievements(totalIncome, totalExpenses, savingsAmount, roast
       expenses: expenses || {},
       language: language || 'en',
       dataResetCount: parseInt(loadFromCookie('data_reset_count') || '0'),
+      currentHour: new Date().getHours(),
     };
 
     // Load previously unlocked achievements
