@@ -7,7 +7,7 @@ export default function Document() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
-        <meta name="description" content="A simple Hello World app" />
+        <meta name="description" content="Aap-FT: Advanced Financial Tools" />
         
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
@@ -21,10 +21,11 @@ export default function Document() {
         {/* Favicon */}
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
       </Head>
-      <body>
+      <body className="bg-dark-900 text-white">
         <Main />
         <NextScript />
       </body>
     </Html>
   );
 }
+
