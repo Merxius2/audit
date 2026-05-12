@@ -33,7 +33,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="hidden md:fixed md:left-0 md:top-0 md:flex md:h-screen md:w-64 md:flex-col md:border-r md:border-gray-200 md:bg-white md:p-6 md:shadow-soft">
+    <div className="hidden md:fixed md:left-0 md:top-0 md:flex md:h-screen md:w-64 md:flex-col md:border-r md:border-gray-200 md:bg-white md:p-6 md:shadow-soft dark:border-gray-800 dark:bg-gray-900">
       {/* Logo */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
@@ -67,7 +67,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 pt-4 text-xs text-gray-500">
+      <div className="border-t border-gray-200 pt-4 text-xs text-gray-500 dark:border-gray-800 dark:text-gray-400">
         <p>© 2026 Aap Financial Tools</p>
       </div>
     </div>

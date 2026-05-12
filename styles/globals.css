@@ -17,9 +17,19 @@ body {
     linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
+/* Dark Mode */
+html.dark body {
+  @apply bg-black text-gray-100;
+  background-image: none;
+}
+
 /* Clean Card Style */
 .card {
   @apply rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-soft hover:shadow-soft-md transition-shadow;
+}
+
+html.dark .card {
+  @apply border-gray-800 bg-gray-900 shadow-soft;
 }
 
 .card-gradient {
@@ -47,6 +57,12 @@ input[type='number'],
 input[type='text'],
 select {
   @apply w-full rounded-lg border border-gray-200 bg-white/50 px-3 py-2 text-gray-900 placeholder-gray-400 transition-all focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10;
+}
+
+html.dark input[type='number'],
+html.dark input[type='text'],
+html.dark select {
+  @apply border-dark-300 bg-dark-300/50 text-gray-100 placeholder-gray-500;
 }
 
 /* Status Badges */
@@ -96,5 +112,41 @@ select {
 /* Age Bracket Badge */
 .age-badge {
   @apply inline-flex items-center space-x-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-soft;
+}
+
+html.dark .age-badge {
+  @apply border-dark-300 bg-dark-300 text-gray-300;
+}
+
+/* Dark Mode - Global Styles */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark [class*="bg-white"] {
+  @apply bg-gray-900;
+}
+
+html.dark [class*="border-gray-100"],
+html.dark [class*="border-gray-200"] {
+  @apply border-gray-800;
+}
+
+html.dark [class*="border-b-gray-200"],
+html.dark [class*="border-t-gray-200"] {
+  @apply border-b-gray-800 border-t-gray-800;
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+  @apply text-gray-100;
+}
+
+html.dark p {
+  @apply text-gray-300;
 }
 

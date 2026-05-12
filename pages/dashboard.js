@@ -129,7 +129,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0">
       {/* Header with Age Bracket Badge */}
-      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8">
+      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <BarChart3 size={36} className="text-brand-primary" />

@@ -54,7 +54,7 @@ export default function Home() {
         />
 
         {/* Language Selector */}
-        <div className="hidden md:fixed md:top-6 md:right-6">
+        <div className="fixed top-6 right-6 hidden md:block">
           <div className="flex gap-2">
             {LANGUAGES.map((lang) => (
               <button
