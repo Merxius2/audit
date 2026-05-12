@@ -331,21 +331,29 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="card p-4">
             <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.expenseRatio')}</p>
-            <p className="amount-large mt-2 text-gray-900">
+            <p className={`font-mono text-3xl font-bold tracking-tight mt-2 ${
+              totalIncome > 0 && ((totalExpenses / totalIncome) * 100) <= 70
+                ? 'text-green-600 dark:text-green-400'
+                : 'text-red-600 dark:text-red-400'
+            }`}>
               {totalIncome > 0 ? ((totalExpenses / totalIncome) * 100).toFixed(1) : '0'}%
             </p>
           </div>
 
           <div className="card p-4">
             <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.savingsRate')}</p>
-            <p className="amount-large mt-2 text-gray-900">
+            <p className={`font-mono text-3xl font-bold tracking-tight mt-2 ${
+              totalIncome > 0 && ((savingsNum / totalIncome) * 100) >= 20
+                ? 'text-green-600 dark:text-green-400'
+                : 'text-red-600 dark:text-red-400'
+            }`}>
               {totalIncome > 0 ? ((savingsNum / totalIncome) * 100).toFixed(1) : '0'}%
             </p>
           </div>
 
           <div className="card p-4">
             <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.monthlyStatus')}</p>
-            <p className={`amount-large mt-2 ${leftover >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <p className={`font-mono text-3xl font-bold tracking-tight mt-2 ${leftover >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
               {leftover >= 0 ? t('dashboard.balanced') : t('dashboard.deficit')}
             </p>
           </div>
