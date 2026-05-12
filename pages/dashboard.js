@@ -114,14 +114,14 @@ export default function Dashboard() {
           <div className="card-summary p-6">
             <p className="text-sm font-medium text-gray-600">Total Expenses</p>
             <p className="amount-large mt-2 text-gray-900">
-              ${totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
           </div>
 
           <div className="card-summary p-6">
             <p className="text-sm font-medium text-gray-600">Monthly Income</p>
             <p className="amount-large mt-2 text-gray-900">
-              ${incomeNum.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{incomeNum.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
           </div>
 
@@ -133,7 +133,7 @@ export default function Dashboard() {
             }}>
             <p className="text-sm font-medium text-gray-600">Net Leftover</p>
             <p className={`amount-large mt-2 ${leftover >= 0 ? 'glow-green text-green-600' : 'text-red-600'}`}>
-              ${leftover.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              €{leftover.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
           </div>
         </div>

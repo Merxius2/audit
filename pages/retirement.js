@@ -98,7 +98,7 @@ export default function RetirementProjection() {
                     border: '1px solid rgba(0,0,0,0.1)',
                     borderRadius: '8px',
                   }}
-                  formatter={(value) => `$${value.toLocaleString()}`}
+                  formatter={(value) => `€${value.toLocaleString()}`}
                   labelFormatter={(label) => `Age ${label}`}
                 />
                 <Area
@@ -125,21 +125,21 @@ export default function RetirementProjection() {
           <div className="card p-6">
             <p className="text-sm font-medium text-gray-600">Total Contributions</p>
             <p className="amount-large mt-2 text-gray-900 font-mono">
-              ${(yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              €{(yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card p-6">
             <p className="text-sm font-medium text-gray-600">Investment Gains</p>
             <p className="amount-large mt-2 text-green-600 font-mono">
-              ${(finalBalance - (yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              €{(finalBalance - (yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-brand-primary/10 to-brand-secondary/10 p-6 shadow-soft">
             <p className="text-sm font-medium text-gray-600">Total Estimated Wealth</p>
             <p className="amount-large mt-2 text-brand-primary font-mono">
-              ${finalBalance.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              €{finalBalance.toLocaleString('en-US', { maximumFractionDigits: 0 })}
             </p>
           </div>
         </div>

@@ -28,7 +28,7 @@ export default function MedianBadge({ value, median }) {
         <Icon size={18} />
       </div>
       <p className="text-xs font-medium text-gray-600">{label}</p>
-      <p className="text-xs text-gray-500">Median: ${median.toLocaleString()}</p>
+      <p className="text-xs text-gray-500">Median: €{median.toLocaleString()}</p>
     </div>
   );
 }
