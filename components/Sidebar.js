@@ -108,40 +108,51 @@ export default function Sidebar() {
       </nav>
 
       {/* Achievements Section */}
-      {achievementMode && unlockedAchievements.length > 0 && (
+      {achievementMode && (
         <div className="mb-6 border-b border-gray-200 pb-6 dark:border-gray-800">
-          <Link href="/achievements">
-            <div className="flex items-center justify-between mb-3 cursor-pointer group">
-              <div className="flex items-center gap-2">
-                <Trophy size={16} className="text-yellow-500" />
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Badges</span>
-              </div>
-              <span className="text-xs font-bold bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full">
-                {unlockedAchievements.length}
-              </span>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Trophy size={16} className="text-yellow-500" />
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Badges</span>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {unlockedAchievements.slice(0, 6).map((id) => {
-                const achievementEmojis = {
-                  first_savings: '🌱',
-                  first_1000: '💰',
-                  first_5000: '🏆',
-                  balanced_budget: '⚖️',
-                  great_savings_rate: '📈',
-                  no_debt: '✨',
-                };
-                return (
-                  <div
-                    key={id}
-                    className="flex items-center justify-center w-full aspect-square bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-xl hover:bg-yellow-100 dark:hover:bg-yellow-900/40 transition-colors"
-                    title={id}
-                  >
-                    {achievementEmojis[id] || '🏅'}
+            <span className="text-xs font-bold bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full">
+              {unlockedAchievements.length}/6
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { id: 'first_savings', emoji: '🌱', title: 'First Steps', desc: 'Have any savings' },
+              { id: 'first_1000', emoji: '💰', title: 'Saver', desc: 'Save 1000+' },
+              { id: 'first_5000', emoji: '🏆', title: 'Big Spender', desc: 'Save 5000+' },
+              { id: 'balanced_budget', emoji: '⚖️', title: 'Balanced', desc: 'Income > Expenses' },
+              { id: 'great_savings_rate', emoji: '📈', title: 'Disciplined', desc: 'Save 30%+ of income' },
+              { id: 'no_debt', emoji: '✨', title: 'Clean Record', desc: 'All expenses covered' },
+            ].map((achievement) => {
+              const isUnlocked = unlockedAchievements.includes(achievement.id);
+              return (
+                <div
+                  key={achievement.id}
+                  className={`relative group flex items-center justify-center w-full aspect-square rounded-lg text-xl transition-colors ${
+                    isUnlocked
+                      ? 'bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/40'
+                      : 'bg-gray-100 dark:bg-gray-800 opacity-50 cursor-not-allowed'
+                  }`}
+                >
+                  {isUnlocked ? achievement.emoji : <span className="opacity-30">{achievement.emoji}</span>}
+                  
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block w-32 z-50">
+                    <div className="bg-gray-900 dark:bg-gray-700 text-white text-xs rounded py-2 px-2 whitespace-normal">
+                      <p className="font-semibold">{achievement.title}</p>
+                      <p className="opacity-90">{achievement.desc}</p>
+                      {!isUnlocked && <p className="text-yellow-300 mt-1">🔒 Locked</p>}
+                    </div>
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
                   </div>
-                );
-              })}
-            </div>
-          </Link>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

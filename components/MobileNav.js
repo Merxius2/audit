@@ -6,12 +6,14 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { BarChart3, TrendingUp, Eye, Settings } from 'lucide-react';
+import { BarChart3, TrendingUp, Eye, Settings, Trophy } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSecretModes } from '../context/SecretModesContext';
 
 export default function MobileNav() {
   const router = useRouter();
   const { t } = useLanguage();
+  const { achievementMode } = useSecretModes();
 
   const isActive = (path) => router.pathname === path;
 
@@ -20,6 +22,7 @@ export default function MobileNav() {
     { path: '/retirement', icon: TrendingUp, labelKey: 'navigation.retirement' },
     { path: '/overview', icon: Eye, labelKey: 'navigation.overview', isPrimary: true },
     { path: '/settings', icon: Settings, labelKey: 'navigation.settings' },
+    ...(achievementMode ? [{ path: '/achievements', icon: Trophy, labelKey: 'navigation.achievements' }] : []),
   ];
 
   return (

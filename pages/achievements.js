@@ -68,7 +68,7 @@ export default function Achievements() {
 
   if (!achievementMode) {
     return (
-      <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0 flex items-center justify-center">
+      <div className="md:hidden min-h-screen bg-white pb-32 flex items-center justify-center">
         <div className="text-center px-4">
           <Trophy size={48} className="mx-auto text-gray-400 mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Achievement Mode Disabled</h2>
@@ -79,11 +79,11 @@ export default function Achievements() {
   }
 
   if (isLoading) {
-    return <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0" />;
+    return <div className="md:hidden min-h-screen bg-white pb-32" />;
   }
 
   return (
-    <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0">
+    <div className="md:hidden min-h-screen bg-white pb-32">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
