@@ -88,7 +88,7 @@ export default function Dashboard() {
   const leftover = totalIncome - (includeSavingsInCalculations ? savingsNum : 0) - totalExpenses;
 
   // Fun features hooks
-  const { getRoastMessage } = useFunFeatures(totalIncome, totalExpenses);
+  const { roastMessage } = useFunFeatures(totalIncome, totalExpenses, expenses);
 
   // Pie chart data and custom label
   const pieData = [
@@ -357,12 +357,14 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Roast Mode Message */}
-        {getRoastMessage && (
-          <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-500 p-4 rounded">
-            <p className="text-sm font-semibold text-orange-900 dark:text-orange-100">
-              🔥 {getRoastMessage}
-            </p>
+        {/* Roast Mode Message - Prominent Floating Display */}
+        {roastMessage && (
+          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-40 max-w-2xl w-4/5 md:w-auto px-4">
+            <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-2xl rounded-lg p-4 border-2 border-red-600 animate-pulse">
+              <p className="text-center font-bold text-lg md:text-xl">
+                🔥 {roastMessage}
+              </p>
+            </div>
           </div>
         )}
 
