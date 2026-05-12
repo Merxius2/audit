@@ -10,7 +10,7 @@ import { TrendingUp, Wallet } from 'lucide-react';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure'];
-const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4'];
+const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6'];
 
 export default function Dashboard() {
   const { getCurrentMedian, selectedAgeBracket } = useFinancial();
@@ -148,7 +148,10 @@ export default function Dashboard() {
               <PieChart>
                 <Pie
                   data={[
-                    { name: 'Expenses', value: totalExpenses },
+                    ...EXPENSE_CATEGORIES.map((cat) => ({
+                      name: cat,
+                      value: parseFloat(expenses[cat]) || 0
+                    })).filter(item => item.value > 0),
                     { name: 'Remaining', value: Math.max(leftover, 0) }
                   ]}
                   cx="50%"
@@ -160,7 +163,10 @@ export default function Dashboard() {
                   dataKey="value"
                 >
                   {[
-                    { name: 'Expenses', value: totalExpenses },
+                    ...EXPENSE_CATEGORIES.map((cat) => ({
+                      name: cat,
+                      value: parseFloat(expenses[cat]) || 0
+                    })).filter(item => item.value > 0),
                     { name: 'Remaining', value: Math.max(leftover, 0) }
                   ].map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
