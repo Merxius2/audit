@@ -3,13 +3,14 @@
  * Displays key metrics from all pages in a unified view
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { Wallet, TrendingUp, Eye } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useOverviewRoasts } from '../hooks/useFunFeatures';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#06B6D4', '#8B5CF6'];
@@ -26,8 +27,13 @@ export default function Overview() {
     monthlyInvestment: 0,
   });
   const [isMobile, setIsMobile] = useState(false);
+  const [displayedRoast, setDisplayedRoast] = useState(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
+  const roastTimeout = useRef(null);
+  
+  // Get roast message
+  const roastMessage = useOverviewRoasts(data.totalIncome, data.totalExpenses, data.savingsAmount, data.retirementProjection);
 
   // Detect mobile screen size
   useEffect(() => {
@@ -38,6 +44,27 @@ export default function Overview() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Handle roast message display with auto-dismiss
+  useEffect(() => {
+    if (roastMessage) {
+      setDisplayedRoast(roastMessage);
+      
+      if (roastTimeout.current) {
+        clearTimeout(roastTimeout.current);
+      }
+      
+      roastTimeout.current = setTimeout(() => {
+        setDisplayedRoast(null);
+      }, 3000);
+    }
+    
+    return () => {
+      if (roastTimeout.current) {
+        clearTimeout(roastTimeout.current);
+      }
+    };
+  }, [roastMessage, JSON.stringify(data)]);
 
   const generateForwardProjection = (currentAge, retirementAge, monthlyInvestment, annualReturn) => {
     const current = parseInt(currentAge) || 0;
@@ -200,6 +227,17 @@ export default function Overview() {
           </div>
         </div>
       </div>
+
+      {/* Roast Mode Message - Prominent Floating Display */}
+      {displayedRoast && (
+        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-40 max-w-2xl w-4/5 md:w-auto px-4 animate-fadeout">
+          <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-2xl rounded-lg p-4 border-2 border-red-600 animate-pulse">
+            <p className="text-center font-bold text-lg md:text-xl">
+              🔥 {displayedRoast}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Retirement Breakdown */}

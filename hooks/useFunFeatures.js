@@ -154,3 +154,184 @@ function generateRoastMessage(totalIncome, totalExpenses, expenses) {
   
   return null;
 }
+
+export function useRetirementRoasts(currentAge, retirementAge, monthlyInvestment, annualReturn, projectedBalance, goalBalance) {
+  const { roastMode } = useSecretModes();
+
+  if (!roastMode) return null;
+  
+  return generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, annualReturn, projectedBalance, goalBalance);
+}
+
+function generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, annualReturn, projectedBalance, goalBalance) {
+  if (!currentAge || !retirementAge) return null;
+
+  const yearsToRetirement = retirementAge - currentAge;
+  
+  // Investment amount roasts
+  if (monthlyInvestment < 100 && monthlyInvestment > 0) {
+    const tooLowRoasts = [
+      "Your monthly investment is... optimistic 💭",
+      "That's a very cautious approach to retirement 🐢",
+      "Investing $" + monthlyInvestment + "/month? That's... dedicated! 😅",
+      "Your future self might want more than this 👴",
+      "Small steps to retirement, I guess? 🚶",
+    ];
+    return tooLowRoasts[Math.floor(Math.random() * tooLowRoasts.length)];
+  }
+
+  if (monthlyInvestment < 500 && monthlyInvestment >= 100) {
+    const modestRoasts = [
+      "That monthly investment is... modest 🤔",
+      "Slow and steady wins the race? 🐢",
+      "Your retirement plan: procrastination edition 📅",
+      "Hope compound interest is feeling generous! 📈",
+      "That's one way to approach retirement 💭",
+    ];
+    return modestRoasts[Math.floor(Math.random() * modestRoasts.length)];
+  }
+
+  if (monthlyInvestment >= 5000) {
+    const impressiveRoasts = [
+      "Wow, serious retirement ambitions! 🚀",
+      "That monthly investment is... aggressive 💪",
+      "Your future self is THRIVING 💎",
+      "Someone's taking retirement seriously! 📊",
+      "Living for retirement? Bold choice 🎯",
+    ];
+    return impressiveRoasts[Math.floor(Math.random() * impressiveRoasts.length)];
+  }
+
+  // Years to retirement roasts
+  if (yearsToRetirement < 5 && yearsToRetirement > 0) {
+    const soonRoasts = [
+      "Only " + yearsToRetirement + " years? Better invest BIG! 🏃",
+      "That's cutting it close for retirement 😰",
+      "Your time frame: panic mode activated 🚨",
+      "Retirement is RIGHT THERE 👀",
+      "Talk about last-minute planning! ⏰",
+    ];
+    return soonRoasts[Math.floor(Math.random() * soonRoasts.length)];
+  }
+
+  if (yearsToRetirement > 40) {
+    const lottaTimeRoasts = [
+      "You've got like... forever to invest 🌅",
+      "That's a LOT of time before retirement 😌",
+      "Early start = lazy investing allowed 🛋️",
+      "So much time, so little urgency 😴",
+      "Retirement seems far away, right? 🗓️",
+    ];
+    return lottaTimeRoasts[Math.floor(Math.random() * lottaTimeRoasts.length)];
+  }
+
+  // Return rate roasts
+  if (annualReturn < 2) {
+    const lowReturnRoasts = [
+      "A " + annualReturn + "% annual return? That's... conservative 😴",
+      "Your investment strategy: savings account energy 🏦",
+      "Hope inflation doesn't catch up 📉",
+      "That's being VERY cautious with returns 🤐",
+    ];
+    return lowReturnRoasts[Math.floor(Math.random() * lowReturnRoasts.length)];
+  }
+
+  if (annualReturn > 15) {
+    const highReturnRoasts = [
+      "Expecting " + annualReturn + "% returns? That's... optimistic 📈",
+      "Those returns are pretty aggressive 🎲",
+      "Feeling lucky with your investments? 🍀",
+      "That return rate is... ambitious 🎯",
+    ];
+    return highReturnRoasts[Math.floor(Math.random() * highReturnRoasts.length)];
+  }
+
+  // Projection vs goal roasts
+  if (goalBalance && projectedBalance) {
+    const ratio = (projectedBalance / goalBalance) * 100;
+    if (ratio < 50) {
+      return "Your projected balance is only " + ratio.toFixed(0) + "% of your goal 😬";
+    } else if (ratio > 150) {
+      return "Wow, you're crushing your retirement goal! 🏆";
+    }
+  }
+
+  // Generic retirement roasts
+  const genericRetirementRoasts = [
+    "Thinking about retirement, are we? 🏖️",
+    "Your retirement plan is... a plan! 📋",
+    "Let's hope this actually works out 🤞",
+    "Retirement: a mystery wrapped in math 🧮",
+    "Your future awaits! (Hopefully) ⏳",
+  ];
+
+  return genericRetirementRoasts[Math.floor(Math.random() * genericRetirementRoasts.length)];
+}
+
+export function useOverviewRoasts(totalIncome, totalExpenses, savingsAmount, projectedRetirementBalance) {
+  const { roastMode } = useSecretModes();
+
+  if (!roastMode) return null;
+  
+  return generateOverviewRoast(totalIncome, totalExpenses, savingsAmount, projectedRetirementBalance);
+}
+
+function generateOverviewRoast(totalIncome, totalExpenses, savingsAmount, projectedRetirementBalance) {
+  if (!totalIncome) return null;
+
+  const expenseRatio = (totalExpenses / totalIncome) * 100;
+  const savingsRate = (savingsAmount / totalIncome) * 100;
+  
+  // Savings rate roasts
+  if (savingsRate > 50) {
+    const superSaverRoasts = [
+      "Saving " + savingsRate.toFixed(0) + "% of income? You're a ROBOT 🤖",
+      "That savings rate is LEGENDARY 🏆",
+      "Are you actually spending money on living? 🤔",
+      "Your future self is THANKING you 🙏",
+    ];
+    return superSaverRoasts[Math.floor(Math.random() * superSaverRoasts.length)];
+  }
+
+  if (savingsRate < 5) {
+    const poorSaverRoasts = [
+      "Saving only " + savingsRate.toFixed(1) + "%? That's... ambitious 😅",
+      "Your savings rate is basically zero 📉",
+      "Spending NOW, paying LATER? 💳",
+      "What's a savings rate anyway? 🤷",
+      "Your future self has some words for you 😬",
+    ];
+    return poorSaverRoasts[Math.floor(Math.random() * poorSaverRoasts.length)];
+  }
+
+  // Overall financial health roasts
+  if (totalExpenses > totalIncome) {
+    const overspendingRoasts = [
+      "You're SPENDING more than you EARN 😱",
+      "Going into debt is your financial strategy? 💔",
+      "That budget math doesn't add up! 🧮",
+      "Deficit spending: is it a lifestyle? 💸",
+    ];
+    return overspendingRoasts[Math.floor(Math.random() * overspendingRoasts.length)];
+  }
+
+  // Retirement projection roasts
+  if (projectedRetirementBalance) {
+    if (projectedRetirementBalance < 100000) {
+      return "Your retirement projection: under $100k? 😰 That's... tight.";
+    } else if (projectedRetirementBalance > 1000000) {
+      return "WHOA, over $1M projected at retirement?! 💰 Living the dream!";
+    }
+  }
+
+  // Balanced overview roasts
+  const overviewRoasts = [
+    "Your financial overview is... a journey 📊",
+    "Overall: could be worse, could be better 🤷",
+    "This overview summarizes the chaos 😅",
+    "Here's a snapshot of your money situation 📸",
+    "Your finances: complicated but interesting 🎪",
+  ];
+
+  return overviewRoasts[Math.floor(Math.random() * overviewRoasts.length)];
+}
