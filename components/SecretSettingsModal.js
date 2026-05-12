@@ -13,7 +13,7 @@ export default function SecretSettingsModal() {
     deleteCookie('unlocked_achievements');
     deleteCookie('data_reset_count');
     alert('🏆 All achievements have been reset!');
-    router.push(router.asPath);
+    router.reload();
   };
 
   if (!isSecretSettingsOpen) return null;
