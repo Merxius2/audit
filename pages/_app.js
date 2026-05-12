@@ -8,8 +8,10 @@ import { FinancialProvider } from '../context/FinancialContext';
 import { LanguageProvider } from '../context/LanguageContext';
 import { CurrencyProvider } from '../context/CurrencyContext';
 import { DarkModeProvider } from '../context/DarkModeContext';
+import { SecretSettingsProvider } from '../context/SecretSettingsContext';
 import Sidebar from '../components/Sidebar';
 import MobileNav from '../components/MobileNav';
+import SecretSettingsModal from '../components/SecretSettingsModal';
 import { useRouter } from 'next/router';
 import { useLanguage } from '../context/LanguageContext';
 import { useEffect } from 'react';
@@ -70,7 +72,14 @@ function MyApp({ Component, pageProps }) {
   return (
     <DarkModeProvider>
       <LanguageProvider>
-        <AppContent Component={Component} pageProps={pageProps} />
+        <CurrencyProvider>
+          <FinancialProvider>
+            <SecretSettingsProvider>
+              <SecretSettingsModal />
+              <AppContent Component={Component} pageProps={pageProps} />
+            </SecretSettingsProvider>
+          </FinancialProvider>
+        </CurrencyProvider>
       </LanguageProvider>
     </DarkModeProvider>
   );

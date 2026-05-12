@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { useLanguage } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useDarkMode } from '../context/DarkModeContext';
+import { useSecretSettings } from '../context/SecretSettingsContext';
 import Image from 'next/image';
 
 const LANGUAGES = [
@@ -37,13 +38,29 @@ const ICON_MAP = {
 export default function SettingsPage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [resetMessage, setResetMessage] = useState('');
+  const [clickCount, setClickCount] = useState(0);
   const router = useRouter();
   const { t, language, changeLanguage } = useLanguage();
   const { currency, changeCurrency } = useCurrency();
   const { isDarkMode, toggleDarkMode, isAutoMode, toggleAutoMode } = useDarkMode();
+  const { openSecretSettings } = useSecretSettings();
 
   const handleResetData = () => {
     setShowConfirmation(true);
+  };
+
+  const handleIconClick = () => {
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+    
+    if (newCount === 3) {
+      openSecretSettings();
+      setClickCount(0);
+    } else {
+      setTimeout(() => {
+        setClickCount(0);
+      }, 1000);
+    }
   };
 
   const confirmReset = () => {
@@ -251,13 +268,19 @@ export default function SettingsPage() {
 
       {/* Mobile App Icon Footer */}
       <div className="md:hidden mt-4 flex justify-center pb-2">
-        <Image
-          src={`/icon-${ICON_MAP[language]}-192.png`}
-          alt="Aap-FT"
-          width={120}
-          height={120}
-          className="rounded-xl"
-        />
+        <button
+          onClick={handleIconClick}
+          className="cursor-pointer transition-transform hover:scale-105 active:scale-95"
+          title={clickCount > 0 ? `${3 - clickCount} clicks left to unlock secret settings` : ''}
+        >
+          <Image
+            src={`/icon-${ICON_MAP[language]}-192.png`}
+            alt="Aap-FT"
+            width={120}
+            height={120}
+            className="rounded-xl"
+          />
+        </button>
       </div>
     </div>
   );

@@ -8,12 +8,34 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { BarChart3, TrendingUp, Eye, Settings } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSecretSettings } from '../context/SecretSettingsContext';
+import { useState, useRef, useEffect } from 'react';
 
 export default function Sidebar() {
   const router = useRouter();
   const { t, language } = useLanguage();
+  const { openSecretSettings } = useSecretSettings();
+  const [clickCount, setClickCount] = useState(0);
+  const clickTimeout = useRef(null);
 
   const isActive = (path) => router.pathname === path;
+
+  const handleLogoClick = () => {
+    setClickCount(prev => prev + 1);
+    
+    if (clickTimeout.current) {
+      clearTimeout(clickTimeout.current);
+    }
+    
+    if (clickCount + 1 === 3) {
+      openSecretSettings();
+      setClickCount(0);
+    } else {
+      clickTimeout.current = setTimeout(() => {
+        setClickCount(0);
+      }, 1000);
+    }
+  };
 
   const getLanguageIcon = (lang) => {
     const iconMap = {
@@ -37,7 +59,13 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="mb-8">
         <div className="flex flex-col items-center gap-3 mb-2">
-          <Image src={getLanguageIcon(language)} alt="Audit Logo" width={80} height={80} className="rounded-lg" />
+          <button
+            onClick={handleLogoClick}
+            className="cursor-pointer transition-transform hover:scale-105 active:scale-95"
+            title={clickCount > 0 ? `${3 - clickCount} clicks left to unlock secret settings` : ''}
+          >
+            <Image src={getLanguageIcon(language)} alt="Audit Logo" width={80} height={80} className="rounded-lg" />
+          </button>
           <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-3xl font-bold text-transparent text-center">
             Aap-FT
           </h1>
