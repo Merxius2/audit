@@ -62,7 +62,7 @@ select {
 html.dark input[type='number'],
 html.dark input[type='text'],
 html.dark select {
-  @apply border-dark-300 bg-dark-300/50 text-gray-100 placeholder-gray-500;
+  @apply border-gray-800 bg-gray-900/50 text-gray-100 placeholder-gray-500;
 }
 
 /* Status Badges */
@@ -102,11 +102,19 @@ html.dark select {
 
 /* Typography */
 .amount {
-  @apply font-mono text-lg font-semibold tracking-wider;
+  @apply font-mono text-lg font-semibold tracking-wider text-gray-900;
+}
+
+html.dark .amount {
+  @apply text-gray-100;
 }
 
 .amount-large {
-  @apply font-mono text-3xl font-bold tracking-tight;
+  @apply font-mono text-3xl font-bold tracking-tight text-gray-900;
+}
+
+html.dark .amount-large {
+  @apply text-gray-100;
 }
 
 /* Age Bracket Badge */
@@ -146,7 +154,7 @@ html.dark h6 {
   @apply text-gray-100;
 }
 
-html.dark p {
-  @apply text-gray-300;
+html.dark [class*="text-gray-900"] {
+  @apply text-gray-100;
 }
 

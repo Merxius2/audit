@@ -77,9 +77,9 @@ export default function SettingsPage() {
         <div className="card p-8">
           <div className="flex items-center gap-3 mb-6">
             <Globe size={28} className="text-brand-primary" />
-            <h2 className="text-2xl font-bold text-gray-900">Language</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Language</h2>
           </div>
-          <p className="text-gray-600 mb-6">Select your preferred language:</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">Select your preferred language:</p>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {LANGUAGES.map((lang) => (
               <button
@@ -88,7 +88,7 @@ export default function SettingsPage() {
                 className={`flex flex-col items-center gap-3 rounded-lg p-6 transition-all ${
                   language === lang.code
                     ? 'bg-gradient-to-br from-brand-primary to-brand-secondary text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 <Image
@@ -109,9 +109,9 @@ export default function SettingsPage() {
         <div className="card p-8">
           <div className="flex items-center gap-3 mb-6">
             <DollarSign size={28} className="text-brand-primary" />
-            <h2 className="text-2xl font-bold text-gray-900">Currency</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Currency</h2>
           </div>
-          <p className="text-gray-600 mb-6">Select your preferred currency:</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">Select your preferred currency:</p>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
             {CURRENCY_OPTIONS.map((curr) => (
               <button
@@ -120,7 +120,7 @@ export default function SettingsPage() {
                 className={`flex flex-col items-center gap-3 rounded-lg p-6 transition-all ${
                   currency === curr.code
                     ? 'bg-gradient-to-br from-brand-primary to-brand-secondary text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 <span className="text-4xl font-bold">{curr.symbol}</span>

@@ -9,6 +9,7 @@ import { TrendingUp } from 'lucide-react';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useDarkMode } from '../context/DarkModeContext';
 
 export default function RetirementProjection() {
   const [calculationType, setCalculationType] = useState('forward'); // 'forward' or 'backward'
@@ -26,6 +27,7 @@ export default function RetirementProjection() {
   const saveCookieTimeout = useRef(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
+  const { isDarkMode } = useDarkMode();
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -164,7 +166,7 @@ export default function RetirementProjection() {
             <TrendingUp size={36} className="text-brand-secondary" />
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('retirement.title')}</h1>
           </div>
-          <p className="text-gray-600">{t('retirement.subtitle')}</p>
+          <p className="text-gray-600 dark:text-gray-300">{t('retirement.subtitle')}</p>
         </div>
       </div>
 
@@ -208,7 +210,7 @@ export default function RetirementProjection() {
               { label: t('retirement.annualReturn'), value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
             ]).map((field, idx) => (
             <div key={idx} className="card p-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">
                 {field.label}
               </label>
               <input
@@ -224,7 +226,7 @@ export default function RetirementProjection() {
 
         {/* Chart Section */}
         <div className="card p-8">
-          <h2 className="mb-6 text-xl font-bold text-gray-900">Growth Projection</h2>
+          <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">Growth Projection</h2>
           {projectionData.length > 0 ? (
             <ResponsiveContainer width="100%" height={400}>
               <AreaChart data={projectionData}>
@@ -234,34 +236,34 @@ export default function RetirementProjection() {
                     <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"} />
                 <XAxis
                   dataKey="age"
-                  stroke="rgba(0,0,0,0.3)"
-                  label={{ value: t('retirement.age'), position: 'insideBottomRight', offset: -5 }}
+                  stroke={isDarkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)"}
+                  label={{ value: t('retirement.age'), position: 'insideBottomRight', offset: -5, fill: isDarkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}
                 />
                 <YAxis
-                  stroke="rgba(0,0,0,0.3)"
-                  label={{ value: `Balance (${getSymbol()})`, angle: -90, position: 'insideLeft' }}
+                  stroke={isDarkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)"}
+                  label={{ value: `Balance (${getSymbol()})`, angle: -90, position: 'insideLeft', fill: isDarkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)" }}
                 />
                 <Tooltip
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
-                          <p className="font-semibold text-gray-900 mb-3">{t('retirement.age')} {data.age}</p>
+                        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+                          <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('retirement.age')} {data.age}</p>
                           <div className="space-y-2 text-sm">
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-600">{t('retirement.yourContributions')}:</span>
-                              <span className="font-mono font-semibold text-gray-900">{getSymbol()}{Math.floor(data.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
+                              <span className="text-gray-600 dark:text-gray-300">{t('retirement.yourContributions')}:</span>
+                              <span className="font-mono font-semibold text-gray-900 dark:text-gray-100">{getSymbol()}{Math.floor(data.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-600">{t('retirement.investmentGains')}:</span>
-                              <span className="font-mono font-semibold text-green-600">{getSymbol()}{Math.floor(data.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
+                              <span className="text-gray-600 dark:text-gray-300">{t('retirement.investmentGains')}:</span>
+                              <span className="font-mono font-semibold text-green-600 dark:text-green-400">{getSymbol()}{Math.floor(data.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
                             </div>
-                            <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between items-center">
-                              <span className="font-semibold text-gray-900">{t('retirement.totalBalance')}:</span>
+                            <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2 flex justify-between items-center">
+                              <span className="font-semibold text-gray-900 dark:text-gray-100">{t('retirement.totalBalance')}:</span>
                               <span className="font-mono font-bold text-brand-primary">{getSymbol()}{Math.floor(data.balance).toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
                             </div>
                           </div>
@@ -281,7 +283,7 @@ export default function RetirementProjection() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-center py-20 text-gray-500">{t('retirement.enterValidAges')}</p>
+            <p className="text-center py-20 text-gray-500 dark:text-gray-400">{t('retirement.enterValidAges')}</p>
           )}
         </div>
 
@@ -294,7 +296,7 @@ export default function RetirementProjection() {
               {/* Contributions Bar */}
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-semibold text-gray-700">{t('retirement.yourContributions')}</span>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-100">{t('retirement.yourContributions')}</span>
                   <span className="text-sm font-bold text-gray-900">
                     {getSymbol()}{Math.floor(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                   </span>
@@ -314,7 +316,7 @@ export default function RetirementProjection() {
               {/* Investment Gains Bar */}
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-semibold text-gray-700">{t('retirement.investmentGains')}</span>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-100">{t('retirement.investmentGains')}</span>
                   <span className="text-sm font-bold text-green-600">
                     {getSymbol()}{Math.floor(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                   </span>
@@ -346,12 +348,12 @@ export default function RetirementProjection() {
           {/* Summary Cards */}
           <div className="space-y-4">
             <div className="card p-6">
-              <p className="text-sm font-medium text-gray-600">{t('retirement.yearsToRetirement')}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('retirement.yearsToRetirement')}</p>
               <p className="amount-large mt-2 text-gray-900">{yearsToRetirement}</p>
             </div>
 
             <div className="card p-6">
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 {isForward ? t('retirement.monthlyInvestment') : t('retirement.requiredMonthlyInvestment')}
               </p>
               <p className="amount-large mt-2 text-gray-900 font-mono">
@@ -360,14 +362,14 @@ export default function RetirementProjection() {
             </div>
 
             <div className="card p-6">
-              <p className="text-sm font-medium text-gray-600">{t('retirement.totalContributions')}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('retirement.totalContributions')}</p>
               <p className="amount-large mt-2 text-gray-900 font-mono">
                 {getSymbol()}{Math.floor(yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)).toLocaleString('en-US', { minimumFractionDigits: 0 })}
               </p>
             </div>
 
             <div className="card p-6">
-              <p className="text-sm font-medium text-gray-600">{t('retirement.investmentGains')}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('retirement.investmentGains')}</p>
               <p className="amount-large mt-2 text-green-600 font-mono">
                 {getSymbol()}{Math.floor(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
               </p>

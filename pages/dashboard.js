@@ -156,7 +156,7 @@ export default function Dashboard() {
             {incomes.map((income) => (
               <div key={income.id} className="flex gap-3 items-end">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
                     {t('dashboard.sourceLabel')}
                   </label>
                   <input
@@ -168,7 +168,7 @@ export default function Dashboard() {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
                     {t('dashboard.amount')} ({getSymbol()})
                   </label>
                   <input
@@ -207,11 +207,11 @@ export default function Dashboard() {
                 onChange={(e) => setIncludeSavingsInCalculations(e.target.checked)}
                 className="w-5 h-5 rounded border-gray-300 text-brand-primary focus:ring-2 focus:ring-brand-primary/10"
               />
-              <span className="text-sm font-semibold text-gray-700">{t('dashboard.includeSavingsInCalc')}</span>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-100">{t('dashboard.includeSavingsInCalc')}</span>
             </label>
           </div>
           <div>
-            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">
               <PiggyBank size={18} className="text-brand-primary" />
               {t('dashboard.savingsAmount')}
             </label>
@@ -222,7 +222,7 @@ export default function Dashboard() {
               placeholder={t('dashboard.placeholder.amount')}
               className="mt-3 amount-large w-full border-0 bg-transparent text-gray-900 focus:ring-0"
             />
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
               {includeSavingsInCalculations 
                 ? '✓ Savings will be subtracted from your leftover' 
                 : '✗ Savings will not affect calculations'}
@@ -238,7 +238,7 @@ export default function Dashboard() {
               const IconComponent = CATEGORY_ICONS[category];
               return (
                 <div key={category}>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
                     <IconComponent size={18} className="text-brand-primary" />
                     {t(`dashboard.expenseCategories.${category}`)}
                   </label>
@@ -260,14 +260,14 @@ export default function Dashboard() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="card-summary p-6">
-            <p className="text-sm font-medium text-gray-600">{t('dashboard.totalIncome')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('dashboard.totalIncome')}</p>
             <p className="amount-large mt-2 text-gray-900">
               {getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-summary p-6">
-            <p className="text-sm font-medium text-gray-600">{t('dashboard.totalExpenses')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('dashboard.totalExpenses')}</p>
             <p className="amount-large mt-2 text-gray-900">
               {getSymbol()}{Math.floor(totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
@@ -279,7 +279,7 @@ export default function Dashboard() {
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
                 : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
             }}>
-            <p className="text-sm font-medium text-gray-600">{t('dashboard.netLeftover')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('dashboard.netLeftover')}</p>
             <p className={`amount-large mt-2 ${leftover >= 0 ? 'glow-green text-green-600' : 'text-red-600'}`}>
               {getSymbol()}{Math.floor(leftover).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
@@ -330,21 +330,21 @@ export default function Dashboard() {
         {/* Status Grid */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">{t('dashboard.expenseRatio')}</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.expenseRatio')}</p>
             <p className="amount-large mt-2 text-gray-900">
               {totalIncome > 0 ? ((totalExpenses / totalIncome) * 100).toFixed(1) : '0'}%
             </p>
           </div>
 
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">{t('dashboard.savingsRate')}</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.savingsRate')}</p>
             <p className="amount-large mt-2 text-gray-900">
               {totalIncome > 0 ? ((savingsNum / totalIncome) * 100).toFixed(1) : '0'}%
             </p>
           </div>
 
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">{t('dashboard.monthlyStatus')}</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.monthlyStatus')}</p>
             <p className={`amount-large mt-2 ${leftover >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {leftover >= 0 ? t('dashboard.balanced') : t('dashboard.deficit')}
             </p>

@@ -189,25 +189,25 @@ export default function Overview() {
             <h2 className="mb-6 text-xl font-bold text-gray-900">{t('overview.retirementProjectionBreakdown')}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-6">
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-blue-50 to-white">
-                <p className="text-sm font-medium text-gray-600">{t('overview.breakdown.contributions')}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.breakdown.contributions')}</p>
                 <p className="amount-large mt-3 text-gray-900">
                   {getSymbol()}{Math.floor(data.retirementBreakdown.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-green-50 to-white">
-                <p className="text-sm font-medium text-gray-600">{t('overview.breakdown.investmentGains')}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.breakdown.investmentGains')}</p>
                 <p className="amount-large mt-3 text-green-600">
                   {getSymbol()}{Math.floor(data.retirementBreakdown.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-purple-50 to-white">
-                <p className="text-sm font-medium text-gray-600">{t('overview.monthlyInvestment')}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.monthlyInvestment')}</p>
                 <p className="amount-large mt-3 text-purple-600">
                   {getSymbol()}{Math.floor(data.monthlyInvestment).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
               <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-brand-secondary/10 to-white">
-                <p className="text-sm font-medium text-gray-600">{t('overview.totalProjectedBalance')}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.totalProjectedBalance')}</p>
                 <p className="amount-large mt-3 text-brand-secondary">
                   {getSymbol()}{Math.floor(data.retirementProjection).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
@@ -215,7 +215,7 @@ export default function Overview() {
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">{t('overview.breakdown.contributions')}</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-100">{t('overview.breakdown.contributions')}</span>
                 <span className="text-sm font-semibold text-gray-900">{((data.retirementBreakdown.contributions / data.retirementProjection) * 100).toFixed(1)}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -225,7 +225,7 @@ export default function Overview() {
                 />
               </div>
               <div className="flex items-center justify-between mt-4">
-                <span className="text-sm font-medium text-gray-700">{t('overview.breakdown.investmentGains')}</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-100">{t('overview.breakdown.investmentGains')}</span>
                 <span className="text-sm font-semibold text-gray-900">{((data.retirementBreakdown.gains / data.retirementProjection) * 100).toFixed(1)}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -241,21 +241,21 @@ export default function Overview() {
         {/* Key Metrics */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="card-income p-6">
-            <p className="text-sm font-medium text-gray-600">{t('overview.cards.totalIncome')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.cards.totalIncome')}</p>
             <p className="amount-large mt-3 text-gray-900">
               {getSymbol()}{Math.floor(data.totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-expenses p-6">
-            <p className="text-sm font-medium text-gray-600">{t('overview.cards.totalExpenses')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.cards.totalExpenses')}</p>
             <p className="amount-large mt-3 text-gray-900">
               {getSymbol()}{Math.floor(data.totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-savings p-6">
-            <p className="text-sm font-medium text-gray-600">{t('overview.cards.savingsAmount')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.cards.savingsAmount')}</p>
             <p className="amount-large mt-3 text-gray-900">
               {getSymbol()}{Math.floor(data.savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
@@ -267,7 +267,7 @@ export default function Overview() {
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
                 : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
             }}>
-            <p className="text-sm font-medium text-gray-600">{t('overview.cards.netLeftover')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.cards.netLeftover')}</p>
             <p className={`amount-large mt-3 ${leftover >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {getSymbol()}{Math.floor(leftover).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
@@ -277,17 +277,17 @@ export default function Overview() {
         {/* Statistics */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">Expense Ratio</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Expense Ratio</p>
             <p className="amount-large mt-3 text-gray-900">{expenseRatio}%</p>
           </div>
 
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">{t('overview.savingsRate')}</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('overview.savingsRate')}</p>
             <p className="amount-large mt-3 text-gray-900">{savingsRate}%</p>
           </div>
 
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 uppercase">{t('overview.retirementBalance')}</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('overview.retirementBalance')}</p>
             <p className="amount-large mt-3 text-brand-secondary">
               {getSymbol()}{Math.floor(data.retirementProjection || 0).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
@@ -334,7 +334,7 @@ export default function Overview() {
 
         {/* Information Card */}
         <div className="card p-6 border-brand-primary/20 bg-brand-primary/5">
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
             <span className="font-semibold">💡 Tip:</span> This overview shows a summary of your financial data from all pages. Visit the Household Budget page to enter detailed income and expenses, or check Retirement to plan your financial future.
           </p>
         </div>
