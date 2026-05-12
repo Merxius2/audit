@@ -90,7 +90,7 @@ export default function RetirementProjection() {
                 />
                 <YAxis
                   stroke="rgba(0,0,0,0.3)"
-                  label={{ value: 'Balance ($)', angle: -90, position: 'insideLeft' }}
+                  label={{ value: 'Balance (€)', angle: -90, position: 'insideLeft' }}
                 />
                 <Tooltip
                   contentStyle={{
@@ -115,32 +115,91 @@ export default function RetirementProjection() {
           )}
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="card p-6">
-            <p className="text-sm font-medium text-gray-600">Years to Retirement</p>
-            <p className="amount-large mt-2 text-gray-900">{yearsToRetirement}</p>
+        {/* Balance Breakdown */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Visual Breakdown */}
+          <div className="card p-8">
+            <h3 className="mb-6 text-lg font-bold text-gray-900">Balance Composition</h3>
+            <div className="space-y-4">
+              {/* Contributions Bar */}
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700">Your Contributions</span>
+                  <span className="text-sm font-bold text-gray-900">
+                    €{(yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+                <div className="h-3 rounded-full bg-gray-200">
+                  <div
+                    className="h-3 rounded-full bg-gradient-to-r from-brand-primary to-brand-secondary transition-all"
+                    style={{
+                      width: finalBalance > 0 
+                        ? `${Math.min(100, ((yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0)) / finalBalance) * 100)}%`
+                        : '0%'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Investment Gains Bar */}
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700">Investment Gains</span>
+                  <span className="text-sm font-bold text-green-600">
+                    €{(finalBalance - (yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+                <div className="h-3 rounded-full bg-gray-200">
+                  <div
+                    className="h-3 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all"
+                    style={{
+                      width: finalBalance > 0 
+                        ? `${Math.min(100, ((finalBalance - (yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0))) / finalBalance) * 100)}%`
+                        : '0%'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Total Balance */}
+              <div className="border-t border-gray-200 pt-4 mt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-bold text-gray-900">Total Balance</span>
+                  <span className="amount-large text-brand-primary">
+                    €{finalBalance.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="card p-6">
-            <p className="text-sm font-medium text-gray-600">Total Contributions</p>
-            <p className="amount-large mt-2 text-gray-900 font-mono">
-              €{(yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-            </p>
-          </div>
+          {/* Summary Cards */}
+          <div className="space-y-4">
+            <div className="card p-6">
+              <p className="text-sm font-medium text-gray-600">Years to Retirement</p>
+              <p className="amount-large mt-2 text-gray-900">{yearsToRetirement}</p>
+            </div>
 
-          <div className="card p-6">
-            <p className="text-sm font-medium text-gray-600">Investment Gains</p>
-            <p className="amount-large mt-2 text-green-600 font-mono">
-              €{(finalBalance - (yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-            </p>
-          </div>
+            <div className="card p-6">
+              <p className="text-sm font-medium text-gray-600">Monthly Investment</p>
+              <p className="amount-large mt-2 text-gray-900 font-mono">
+                €{(parseFloat(monthlyInvestment) || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </p>
+            </div>
 
-          <div className="rounded-2xl border border-gray-100 bg-gradient-to-br from-brand-primary/10 to-brand-secondary/10 p-6 shadow-soft">
-            <p className="text-sm font-medium text-gray-600">Total Estimated Wealth</p>
-            <p className="amount-large mt-2 text-brand-primary font-mono">
-              €{finalBalance.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-            </p>
+            <div className="card p-6">
+              <p className="text-sm font-medium text-gray-600">Total Contributions</p>
+              <p className="amount-large mt-2 text-gray-900 font-mono">
+                €{(yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </p>
+            </div>
+
+            <div className="card p-6">
+              <p className="text-sm font-medium text-gray-600">Investment Gains</p>
+              <p className="amount-large mt-2 text-green-600 font-mono">
+                €{(finalBalance - (yearsToRetirement * 12 * (parseFloat(monthlyInvestment) || 0))).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </p>
+            </div>
           </div>
         </div>
       </div>
