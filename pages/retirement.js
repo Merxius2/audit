@@ -182,7 +182,7 @@ export default function RetirementProjection() {
         clearTimeout(roastTimeout.current);
       }
     };
-  }, [applicableRoasts]);
+  }, [currentAgeNum, retirementAgeNum, monthlyNum, returnNum, finalBalance, goalBalance]);
   
   const yearsToRetirement = Math.max(0, retirementAgeNum - currentAgeNum);
   const monthlyForDisplay = isForward ? parseFloat(monthlyInvestment) || 0 : Math.round((parseFloat(goalBalance) || 0) / Math.max(1, (yearsToRetirement * 12)) * 100) / 100;

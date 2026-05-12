@@ -77,7 +77,7 @@ export default function Overview() {
         clearTimeout(roastTimeout.current);
       }
     };
-  }, [applicableRoasts, JSON.stringify(data)]);
+  }, [JSON.stringify(data)]);
 
   const generateForwardProjection = (currentAge, retirementAge, monthlyInvestment, annualReturn) => {
     const current = parseInt(currentAge) || 0;

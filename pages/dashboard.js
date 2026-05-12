@@ -135,7 +135,7 @@ export default function Dashboard() {
         clearTimeout(roastTimeout.current);
       }
     };
-  }, [applicableRoasts, expensesKey]);
+  }, [expensesKey]);
   const pieData = [
     ...EXPENSE_CATEGORIES.map((cat) => ({
       name: cat,
