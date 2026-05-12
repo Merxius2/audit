@@ -1,6 +1,12 @@
+/**
+ * App Component
+ * Root wrapper with global context provider and navigation
+ */
+
 import '../styles/globals.css';
 import { FinancialProvider } from '../context/FinancialContext';
 import Sidebar from '../components/Sidebar';
+import MobileNav from '../components/MobileNav';
 import { useRouter } from 'next/router';
 
 function MyApp({ Component, pageProps }) {
@@ -9,10 +15,16 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <FinancialProvider>
-      {!isHomePage && <Sidebar />}
+      {!isHomePage && (
+        <>
+          <Sidebar />
+          <MobileNav />
+        </>
+      )}
       <Component {...pageProps} />
     </FinancialProvider>
   );
 }
 
 export default MyApp;
+

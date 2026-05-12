@@ -1,6 +1,11 @@
+/**
+ * Settings Page - Benchmark Configuration
+ * Edit global median values for each age bracket
+ */
+
 import { useState } from 'react';
 import { useFinancial } from '../context/FinancialContext';
-import { Save } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 const AGE_BRACKETS = ['18-29', '30-44', '45-59', '60+'];
 
@@ -14,79 +19,91 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900 p-8 ml-64">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Benchmark Settings</h1>
-          <p className="text-white/60">Edit median values for each age bracket</p>
+    <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0">
+      {/* Header */}
+      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Benchmark Settings</h1>
+          <p className="mt-2 text-gray-600">Edit median values for each age bracket</p>
         </div>
+      </div>
 
-        {/* Table */}
-        <div className="glass-card mb-8 overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-white/10">
-                <th className="px-6 py-4 text-left text-white/70 font-semibold">Age Bracket</th>
-                <th className="px-6 py-4 text-left text-white/70 font-semibold">Median Monthly Income</th>
-                <th className="px-6 py-4 text-left text-white/70 font-semibold">Median Monthly Savings</th>
-              </tr>
-            </thead>
-            <tbody>
-              {AGE_BRACKETS.map((bracket, index) => (
-                <tr
-                  key={bracket}
-                  className={`border-b border-white/5 ${
-                    index % 2 === 0 ? 'bg-white/2' : ''
-                  } hover:bg-white/5 transition-colors`}
-                >
-                  <td className="px-6 py-4 font-semibold">{bracket}</td>
-                  <td className="px-6 py-4">
-                    <input
-                      type="number"
-                      value={medianData[bracket].income}
-                      onChange={(e) =>
-                        updateMedianData(bracket, 'income', parseFloat(e.target.value) || 0)
-                      }
-                      className="w-32 font-mono"
-                    />
-                  </td>
-                  <td className="px-6 py-4">
-                    <input
-                      type="number"
-                      value={medianData[bracket].savings}
-                      onChange={(e) =>
-                        updateMedianData(bracket, 'savings', parseFloat(e.target.value) || 0)
-                      }
-                      className="w-32 font-mono"
-                    />
-                  </td>
+      <div className="max-w-4xl mx-auto px-4 py-8 md:px-8">
+        {/* Table Card */}
+        <div className="card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Age Bracket</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Median Monthly Income</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Median Monthly Savings</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {AGE_BRACKETS.map((bracket, index) => (
+                  <tr
+                    key={bracket}
+                    className={`border-b border-gray-100 transition-colors hover:bg-gray-50 ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                    }`}
+                  >
+                    <td className="px-6 py-4 font-semibold text-gray-900">{bracket}</td>
+                    <td className="px-6 py-4">
+                      <input
+                        type="number"
+                        value={medianData[bracket].income}
+                        onChange={(e) =>
+                          updateMedianData(bracket, 'income', parseFloat(e.target.value) || 0)
+                        }
+                        className="amount w-32 rounded-lg border border-gray-200 px-3 py-2 text-gray-900"
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      <input
+                        type="number"
+                        value={medianData[bracket].savings}
+                        onChange={(e) =>
+                          updateMedianData(bracket, 'savings', parseFloat(e.target.value) || 0)
+                        }
+                        className="amount w-32 rounded-lg border border-gray-200 px-3 py-2 text-gray-900"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          {/* Save Button */}
-          <div className="px-6 py-6 border-t border-white/10 flex items-center justify-between">
-            <p className="text-white/60 text-sm">
+          {/* Save Section */}
+          <div className="border-t border-gray-200 bg-gray-50 px-6 py-6 flex items-center justify-between">
+            <p className="text-sm text-gray-600">
               Changes are applied immediately to all pages
             </p>
             <button
               onClick={handleSave}
-              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition-colors"
+              className="flex items-center space-x-2 rounded-lg bg-gradient-to-r from-brand-primary to-brand-secondary px-6 py-2 font-semibold text-white shadow-soft transition-all hover:shadow-soft-md active:scale-95"
             >
-              <Save size={18} />
-              <span>{saved ? 'Saved!' : 'Save Changes'}</span>
+              {saved ? (
+                <>
+                  <CheckCircle2 size={18} />
+                  <span>Saved!</span>
+                </>
+              ) : (
+                <>
+                  <span>Save Changes</span>
+                </>
+              )}
             </button>
           </div>
         </div>
 
-        {/* Info Box */}
-        <div className="glass-card bg-blue-500/10 border-blue-500/30">
-          <h3 className="text-lg font-bold mb-3 text-blue-300">About Benchmark Data</h3>
-          <ul className="space-y-2 text-white/70 text-sm">
-            <li>• Median Monthly Income: Average net monthly income for the age bracket</li>
-            <li>• Median Monthly Savings: Average monthly savings amount for the age bracket</li>
+        {/* Info Card */}
+        <div className="card mt-8 border-brand-primary/30 bg-gradient-to-br from-brand-primary/5 to-brand-secondary/5 p-6">
+          <h3 className="mb-3 text-lg font-bold text-gray-900">About Benchmark Data</h3>
+          <ul className="space-y-2 text-sm text-gray-700">
+            <li>• <strong>Median Monthly Income:</strong> Average net monthly income for the age bracket</li>
+            <li>• <strong>Median Monthly Savings:</strong> Average monthly savings amount for the age bracket</li>
             <li>• These values are used to compare your income and savings on the Dashboard</li>
             <li>• Edit these values to reflect your local market data</li>
           </ul>
@@ -95,3 +112,4 @@ export default function Settings() {
     </div>
   );
 }
+

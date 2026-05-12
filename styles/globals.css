@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 * {
-  @apply transition-colors duration-300;
+  @apply transition-colors duration-200;
 }
 
 html {
@@ -11,39 +11,90 @@ html {
 }
 
 body {
-  @apply bg-dark-900 text-white;
+  @apply bg-gradient-to-br from-light-50 via-light-50 to-light-50 text-gray-900;
+  background-image: 
+    linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.03) 15%, rgba(255, 255, 255, 0) 40%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
-/* Glassmorphism utility */
-.glass {
-  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg;
+/* Clean Card Style */
+.card {
+  @apply rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-soft hover:shadow-soft-md transition-shadow;
 }
 
-.glass-card {
-  @apply glass p-6;
+.card-gradient {
+  @apply rounded-2xl border border-gray-100 shadow-soft hover:shadow-soft-md transition-shadow;
 }
 
-/* Median badges */
-.badge-above {
-  @apply bg-green-500/20 text-green-300 border border-green-500/30;
+.card-income {
+  @apply card-gradient bg-gradient-income;
 }
 
-.badge-at {
-  @apply bg-blue-500/20 text-blue-300 border border-blue-500/30;
+.card-savings {
+  @apply card-gradient bg-gradient-savings;
 }
 
-.badge-below {
-  @apply bg-amber-500/20 text-amber-300 border border-amber-500/30;
+.card-expenses {
+  @apply card-gradient bg-gradient-expenses;
 }
 
-/* Input styling */
+.card-summary {
+  @apply card-gradient bg-gradient-summary;
+}
+
+/* Input Styling */
 input[type='number'],
 input[type='text'],
 select {
-  @apply bg-white/5 border border-white/10 rounded px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20;
+  @apply w-full rounded-lg border border-gray-200 bg-white/50 px-3 py-2 text-gray-900 placeholder-gray-400 transition-all focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/10;
 }
 
-input[type='number']::placeholder,
-input[type='text']::placeholder {
-  @apply text-white/40;
+/* Status Badges */
+.badge-container {
+  @apply inline-flex flex-col items-center space-y-1;
 }
+
+.badge-above {
+  @apply flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-green-50 shadow-glow-green;
+  color: #059669;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.badge-below {
+  @apply flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-100 to-amber-50 shadow-glow-amber;
+  color: #d97706;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.badge-at {
+  @apply flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50;
+  color: #0284c7;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+/* Glow Effects */
+.glow-green {
+  @apply text-green-600 shadow-glow-green;
+}
+
+.glow-amber {
+  @apply text-amber-600 shadow-glow-amber;
+}
+
+/* Typography */
+.amount {
+  @apply font-mono text-lg font-semibold tracking-wider;
+}
+
+.amount-large {
+  @apply font-mono text-3xl font-bold tracking-tight;
+}
+
+/* Age Bracket Badge */
+.age-badge {
+  @apply inline-flex items-center space-x-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-soft;
+}
+

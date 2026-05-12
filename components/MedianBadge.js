@@ -1,29 +1,35 @@
+/**
+ * Median Status Badge Component
+ * Displays circular indicator showing if value is above/below/at median
+ */
+
 import { TrendingUp, Minus, TrendingDown } from 'lucide-react';
 
 export default function MedianBadge({ value, median }) {
-  let status, Icon, label, className;
+  let badgeClass, Icon, label;
 
   if (value > median) {
-    status = 'above';
+    badgeClass = 'badge-above';
     Icon = TrendingUp;
-    label = 'Above Median';
-    className = 'badge-above';
+    label = 'Above';
   } else if (value === median) {
-    status = 'at';
+    badgeClass = 'badge-at';
     Icon = Minus;
-    label = 'At Median';
-    className = 'badge-at';
+    label = 'At';
   } else {
-    status = 'below';
+    badgeClass = 'badge-below';
     Icon = TrendingDown;
-    label = 'Below Median';
-    className = 'badge-below';
+    label = 'Below';
   }
 
   return (
-    <div className={`${className} inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-semibold`}>
-      <Icon size={14} />
-      <span>{label}</span>
+    <div className="badge-container">
+      <div className={badgeClass}>
+        <Icon size={18} />
+      </div>
+      <p className="text-xs font-medium text-gray-600">{label}</p>
+      <p className="text-xs text-gray-500">Median: ${median.toLocaleString()}</p>
     </div>
   );
 }
+
