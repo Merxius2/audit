@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useFinancial } from '../context/FinancialContext';
 import MedianBadge from '../components/MedianBadge';
 import { TrendingUp, Wallet } from 'lucide-react';
+import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure'];
 
@@ -137,6 +138,37 @@ export default function Dashboard() {
             </p>
           </div>
         </div>
+
+        {/* Income vs Expenses Pie Chart */}
+        {incomeNum > 0 && (
+          <div className="card p-8">
+            <h2 className="mb-6 text-xl font-bold text-gray-900">Income vs Expenses</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: 'Expenses', value: totalExpenses },
+                    { name: 'Remaining', value: Math.max(leftover, 0) }
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, value }) => `${name}: €${value.toLocaleString()}`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  <Cell fill="#EC4899" />
+                  <Cell fill="#10B981" />
+                </Pie>
+                <Tooltip
+                  formatter={(value) => `€${value.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        )}
 
         {/* Status Grid */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
