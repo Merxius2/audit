@@ -51,6 +51,13 @@ const ACHIEVEMENTS = {
     icon: '✨',
     color: 'from-yellow-500 to-yellow-600',
   },
+  roasted_100x: {
+    id: 'roasted_100x',
+    title: 'Get Roasted 100x',
+    description: 'Get roasted 100 times',
+    icon: '🔥',
+    color: 'from-red-500 to-red-600',
+  },
 };
 
 export default function Achievements() {

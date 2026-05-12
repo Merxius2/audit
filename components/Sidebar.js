@@ -116,7 +116,7 @@ export default function Sidebar() {
               <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Badges</span>
             </div>
             <span className="text-xs font-bold bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full">
-              {unlockedAchievements.length}/6
+              {unlockedAchievements.length}/7
             </span>
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -127,6 +127,7 @@ export default function Sidebar() {
               { id: 'balanced_budget', emoji: '⚖️', title: 'Balanced', desc: 'Income > Expenses' },
               { id: 'great_savings_rate', emoji: '📈', title: 'Disciplined', desc: 'Save 30%+ of income' },
               { id: 'no_debt', emoji: '✨', title: 'Clean Record', desc: 'All expenses covered' },
+              { id: 'roasted_100x', emoji: '🔥', title: 'Get Roasted 100x', desc: 'Get roasted 100 times' },
             ].map((achievement) => {
               const isUnlocked = unlockedAchievements.includes(achievement.id);
               return (
