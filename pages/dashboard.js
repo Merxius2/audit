@@ -235,8 +235,8 @@ export default function Dashboard() {
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
               {includeSavingsInCalculations 
-                ? '✓ Savings will be subtracted from your leftover' 
-                : '✗ Savings will not affect calculations'}
+                ? t('dashboard.savingsIncluded')
+                : t('dashboard.savingsNotIncluded')}
             </p>
           </div>
         </div>
