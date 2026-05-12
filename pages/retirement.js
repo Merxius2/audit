@@ -3,15 +3,54 @@
  * Plan retirement with compound growth projections
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from 'lucide-react';
+import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 
 export default function RetirementProjection() {
   const [currentAge, setCurrentAge] = useState('30');
   const [retirementAge, setRetirementAge] = useState('65');
   const [monthlyInvestment, setMonthlyInvestment] = useState('1000');
   const [annualReturn, setAnnualReturn] = useState('7');
+  const [isLoading, setIsLoading] = useState(true);
+  const saveCookieTimeout = useRef(null);
+
+  // Load data from cookies on mount
+  useEffect(() => {
+    const savedData = loadFromCookie('retirement_data');
+    if (savedData) {
+      if (savedData.currentAge) setCurrentAge(savedData.currentAge);
+      if (savedData.retirementAge) setRetirementAge(savedData.retirementAge);
+      if (savedData.monthlyInvestment) setMonthlyInvestment(savedData.monthlyInvestment);
+      if (savedData.annualReturn) setAnnualReturn(savedData.annualReturn);
+    }
+    setIsLoading(false);
+  }, []);
+
+  // Save to cookie with debounce
+  const debouncedSave = () => {
+    if (saveCookieTimeout.current) {
+      clearTimeout(saveCookieTimeout.current);
+    }
+    saveCookieTimeout.current = setTimeout(() => {
+      const projectionData = generateProjection();
+      const finalBalance = projectionData[projectionData.length - 1]?.balance || 0;
+      saveToCookie('retirement_data', {
+        currentAge,
+        retirementAge,
+        monthlyInvestment,
+        annualReturn,
+        finalBalance,
+      });
+    }, 500);
+  };
+
+  useEffect(() => {
+    if (!isLoading) {
+      debouncedSave();
+    }
+  }, [currentAge, retirementAge, monthlyInvestment, annualReturn, isLoading]);
 
   const generateProjection = () => {
     const data = [];
@@ -45,13 +84,20 @@ export default function RetirementProjection() {
   const retirementAgeNum = parseInt(retirementAge) || 65;
   const yearsToRetirement = Math.max(0, retirementAgeNum - currentAgeNum);
 
+  if (isLoading) {
+    return <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0" />;
+  }
+
   return (
     <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Retirement Projection</h1>
-          <p className="mt-2 text-gray-600">Plan your financial future with compound growth</p>
+          <div className="flex items-center gap-3 mb-2">
+            <TrendingUp size={36} className="text-brand-secondary" />
+            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Retirement Projection</h1>
+          </div>
+          <p className="text-gray-600">Plan your financial future with compound growth</p>
         </div>
       </div>
 

@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useFinancial } from '../context/FinancialContext';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Settings as SettingsIcon } from 'lucide-react';
 
 const AGE_BRACKETS = ['18-29', '30-44', '45-59', '60+'];
 
@@ -23,8 +23,11 @@ export default function Settings() {
       {/* Header */}
       <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Benchmark Settings</h1>
-          <p className="mt-2 text-gray-600">Edit median values for each age bracket</p>
+          <div className="flex items-center gap-3 mb-2">
+            <SettingsIcon size={36} className="text-brand-accent" />
+            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Benchmark Settings</h1>
+          </div>
+          <p className="text-gray-600">Edit median values for each age bracket</p>
         </div>
       </div>
 
@@ -34,10 +37,19 @@ export default function Settings() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
+                <tr className="border-b-2 border-gray-300 bg-gray-100">
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">Age Bracket</th>
+                  <th colSpan="2" className="px-6 py-4 text-left text-sm font-bold text-gray-900 border-l border-gray-300">Monthly Income</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 border-l border-gray-300">Monthly Savings</th>
+                  <th colSpan="2" className="px-6 py-4 text-left text-sm font-bold text-gray-900 border-l border-gray-300">Wealth</th>
+                </tr>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Age Bracket</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Median Monthly Income</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Median Monthly Savings</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600"></th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600">Min</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600">Max</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600"></th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600">Min</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600">Max</th>
                 </tr>
               </thead>
               <tbody>
@@ -49,12 +61,15 @@ export default function Settings() {
                     }`}
                   >
                     <td className="px-6 py-4 font-semibold text-gray-900">{bracket}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 border-l border-gray-200">
                       <input
                         type="number"
-                        value={medianData[bracket].income}
+                        value={medianData[bracket].income.min}
                         onChange={(e) =>
-                          updateMedianData(bracket, 'income', parseFloat(e.target.value) || 0)
+                          updateMedianData(bracket, 'income', {
+                            ...medianData[bracket].income,
+                            min: parseFloat(e.target.value) || 0
+                          })
                         }
                         className="amount w-32 rounded-lg border border-gray-200 px-3 py-2 text-gray-900"
                       />
@@ -62,11 +77,50 @@ export default function Settings() {
                     <td className="px-6 py-4">
                       <input
                         type="number"
+                        value={medianData[bracket].income.max}
+                        onChange={(e) =>
+                          updateMedianData(bracket, 'income', {
+                            ...medianData[bracket].income,
+                            max: parseFloat(e.target.value) || 0
+                          })
+                        }
+                        className="amount w-32 rounded-lg border border-gray-200 px-3 py-2 text-gray-900"
+                      />
+                    </td>
+                    <td className="px-6 py-4 border-l border-gray-200">
+                      <input
+                        type="number"
                         value={medianData[bracket].savings}
                         onChange={(e) =>
                           updateMedianData(bracket, 'savings', parseFloat(e.target.value) || 0)
                         }
                         className="amount w-32 rounded-lg border border-gray-200 px-3 py-2 text-gray-900"
+                      />
+                    </td>
+                    <td className="px-6 py-4 border-l border-gray-200">
+                      <input
+                        type="number"
+                        value={medianData[bracket].wealth.min}
+                        onChange={(e) =>
+                          updateMedianData(bracket, 'wealth', {
+                            ...medianData[bracket].wealth,
+                            min: parseFloat(e.target.value) || 0
+                          })
+                        }
+                        className="amount w-40 rounded-lg border border-gray-200 px-3 py-2 text-gray-900"
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      <input
+                        type="number"
+                        value={medianData[bracket].wealth.max}
+                        onChange={(e) =>
+                          updateMedianData(bracket, 'wealth', {
+                            ...medianData[bracket].wealth,
+                            max: parseFloat(e.target.value) || 0
+                          })
+                        }
+                        className="amount w-40 rounded-lg border border-gray-200 px-3 py-2 text-gray-900"
                       />
                     </td>
                   </tr>

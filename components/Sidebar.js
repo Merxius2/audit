@@ -4,8 +4,9 @@
  */
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { BarChart3, TrendingUp, Settings, Menu } from 'lucide-react';
+import { BarChart3, TrendingUp, Settings, Eye } from 'lucide-react';
 import { useFinancial } from '../context/FinancialContext';
 
 export default function Sidebar() {
@@ -16,7 +17,8 @@ export default function Sidebar() {
   const isActive = (path) => router.pathname === path;
 
   const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: BarChart3 },
+    { path: '/overview', label: 'Overview', icon: Eye },
+    { path: '/dashboard', label: 'Huishoudboekje', icon: BarChart3 },
     { path: '/retirement', label: 'Retirement', icon: TrendingUp },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
@@ -25,9 +27,12 @@ export default function Sidebar() {
     <div className="hidden md:fixed md:left-0 md:top-0 md:flex md:h-screen md:w-64 md:flex-col md:border-r md:border-gray-200 md:bg-white md:p-6 md:shadow-soft">
       {/* Logo */}
       <div className="mb-8">
-        <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-3xl font-bold text-transparent">
-          Aap-FT
-        </h1>
+        <div className="flex items-center gap-3 mb-2">
+          <Image src="/icon-512.png" alt="Audit Logo" width={40} height={40} className="rounded-lg" />
+          <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-3xl font-bold text-transparent">
+            Aap-FT
+          </h1>
+        </div>
         <p className="mt-1 text-xs font-medium text-gray-500">Financial Tools</p>
       </div>
 

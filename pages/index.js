@@ -44,7 +44,7 @@ export default function Home() {
             <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
               <div className="card p-6">
                 <BarChart3 className="mx-auto mb-3 text-brand-primary" size={32} />
-                <h3 className="font-semibold text-gray-900">Dashboard</h3>
+                <h3 className="font-semibold text-gray-900">Huishoudboekje</h3>
                 <p className="mt-2 text-sm text-gray-600">Track income, expenses & savings</p>
               </div>
 

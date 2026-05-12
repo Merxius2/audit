@@ -14,10 +14,9 @@ export default function MobileNav() {
   const isActive = (path) => router.pathname === path;
 
   const navItems = [
-    { path: '/dashboard', icon: Home, label: 'Home' },
-    { path: '/portfolio', icon: Folder, label: 'Portfolio' },
-    { path: '/retirement', icon: Plus, label: 'Add', isPrimary: true },
-    { path: '/inbox', icon: Inbox, label: 'Inbox' },
+    { path: '/dashboard', icon: Home, label: 'Huishoudboekje' },
+    { path: '/retirement', icon: Home, label: 'Retirement' },
+    { path: '/overview', icon: Home, label: 'Overview', isPrimary: true },
     { path: '/settings', icon: Settings, label: 'Settings' },
   ];
 
