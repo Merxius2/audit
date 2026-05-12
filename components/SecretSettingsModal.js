@@ -1,10 +1,18 @@
-import { X } from 'lucide-react';
+import { X, RotateCcw } from 'lucide-react';
 import { useSecretSettings } from '../context/SecretSettingsContext';
 import { useSecretModes } from '../context/SecretModesContext';
+import { deleteCookie } from '../lib/cookieStorage';
 
 export default function SecretSettingsModal() {
   const { isSecretSettingsOpen, closeSecretSettings } = useSecretSettings();
   const { confettiMode, darkSoulMode, roastMode, achievementMode, toggleConfetti, toggleDarkSoul, toggleRoast, toggleAchievement } = useSecretModes();
+
+  const handleResetAchievements = () => {
+    deleteCookie('unlocked_achievements');
+    deleteCookie('data_reset_count');
+    alert('🏆 All achievements have been reset!');
+    window.location.reload();
+  };
 
   if (!isSecretSettingsOpen) return null;
 
@@ -112,8 +120,16 @@ export default function SecretSettingsModal() {
         </div>
 
         <button
+          onClick={handleResetAchievements}
+          className="w-full mb-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center justify-center gap-2"
+        >
+          <RotateCcw size={18} />
+          Reset All Achievements
+        </button>
+
+        <button
           onClick={closeSecretSettings}
-          className="w-full mt-6 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition-all"
+          className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition-all"
         >
           Close Secret Settings
         </button>
