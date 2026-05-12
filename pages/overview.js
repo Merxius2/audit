@@ -171,13 +171,13 @@ export default function Overview() {
   ];
 
   return (
-    <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0">
+    <div className="min-h-screen bg-white dark:bg-gray-900 pb-32 md:ml-64 md:pb-0">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <Eye size={36} className="text-brand-primary" />
-            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('overview.title')}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">{t('overview.title')}</h1>
           </div>
         </div>
       </div>
@@ -186,29 +186,29 @@ export default function Overview() {
         {/* Retirement Breakdown */}
         {data.retirementProjection > 0 && (
           <div className="card p-8">
-            <h2 className="mb-6 text-xl font-bold text-gray-900">{t('overview.retirementProjectionBreakdown')}</h2>
+            <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('overview.retirementProjectionBreakdown')}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-6">
-              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-blue-50 to-white">
+              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-blue-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.breakdown.contributions')}</p>
-                <p className="amount-large mt-3 text-gray-900">
+                <p className="amount-large mt-3 text-gray-900 dark:text-gray-100">
                   {getSymbol()}{Math.floor(data.retirementBreakdown.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
-              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-green-50 to-white">
+              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-green-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.breakdown.investmentGains')}</p>
-                <p className="amount-large mt-3 text-green-600">
+                <p className="amount-large mt-3 text-green-600 dark:text-green-400">
                   {getSymbol()}{Math.floor(data.retirementBreakdown.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
-              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-purple-50 to-white">
+              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-purple-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.monthlyInvestment')}</p>
-                <p className="amount-large mt-3 text-purple-600">
+                <p className="amount-large mt-3 text-purple-600 dark:text-purple-400">
                   {getSymbol()}{Math.floor(data.monthlyInvestment).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
-              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-brand-secondary/10 to-white">
+              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-brand-secondary/10 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.totalProjectedBalance')}</p>
-                <p className="amount-large mt-3 text-brand-secondary">
+                <p className="amount-large mt-3 text-brand-secondary dark:text-brand-secondary">
                   {getSymbol()}{Math.floor(data.retirementProjection).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
@@ -216,9 +216,9 @@ export default function Overview() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-100">{t('overview.breakdown.contributions')}</span>
-                <span className="text-sm font-semibold text-gray-900">{((data.retirementBreakdown.contributions / data.retirementProjection) * 100).toFixed(1)}%</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{((data.retirementBreakdown.contributions / data.retirementProjection) * 100).toFixed(1)}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className="bg-blue-500 h-2 rounded-full"
                   style={{ width: `${(data.retirementBreakdown.contributions / data.retirementProjection) * 100}%` }}
@@ -226,9 +226,9 @@ export default function Overview() {
               </div>
               <div className="flex items-center justify-between mt-4">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-100">{t('overview.breakdown.investmentGains')}</span>
-                <span className="text-sm font-semibold text-gray-900">{((data.retirementBreakdown.gains / data.retirementProjection) * 100).toFixed(1)}%</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{((data.retirementBreakdown.gains / data.retirementProjection) * 100).toFixed(1)}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className="bg-green-500 h-2 rounded-full"
                   style={{ width: `${(data.retirementBreakdown.gains / data.retirementProjection) * 100}%` }}
@@ -242,33 +242,33 @@ export default function Overview() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="card-income p-6">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.cards.totalIncome')}</p>
-            <p className="amount-large mt-3 text-gray-900">
+            <p className="amount-large mt-3 text-gray-900 dark:text-gray-100">
               {getSymbol()}{Math.floor(data.totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-expenses p-6">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.cards.totalExpenses')}</p>
-            <p className="amount-large mt-3 text-gray-900">
+            <p className="amount-large mt-3 text-gray-900 dark:text-gray-100">
               {getSymbol()}{Math.floor(data.totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
           <div className="card-savings p-6">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.cards.savingsAmount')}</p>
-            <p className="amount-large mt-3 text-gray-900">
+            <p className="amount-large mt-3 text-gray-900 dark:text-gray-100">
               {getSymbol()}{Math.floor(data.savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-100 p-6 shadow-soft"
+          <div className="rounded-2xl border border-gray-100 p-6 shadow-soft dark:border-gray-700"
             style={{
               background: leftover >= 0
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
                 : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
             }}>
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.cards.netLeftover')}</p>
-            <p className={`amount-large mt-3 ${leftover >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <p className={`amount-large mt-3 ${leftover >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
               {getSymbol()}{Math.floor(leftover).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
@@ -278,12 +278,12 @@ export default function Overview() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="card p-4">
             <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Expense Ratio</p>
-            <p className="amount-large mt-3 text-gray-900">{expenseRatio}%</p>
+            <p className="amount-large mt-3 text-gray-900 dark:text-gray-100">{expenseRatio}%</p>
           </div>
 
           <div className="card p-4">
             <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('overview.savingsRate')}</p>
-            <p className="amount-large mt-3 text-gray-900">{savingsRate}%</p>
+            <p className="amount-large mt-3 text-gray-900 dark:text-gray-100">{savingsRate}%</p>
           </div>
 
           <div className="card p-4">
@@ -297,7 +297,7 @@ export default function Overview() {
         {/* Expense Breakdown Chart */}
         {data.totalIncome > 0 && (
           <div className="card p-8">
-            <h2 className="mb-6 text-xl font-bold text-gray-900">{t('overview.expenseBreakdown')}</h2>
+            <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('overview.expenseBreakdown')}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
