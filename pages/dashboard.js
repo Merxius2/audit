@@ -10,6 +10,7 @@ import { TrendingUp, Wallet } from 'lucide-react';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure'];
+const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4'];
 
 export default function Dashboard() {
   const { getCurrentMedian, selectedAgeBracket } = useFinancial();
@@ -158,8 +159,12 @@ export default function Dashboard() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  <Cell fill="#EC4899" />
-                  <Cell fill="#10B981" />
+                  {[
+                    { name: 'Expenses', value: totalExpenses },
+                    { name: 'Remaining', value: Math.max(leftover, 0) }
+                  ].map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                  ))}
                 </Pie>
                 <Tooltip
                   formatter={(value) => `€${value.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
