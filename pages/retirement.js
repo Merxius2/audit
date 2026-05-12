@@ -226,7 +226,7 @@ export default function RetirementProjection() {
 
         {/* Chart Section */}
         <div className="card p-8">
-          <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">Growth Projection</h2>
+          <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('retirement.growthProjection')}</h2>
           {projectionData.length > 0 ? (
             <ResponsiveContainer width="100%" height={400}>
               <AreaChart data={projectionData}>
