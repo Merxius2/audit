@@ -80,3 +80,5 @@ const styles = {
   time: {
     fontSize: '0.9rem',
     color: '#a1a1a1',
+  },
+};
