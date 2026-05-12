@@ -91,19 +91,31 @@ export default function Dashboard() {
 
   // Fun features hooks
   const { roastMessage } = useFunFeatures(totalIncome, totalExpenses, expenses);
+  
+  // Create a key for tracking when expenses change to trigger roasts even if message is same
+  const expensesKey = JSON.stringify(Object.values(expenses));
 
   // Handle roast message display with auto-dismiss
   useEffect(() => {
     if (roastMessage) {
+      // Always set the roast (creates new effect run even if message is the same)
       setDisplayedRoast(roastMessage);
       
+      // Clear any existing timeout
       if (roastTimeout.current) {
         clearTimeout(roastTimeout.current);
       }
       
+      // Auto-dismiss after 3 seconds
       roastTimeout.current = setTimeout(() => {
         setDisplayedRoast(null);
       }, 3000);
+    } else if (!roastMessage) {
+      // Clear roast when message becomes null
+      setDisplayedRoast(null);
+      if (roastTimeout.current) {
+        clearTimeout(roastTimeout.current);
+      }
     }
     
     return () => {
@@ -111,7 +123,7 @@ export default function Dashboard() {
         clearTimeout(roastTimeout.current);
       }
     };
-  }, [roastMessage]);
+  }, [roastMessage, expensesKey]);
   const pieData = [
     ...EXPENSE_CATEGORIES.map((cat) => ({
       name: cat,
