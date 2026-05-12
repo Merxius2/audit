@@ -33,7 +33,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const { t, language, changeLanguage } = useLanguage();
   const { currency, changeCurrency } = useCurrency();
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { isDarkMode, toggleDarkMode, isAutoMode, toggleAutoMode } = useDarkMode();
 
   const handleResetData = () => {
     setShowConfirmation(true);
@@ -147,7 +147,10 @@ export default function SettingsPage() {
             </div>
             <button
               onClick={toggleDarkMode}
+              disabled={isAutoMode}
               className={`relative flex-shrink-0 h-8 w-14 items-center rounded-full transition-colors inline-flex ${
+                isAutoMode ? 'opacity-50 cursor-not-allowed' : ''
+              } ${
                 isDarkMode
                   ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
                   : 'bg-gray-300'
@@ -162,16 +165,43 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Auto Dark Mode Toggle Section */}
+        <div className="card p-8">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <Globe size={28} className="text-brand-primary flex-shrink-0" />
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.autoDarkMode')}</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('settings.autoDarkModeDesc')}</p>
+              </div>
+            </div>
+            <button
+              onClick={toggleAutoMode}
+              className={`relative flex-shrink-0 h-8 w-14 items-center rounded-full transition-colors inline-flex ${
+                isAutoMode
+                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary'
+                  : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                  isAutoMode ? 'translate-x-7' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
         {/* Reset Data Section */}
         <div className="card p-8">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('settings.resetData')}</h2>
-              <p className="text-gray-600 mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{t('settings.resetData')}</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {t('settings.resetDesc')}
               </p>
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                <p className="text-sm text-red-800">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+                <p className="text-sm text-red-800 dark:text-red-300">
                   <strong>{t('settings.warning')}</strong>
                 </p>
               </div>
@@ -188,7 +218,7 @@ export default function SettingsPage() {
 
           {/* Success Message */}
           {resetMessage && (
-            <div className={`mt-6 rounded-lg p-4 ${resetMessage.includes('successfully') || resetMessage.includes('успешно') || resetMessage.includes('başarı') ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
+            <div className={`mt-6 rounded-lg p-4 ${resetMessage.includes('successfully') || resetMessage.includes('успешно') || resetMessage.includes('başarı') ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800'}`}>
               <p className="font-medium">{resetMessage}</p>
             </div>
           )}
