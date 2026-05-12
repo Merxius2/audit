@@ -82,14 +82,6 @@ export default function Dashboard() {
     }, 500);
   };
 
-  // Handle new achievements
-  useEffect(() => {
-    if (newAchievements.length > 0) {
-      // Display the first new achievement
-      setNewAchievementToDisplay(newAchievements[0]);
-    }
-  }, [newAchievements]);
-
   // Calculate totals
   const totalIncome = incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
   const savingsNum = parseFloat(savings) || 0;
@@ -100,6 +92,14 @@ export default function Dashboard() {
   // Fun features hooks
   const { getRoastMessage } = useFunFeatures(totalIncome, totalExpenses);
   const { unlockedAchievements, newAchievements } = useAchievements(totalIncome, totalExpenses, savingsNum);
+
+  // Handle new achievements - only depend on the first achievement's ID to avoid stale closure
+  const newAchievementId = newAchievements[0]?.id;
+  useEffect(() => {
+    if (newAchievementId) {
+      setNewAchievementToDisplay(newAchievements[0]);
+    }
+  }, [newAchievementId, setNewAchievementToDisplay]);
 
   // Pie chart data and custom label
   const pieData = [
