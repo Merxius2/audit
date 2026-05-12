@@ -25,7 +25,16 @@ export default function RetirementProjection() {
       for (let month = 0; month < 12; month++) {
         balance = balance * (1 + rate) + monthly;
       }
-      data.push({ age, balance: Math.round(balance) });
+      const yearsElapsed = age - current;
+      const totalContributions = yearsElapsed * 12 * monthly;
+      const gains = Math.round(balance - totalContributions);
+      
+      data.push({ 
+        age, 
+        balance: Math.round(balance),
+        contributions: Math.round(totalContributions),
+        gains: gains,
+      });
     }
     return data;
   };
@@ -93,13 +102,31 @@ export default function RetirementProjection() {
                   label={{ value: 'Balance (€)', angle: -90, position: 'insideLeft' }}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid rgba(0,0,0,0.1)',
-                    borderRadius: '8px',
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
+                          <p className="font-semibold text-gray-900 mb-3">Age {data.age}</p>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Contributions:</span>
+                              <span className="font-mono font-semibold text-gray-900">€{data.contributions.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Investment Gains:</span>
+                              <span className="font-mono font-semibold text-green-600">€{data.gains.toLocaleString()}</span>
+                            </div>
+                            <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between items-center">
+                              <span className="font-semibold text-gray-900">Total Balance:</span>
+                              <span className="font-mono font-bold text-brand-primary">€{data.balance.toLocaleString()}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
-                  formatter={(value) => `€${value.toLocaleString()}`}
-                  labelFormatter={(label) => `Age ${label}`}
                 />
                 <Area
                   type="monotone"
