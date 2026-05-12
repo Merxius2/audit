@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { BarChart3, TrendingUp, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useDarkMode } from '../context/DarkModeContext';
 
 const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', name: 'English' },
@@ -30,6 +31,7 @@ const getLanguageIcon = (language) => {
 export default function Home() {
   const [time, setTime] = useState('');
   const { t, language, changeLanguage, isLoading } = useLanguage();
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   useEffect(() => {
     setTime(new Date().toLocaleString());
@@ -44,12 +46,14 @@ export default function Home() {
       <Head>
         <title>Aap-FT</title>
       </Head>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white dark:bg-gray-900 dark:text-gray-100">
         {/* Gradient Background */}
         <div
           className="absolute inset-0 -z-10"
           style={{
-            backgroundImage: 'linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.03) 15%, rgba(255, 255, 255, 0) 40%)',
+            backgroundImage: isDarkMode 
+              ? 'linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 15%, rgba(17, 24, 39, 0) 40%)'
+              : 'linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.03) 15%, rgba(255, 255, 255, 0) 40%)',
           }}
         />
 
@@ -63,7 +67,7 @@ export default function Home() {
                 className={`flex items-center justify-center w-12 h-12 rounded-full transition-all ${
                   language === lang.code
                     ? 'bg-gradient-to-r from-brand-primary to-brand-secondary shadow-lg'
-                    : 'bg-gray-100 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
                 title={lang.name}
               >
@@ -82,8 +86,8 @@ export default function Home() {
             <h1 className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-6xl font-bold text-transparent md:text-7xl">
               {t('landing.title')}
             </h1>
-            <p className="mt-4 text-2xl font-semibold text-gray-900">{t('landing.subtitle')}</p>
-            <p className="mt-3 text-lg text-gray-600">
+            <p className="mt-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">{t('landing.subtitle')}</p>
+            <p className="mt-3 text-lg text-gray-600 dark:text-gray-400">
               {t('landing.description')}
             </p>
 
@@ -91,14 +95,14 @@ export default function Home() {
             <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="card p-6">
                 <BarChart3 className="mx-auto mb-3 text-brand-primary" size={32} />
-                <h3 className="font-semibold text-gray-900">{t('landing.budgetLabel')}</h3>
-                <p className="mt-2 text-sm text-gray-600">{t('landing.budgetDesc')}</p>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('landing.budgetLabel')}</h3>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t('landing.budgetDesc')}</p>
               </div>
 
               <div className="card p-6">
                 <TrendingUp className="mx-auto mb-3 text-brand-secondary" size={32} />
-                <h3 className="font-semibold text-gray-900">{t('landing.retirementLabel')}</h3>
-                <p className="mt-2 text-sm text-gray-600">{t('landing.retirementDesc')}</p>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('landing.retirementLabel')}</h3>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t('landing.retirementDesc')}</p>
               </div>
             </div>
 
@@ -112,7 +116,7 @@ export default function Home() {
                     className={`flex items-center justify-center w-12 h-12 rounded-full transition-all ${
                       language === lang.code
                         ? 'bg-gradient-to-r from-brand-primary to-brand-secondary shadow-lg'
-                        : 'bg-gray-100 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                     }`}
                     title={lang.name}
                   >
@@ -131,7 +135,21 @@ export default function Home() {
             </Link>
 
             {/* Time Display */}
-            {time && <p className="mt-12 text-sm text-gray-500">{time}</p>}
+            {time && <p className="mt-12 text-sm text-gray-500 dark:text-gray-400">{time}</p>}
+
+            {/* Dark Mode Toggle with Label */}
+            <div className="mt-16 flex items-center justify-center gap-4 pt-12 border-t border-gray-200 dark:border-gray-700">
+              <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">{isDarkMode ? t('landing.darkMode') : t('landing.lightMode')}</span>
+              <button
+                onClick={toggleDarkMode}
+                className={`relative h-8 w-14 items-center rounded-full transition-colors inline-flex ${isDarkMode ? 'bg-gradient-to-r from-brand-primary to-brand-secondary' : 'bg-gray-300'}`}
+                title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                <span
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${isDarkMode ? 'translate-x-7' : 'translate-x-1'}`}
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>
