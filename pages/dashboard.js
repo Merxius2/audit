@@ -90,16 +90,28 @@ export default function Dashboard() {
   const leftover = totalIncome - (includeSavingsInCalculations ? savingsNum : 0) - totalExpenses;
 
   // Fun features hooks
-  const { roastMessage } = useFunFeatures(totalIncome, totalExpenses, expenses);
+  const { applicableRoasts } = useFunFeatures(totalIncome, totalExpenses, expenses);
+  const [lastRoastIndex, setLastRoastIndex] = useState(-1);
   
   // Create a key for tracking when expenses change to trigger roasts even if message is same
   const expensesKey = JSON.stringify(Object.values(expenses));
 
   // Handle roast message display with auto-dismiss
   useEffect(() => {
-    if (roastMessage) {
-      // Always set the roast (creates new effect run even if message is the same)
-      setDisplayedRoast(roastMessage);
+    if (applicableRoasts && applicableRoasts.length > 0) {
+      // Pick a random roast that's different from the last one shown
+      let newIndex;
+      if (applicableRoasts.length === 1) {
+        newIndex = 0;
+      } else {
+        // Ensure we don't pick the same roast twice in a row
+        do {
+          newIndex = Math.floor(Math.random() * applicableRoasts.length);
+        } while (newIndex === lastRoastIndex && applicableRoasts.length > 1);
+      }
+      
+      setLastRoastIndex(newIndex);
+      setDisplayedRoast(applicableRoasts[newIndex]);
       
       // Clear any existing timeout
       if (roastTimeout.current) {
@@ -110,8 +122,8 @@ export default function Dashboard() {
       roastTimeout.current = setTimeout(() => {
         setDisplayedRoast(null);
       }, 3000);
-    } else if (!roastMessage) {
-      // Clear roast when message becomes null
+    } else if (!applicableRoasts || applicableRoasts.length === 0) {
+      // Clear roast when no roasts are available
       setDisplayedRoast(null);
       if (roastTimeout.current) {
         clearTimeout(roastTimeout.current);
@@ -123,7 +135,7 @@ export default function Dashboard() {
         clearTimeout(roastTimeout.current);
       }
     };
-  }, [roastMessage, expensesKey]);
+  }, [applicableRoasts, expensesKey]);
   const pieData = [
     ...EXPENSE_CATEGORIES.map((cat) => ({
       name: cat,

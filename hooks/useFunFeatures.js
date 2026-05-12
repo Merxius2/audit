@@ -15,7 +15,7 @@ export function useFunFeatures(totalIncome, totalExpenses, expenses = {}) {
   }, [totalIncome, totalExpenses, confettiMode]);
 
   return {
-    roastMessage: roastMode ? generateRoastMessage(totalIncome, totalExpenses, expenses) : null,
+    applicableRoasts: roastMode ? generateRoastMessage(totalIncome, totalExpenses, expenses) : [],
   };
 }
 
@@ -45,6 +45,7 @@ function triggerConfetti() {
 
 function generateRoastMessage(totalIncome, totalExpenses, expenses) {
   const expenseRatio = totalIncome > 0 ? (totalExpenses / totalIncome) * 100 : 0;
+  const applicableRoasts = [];
   
   // Category-specific roasts
   const categoryRoasts = {
@@ -123,19 +124,18 @@ function generateRoastMessage(totalIncome, totalExpenses, expenses) {
     const categoryRatio = (highestAmount / totalIncome) * 100;
     
     if (categoryRatio > 25) {
-      // Show category roast for notably high categories
-      const roasts = categoryRoasts[highestCategory];
-      return roasts[Math.floor(Math.random() * roasts.length)];
+      // Add all category roasts to applicable pool
+      applicableRoasts.push(...categoryRoasts[highestCategory]);
     }
   }
   
   // Only show extreme overall spending roasts if REALLY extreme (95%+)
   if (expenseRatio > 95) {
-    return "You're spending 95%+ of income! The credit card is MELTING! 🔥🔥🔥";
+    applicableRoasts.push("You're spending 95%+ of income! The credit card is MELTING! 🔥🔥🔥");
   } else if (expenseRatio > 85) {
-    return "85%+ going to expenses? That's financial self-sabotage! 💥";
+    applicableRoasts.push("85%+ going to expenses? That's financial self-sabotage! 💥");
   } else if (expenseRatio > 75) {
-    return "75%+ on expenses? Your wallet filed for bankruptcy! 😭";
+    applicableRoasts.push("75%+ on expenses? Your wallet filed for bankruptcy! 😭");
   }
   
   // Generic roasts for general overspending
@@ -148,24 +148,26 @@ function generateRoastMessage(totalIncome, totalExpenses, expenses) {
     "Your budget: adventure mode 🎢",
   ];
   
-  if (expenseRatio > 50) {
-    return genericRoasts[Math.floor(Math.random() * genericRoasts.length)];
+  if (expenseRatio > 50 && applicableRoasts.length === 0) {
+    applicableRoasts.push(...genericRoasts);
   }
   
-  return null;
+  // Return array of all applicable roasts
+  return applicableRoasts.length > 0 ? applicableRoasts : [];
 }
 
 export function useRetirementRoasts(currentAge, retirementAge, monthlyInvestment, annualReturn, projectedBalance, goalBalance) {
   const { roastMode } = useSecretModes();
 
-  if (!roastMode) return null;
+  if (!roastMode) return [];
   
   return generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, annualReturn, projectedBalance, goalBalance);
 }
 
 function generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, annualReturn, projectedBalance, goalBalance) {
-  if (!currentAge || !retirementAge) return null;
+  if (!currentAge || !retirementAge) return [];
 
+  const applicableRoasts = [];
   const yearsToRetirement = retirementAge - currentAge;
   
   // Investment amount roasts
@@ -177,7 +179,7 @@ function generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, a
       "Your future self might want more than this 👴",
       "Small steps to retirement, I guess? 🚶",
     ];
-    return tooLowRoasts[Math.floor(Math.random() * tooLowRoasts.length)];
+    applicableRoasts.push(...tooLowRoasts);
   }
 
   if (monthlyInvestment < 500 && monthlyInvestment >= 100) {
@@ -188,7 +190,7 @@ function generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, a
       "Hope compound interest is feeling generous! 📈",
       "That's one way to approach retirement 💭",
     ];
-    return modestRoasts[Math.floor(Math.random() * modestRoasts.length)];
+    applicableRoasts.push(...modestRoasts);
   }
 
   if (monthlyInvestment >= 5000) {
@@ -199,7 +201,7 @@ function generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, a
       "Someone's taking retirement seriously! 📊",
       "Living for retirement? Bold choice 🎯",
     ];
-    return impressiveRoasts[Math.floor(Math.random() * impressiveRoasts.length)];
+    applicableRoasts.push(...impressiveRoasts);
   }
 
   // Years to retirement roasts
@@ -211,7 +213,7 @@ function generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, a
       "Retirement is RIGHT THERE 👀",
       "Talk about last-minute planning! ⏰",
     ];
-    return soonRoasts[Math.floor(Math.random() * soonRoasts.length)];
+    applicableRoasts.push(...soonRoasts);
   }
 
   if (yearsToRetirement > 40) {
@@ -222,7 +224,7 @@ function generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, a
       "So much time, so little urgency 😴",
       "Retirement seems far away, right? 🗓️",
     ];
-    return lottaTimeRoasts[Math.floor(Math.random() * lottaTimeRoasts.length)];
+    applicableRoasts.push(...lottaTimeRoasts);
   }
 
   // Return rate roasts
@@ -233,7 +235,7 @@ function generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, a
       "Hope inflation doesn't catch up 📉",
       "That's being VERY cautious with returns 🤐",
     ];
-    return lowReturnRoasts[Math.floor(Math.random() * lowReturnRoasts.length)];
+    applicableRoasts.push(...lowReturnRoasts);
   }
 
   if (annualReturn > 15) {
@@ -243,42 +245,46 @@ function generateRetirementRoast(currentAge, retirementAge, monthlyInvestment, a
       "Feeling lucky with your investments? 🍀",
       "That return rate is... ambitious 🎯",
     ];
-    return highReturnRoasts[Math.floor(Math.random() * highReturnRoasts.length)];
+    applicableRoasts.push(...highReturnRoasts);
   }
 
   // Projection vs goal roasts
   if (goalBalance && projectedBalance) {
     const ratio = (projectedBalance / goalBalance) * 100;
     if (ratio < 50) {
-      return "Your projected balance is only " + ratio.toFixed(0) + "% of your goal 😬";
+      applicableRoasts.push("Your projected balance is only " + ratio.toFixed(0) + "% of your goal 😬");
     } else if (ratio > 150) {
-      return "Wow, you're crushing your retirement goal! 🏆";
+      applicableRoasts.push("Wow, you're crushing your retirement goal! 🏆");
     }
   }
 
-  // Generic retirement roasts
-  const genericRetirementRoasts = [
-    "Thinking about retirement, are we? 🏖️",
-    "Your retirement plan is... a plan! 📋",
-    "Let's hope this actually works out 🤞",
-    "Retirement: a mystery wrapped in math 🧮",
-    "Your future awaits! (Hopefully) ⏳",
-  ];
+  // Generic retirement roasts - only add if no specific roasts apply
+  if (applicableRoasts.length === 0) {
+    const genericRetirementRoasts = [
+      "Thinking about retirement, are we? 🏖️",
+      "Your retirement plan is... a plan! 📋",
+      "Let's hope this actually works out 🤞",
+      "Retirement: a mystery wrapped in math 🧮",
+      "Your future awaits! (Hopefully) ⏳",
+    ];
+    applicableRoasts.push(...genericRetirementRoasts);
+  }
 
-  return genericRetirementRoasts[Math.floor(Math.random() * genericRetirementRoasts.length)];
+  return applicableRoasts;
 }
 
 export function useOverviewRoasts(totalIncome, totalExpenses, savingsAmount, projectedRetirementBalance) {
   const { roastMode } = useSecretModes();
 
-  if (!roastMode) return null;
+  if (!roastMode) return [];
   
   return generateOverviewRoast(totalIncome, totalExpenses, savingsAmount, projectedRetirementBalance);
 }
 
 function generateOverviewRoast(totalIncome, totalExpenses, savingsAmount, projectedRetirementBalance) {
-  if (!totalIncome) return null;
+  if (!totalIncome) return [];
 
+  const applicableRoasts = [];
   const expenseRatio = (totalExpenses / totalIncome) * 100;
   const savingsRate = (savingsAmount / totalIncome) * 100;
   
@@ -290,7 +296,7 @@ function generateOverviewRoast(totalIncome, totalExpenses, savingsAmount, projec
       "Are you actually spending money on living? 🤔",
       "Your future self is THANKING you 🙏",
     ];
-    return superSaverRoasts[Math.floor(Math.random() * superSaverRoasts.length)];
+    applicableRoasts.push(...superSaverRoasts);
   }
 
   if (savingsRate < 5) {
@@ -301,7 +307,7 @@ function generateOverviewRoast(totalIncome, totalExpenses, savingsAmount, projec
       "What's a savings rate anyway? 🤷",
       "Your future self has some words for you 😬",
     ];
-    return poorSaverRoasts[Math.floor(Math.random() * poorSaverRoasts.length)];
+    applicableRoasts.push(...poorSaverRoasts);
   }
 
   // Overall financial health roasts
@@ -312,26 +318,29 @@ function generateOverviewRoast(totalIncome, totalExpenses, savingsAmount, projec
       "That budget math doesn't add up! 🧮",
       "Deficit spending: is it a lifestyle? 💸",
     ];
-    return overspendingRoasts[Math.floor(Math.random() * overspendingRoasts.length)];
+    applicableRoasts.push(...overspendingRoasts);
   }
 
   // Retirement projection roasts
   if (projectedRetirementBalance) {
     if (projectedRetirementBalance < 100000) {
-      return "Your retirement projection: under $100k? 😰 That's... tight.";
+      applicableRoasts.push("Your retirement projection: under $100k? 😰 That's... tight.");
     } else if (projectedRetirementBalance > 1000000) {
-      return "WHOA, over $1M projected at retirement?! 💰 Living the dream!";
+      applicableRoasts.push("WHOA, over $1M projected at retirement?! 💰 Living the dream!");
     }
   }
 
-  // Balanced overview roasts
-  const overviewRoasts = [
-    "Your financial overview is... a journey 📊",
-    "Overall: could be worse, could be better 🤷",
-    "This overview summarizes the chaos 😅",
-    "Here's a snapshot of your money situation 📸",
-    "Your finances: complicated but interesting 🎪",
-  ];
+  // Balanced overview roasts - only add if no specific roasts apply
+  if (applicableRoasts.length === 0) {
+    const overviewRoasts = [
+      "Your financial overview is... a journey 📊",
+      "Overall: could be worse, could be better 🤷",
+      "This overview summarizes the chaos 😅",
+      "Here's a snapshot of your money situation 📸",
+      "Your finances: complicated but interesting 🎪",
+    ];
+    applicableRoasts.push(...overviewRoasts);
+  }
 
-  return overviewRoasts[Math.floor(Math.random() * overviewRoasts.length)];
+  return applicableRoasts;
 }

@@ -28,12 +28,13 @@ export default function Overview() {
   });
   const [isMobile, setIsMobile] = useState(false);
   const [displayedRoast, setDisplayedRoast] = useState(null);
+  const [lastRoastIndex, setLastRoastIndex] = useState(-1);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const roastTimeout = useRef(null);
   
   // Get roast message
-  const roastMessage = useOverviewRoasts(data.totalIncome, data.totalExpenses, data.savingsAmount, data.retirementProjection);
+  const applicableRoasts = useOverviewRoasts(data.totalIncome, data.totalExpenses, data.savingsAmount, data.retirementProjection);
 
   // Detect mobile screen size
   useEffect(() => {
@@ -47,8 +48,20 @@ export default function Overview() {
 
   // Handle roast message display with auto-dismiss
   useEffect(() => {
-    if (roastMessage) {
-      setDisplayedRoast(roastMessage);
+    if (applicableRoasts && applicableRoasts.length > 0) {
+      // Pick a random roast that's different from the last one shown
+      let newIndex;
+      if (applicableRoasts.length === 1) {
+        newIndex = 0;
+      } else {
+        // Ensure we don't pick the same roast twice in a row
+        do {
+          newIndex = Math.floor(Math.random() * applicableRoasts.length);
+        } while (newIndex === lastRoastIndex && applicableRoasts.length > 1);
+      }
+      
+      setLastRoastIndex(newIndex);
+      setDisplayedRoast(applicableRoasts[newIndex]);
       
       if (roastTimeout.current) {
         clearTimeout(roastTimeout.current);
@@ -64,7 +77,7 @@ export default function Overview() {
         clearTimeout(roastTimeout.current);
       }
     };
-  }, [roastMessage, JSON.stringify(data)]);
+  }, [applicableRoasts, JSON.stringify(data)]);
 
   const generateForwardProjection = (currentAge, retirementAge, monthlyInvestment, annualReturn) => {
     const current = parseInt(currentAge) || 0;

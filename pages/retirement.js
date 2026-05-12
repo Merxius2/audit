@@ -26,6 +26,7 @@ export default function RetirementProjection() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [displayedRoast, setDisplayedRoast] = useState(null);
+  const [lastRoastIndex, setLastRoastIndex] = useState(-1);
   const saveCookieTimeout = useRef(null);
   const roastTimeout = useRef(null);
   const { getSymbol } = useCurrency();
@@ -148,12 +149,24 @@ export default function RetirementProjection() {
   const returnNum = parseFloat(annualReturn) || 7;
   
   // Get roast message
-  const roastMessage = useRetirementRoasts(currentAgeNum, retirementAgeNum, monthlyNum, returnNum, finalBalance, parseFloat(goalBalance) || 500000);
+  const applicableRoasts = useRetirementRoasts(currentAgeNum, retirementAgeNum, monthlyNum, returnNum, finalBalance, parseFloat(goalBalance) || 500000);
   
   // Handle roast message display with auto-dismiss
   useEffect(() => {
-    if (roastMessage) {
-      setDisplayedRoast(roastMessage);
+    if (applicableRoasts && applicableRoasts.length > 0) {
+      // Pick a random roast that's different from the last one shown
+      let newIndex;
+      if (applicableRoasts.length === 1) {
+        newIndex = 0;
+      } else {
+        // Ensure we don't pick the same roast twice in a row
+        do {
+          newIndex = Math.floor(Math.random() * applicableRoasts.length);
+        } while (newIndex === lastRoastIndex && applicableRoasts.length > 1);
+      }
+      
+      setLastRoastIndex(newIndex);
+      setDisplayedRoast(applicableRoasts[newIndex]);
       
       if (roastTimeout.current) {
         clearTimeout(roastTimeout.current);
@@ -169,8 +182,8 @@ export default function RetirementProjection() {
         clearTimeout(roastTimeout.current);
       }
     };
-  }, [roastMessage]);
-  const retirementAgeNum = parseInt(retirementAge) || 65;
+  }, [applicableRoasts]);
+  
   const yearsToRetirement = Math.max(0, retirementAgeNum - currentAgeNum);
   const monthlyForDisplay = isForward ? parseFloat(monthlyInvestment) || 0 : Math.round((parseFloat(goalBalance) || 0) / Math.max(1, (yearsToRetirement * 12)) * 100) / 100;
   // Better calculation for backward
