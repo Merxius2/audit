@@ -27,6 +27,13 @@ const CURRENCY_OPTIONS = [
   { code: 'TRY', symbol: '₺', name: 'Lira', flag: '🇹🇷' },
 ];
 
+const ICON_MAP = {
+  en: 'e',
+  nl: 'n',
+  ru: 'r',
+  tr: 't',
+};
+
 export default function SettingsPage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [resetMessage, setResetMessage] = useState('');
@@ -60,7 +67,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0">
+    <div className="min-h-screen bg-white pb-40 md:ml-64 md:pb-0">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
@@ -241,6 +248,17 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
+      {/* Mobile App Icon Footer */}
+      <div className="md:hidden mt-4 flex justify-center pb-2">
+        <Image
+          src={`/icon-${ICON_MAP[language]}-192.png`}
+          alt="Aap-FT"
+          width={120}
+          height={120}
+          className="rounded-xl"
+        />
+      </div>
     </div>
   );
 }
