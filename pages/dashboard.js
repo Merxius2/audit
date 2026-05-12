@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useFinancial } from '../context/FinancialContext';
 import MedianBadge from '../components/MedianBadge';
-import { TrendingUp, Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile } from 'lucide-react';
+import { TrendingUp, Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, DollarSign, PiggyBank } from 'lucide-react';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure'];
@@ -58,7 +58,8 @@ export default function Dashboard() {
           <div className="card-income p-6">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <DollarSign size={18} className="text-brand-primary" />
                   Monthly Net Income
                 </label>
                 <input
@@ -79,7 +80,8 @@ export default function Dashboard() {
           <div className="card-savings p-6">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <PiggyBank size={18} className="text-brand-primary" />
                   Current Monthly Savings
                 </label>
                 <input
