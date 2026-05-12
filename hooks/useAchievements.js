@@ -48,9 +48,16 @@ const ACHIEVEMENTS = {
     icon: '✨',
     condition: (data) => data.leftover >= 0,
   },
+  roasted_100x: {
+    id: 'roasted_100x',
+    title: 'Get Roasted 100x',
+    description: 'Get roasted 100 times',
+    icon: '🔥',
+    condition: (data) => data.roastCount >= 100,
+  },
 };
 
-export function useAchievements(totalIncome, totalExpenses, savingsAmount) {
+export function useAchievements(totalIncome, totalExpenses, savingsAmount, roastCount = 0) {
   const { achievementMode } = useSecretModes();
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
   const [newAchievements, setNewAchievements] = useState([]);
@@ -63,6 +70,7 @@ export function useAchievements(totalIncome, totalExpenses, savingsAmount) {
       totalExpenses: totalExpenses || 0,
       savingsAmount: savingsAmount || 0,
       leftover: (totalIncome || 0) - (totalExpenses || 0),
+      roastCount: roastCount || 0,
     };
 
     // Load previously unlocked achievements
@@ -85,7 +93,7 @@ export function useAchievements(totalIncome, totalExpenses, savingsAmount) {
     }
 
     setUnlockedAchievements(currentlyUnlocked);
-  }, [totalIncome, totalExpenses, savingsAmount, achievementMode]);
+  }, [totalIncome, totalExpenses, savingsAmount, roastCount, achievementMode]);
 
   return { unlockedAchievements, newAchievements };
 }

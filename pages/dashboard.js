@@ -10,6 +10,8 @@ import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useFunFeatures } from '../hooks/useFunFeatures';
+import { useSecretModes } from '../context/SecretModesContext';
+import { useAchievements } from '../hooks/useAchievements';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#8B5CF6', '#F97316'];
@@ -38,10 +40,12 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [displayedRoast, setDisplayedRoast] = useState(null);
+  const [lastRoastIndex, setLastRoastIndex] = useState(-1);
   const saveCookieTimeout = useRef(null);
   const roastTimeout = useRef(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
+  const { roastCount, incrementRoastCount } = useSecretModes();
 
   // Detect mobile screen size
   useEffect(() => {
@@ -91,6 +95,7 @@ export default function Dashboard() {
 
   // Fun features hooks
   const { applicableRoasts } = useFunFeatures(totalIncome, totalExpenses, expenses);
+  const { newAchievements } = useAchievements(totalIncome, totalExpenses, savingsNum, roastCount);
   const [lastRoastIndex, setLastRoastIndex] = useState(-1);
   
   // Create a key for tracking when expenses change to trigger roasts even if message is same
@@ -112,6 +117,7 @@ export default function Dashboard() {
       
       setLastRoastIndex(newIndex);
       setDisplayedRoast(applicableRoasts[newIndex]);
+      incrementRoastCount();
       
       // Clear any existing timeout
       if (roastTimeout.current) {
@@ -156,6 +162,7 @@ export default function Dashboard() {
 
       setLastRoastIndex(newIndex);
       setDisplayedRoast(applicableRoasts[newIndex]);
+      incrementRoastCount();
 
       // Clear any existing timeout
       if (roastTimeout.current) {

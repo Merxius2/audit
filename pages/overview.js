@@ -11,6 +11,8 @@ import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useOverviewRoasts } from '../hooks/useFunFeatures';
+import { useSecretModes } from '../context/SecretModesContext';
+import { useAchievements } from '../hooks/useAchievements';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#06B6D4', '#8B5CF6'];
@@ -31,7 +33,11 @@ export default function Overview() {
   const [lastRoastIndex, setLastRoastIndex] = useState(-1);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
+  const { roastCount, incrementRoastCount } = useSecretModes();
   const roastTimeout = useRef(null);
+  
+  // Get achievements
+  const { newAchievements } = useAchievements(data.totalIncome, data.totalExpenses, data.savingsAmount, roastCount);
   
   // Get roast message
   const applicableRoasts = useOverviewRoasts(data.totalIncome, data.totalExpenses, data.savingsAmount, data.retirementProjection);
@@ -62,6 +68,7 @@ export default function Overview() {
       
       setLastRoastIndex(newIndex);
       setDisplayedRoast(applicableRoasts[newIndex]);
+      incrementRoastCount();
       
       if (roastTimeout.current) {
         clearTimeout(roastTimeout.current);
@@ -98,6 +105,7 @@ export default function Overview() {
 
       setLastRoastIndex(newIndex);
       setDisplayedRoast(applicableRoasts[newIndex]);
+      incrementRoastCount();
 
       if (roastTimeout.current) {
         clearTimeout(roastTimeout.current);

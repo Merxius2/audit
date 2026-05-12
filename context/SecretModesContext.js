@@ -8,6 +8,7 @@ export function SecretModesProvider({ children }) {
   const [darkSoulMode, setDarkSoulMode] = useState(false);
   const [roastMode, setRoastMode] = useState(false);
   const [achievementMode, setAchievementMode] = useState(false);
+  const [roastCount, setRoastCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load from cookies on mount
@@ -16,11 +17,13 @@ export function SecretModesProvider({ children }) {
     const savedDarkSoul = loadFromCookie('secret_darksoul_mode');
     const savedRoast = loadFromCookie('secret_roast_mode');
     const savedAchievement = loadFromCookie('secret_achievement_mode');
+    const savedRoastCount = loadFromCookie('roast_count');
 
     if (savedConfetti !== null) setConfettiMode(savedConfetti === 'true');
     if (savedDarkSoul !== null) setDarkSoulMode(savedDarkSoul === 'true');
     if (savedRoast !== null) setRoastMode(savedRoast === 'true');
     if (savedAchievement !== null) setAchievementMode(savedAchievement === 'true');
+    if (savedRoastCount !== null) setRoastCount(parseInt(savedRoastCount) || 0);
     setIsLoading(false);
   }, []);
 
@@ -48,6 +51,12 @@ export function SecretModesProvider({ children }) {
     saveToCookie('secret_achievement_mode', newValue, 365);
   };
 
+  const incrementRoastCount = () => {
+    const newCount = roastCount + 1;
+    setRoastCount(newCount);
+    saveToCookie('roast_count', newCount.toString(), 365);
+  };
+
   return (
     <SecretModesContext.Provider
       value={{
@@ -55,10 +64,12 @@ export function SecretModesProvider({ children }) {
         darkSoulMode,
         roastMode,
         achievementMode,
+        roastCount,
         toggleConfetti,
         toggleDarkSoul,
         toggleRoast,
         toggleAchievement,
+        incrementRoastCount,
         isLoading,
       }}
     >

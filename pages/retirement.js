@@ -11,6 +11,8 @@ import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useRetirementRoasts } from '../hooks/useFunFeatures';
+import { useSecretModes } from '../context/SecretModesContext';
+import { useAchievements } from '../hooks/useAchievements';
 
 export default function RetirementProjection() {
   const [calculationType, setCalculationType] = useState('forward'); // 'forward' or 'backward'
@@ -32,6 +34,7 @@ export default function RetirementProjection() {
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const { isDarkMode } = useDarkMode();
+  const { roastCount, incrementRoastCount } = useSecretModes();
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -151,6 +154,9 @@ export default function RetirementProjection() {
   // Get roast message
   const applicableRoasts = useRetirementRoasts(currentAgeNum, retirementAgeNum, monthlyNum, returnNum, finalBalance, parseFloat(goalBalance) || 500000);
   
+  // Get achievements
+  const { newAchievements } = useAchievements(0, 0, 0, roastCount);
+  
   // Handle roast message display with auto-dismiss
   useEffect(() => {
     if (applicableRoasts && applicableRoasts.length > 0) {
@@ -167,6 +173,7 @@ export default function RetirementProjection() {
       
       setLastRoastIndex(newIndex);
       setDisplayedRoast(applicableRoasts[newIndex]);
+      incrementRoastCount();
       
       if (roastTimeout.current) {
         clearTimeout(roastTimeout.current);
@@ -203,6 +210,7 @@ export default function RetirementProjection() {
 
       setLastRoastIndex(newIndex);
       setDisplayedRoast(applicableRoasts[newIndex]);
+      incrementRoastCount();
 
       if (roastTimeout.current) {
         clearTimeout(roastTimeout.current);
