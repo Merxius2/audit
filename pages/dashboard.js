@@ -872,15 +872,6 @@ function SeparateModeContent({
             })).filter(item => item.value > 0)}
             getSymbol={getSymbol}
             isMobile={isMobile}
-            breakdown={{
-              person1Contribution,
-              person2Contribution,
-              sharedExpensesTotal,
-              balance: sharedBalance,
-              person1Name,
-              person2Name,
-              t
-            }}
           />
         </div>
       </div>
@@ -889,39 +880,12 @@ function SeparateModeContent({
 }
 
 // Helper component for pie chart display
-function PieChartCard({ title, data, getSymbol, isMobile, breakdown }) {
+function PieChartCard({ title, data, getSymbol, isMobile }) {
   const totalValue = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <div className="card p-6">
       <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{title}</h4>
-      
-      {/* Breakdown Section for Shared Account */}
-      {breakdown && (
-        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-2">
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-700 dark:text-gray-300">{breakdown.person1Name} {breakdown.t('dashboard.contribution')}:</span>
-            <span className="font-mono font-bold text-gray-900 dark:text-gray-100">{getSymbol()}{Math.floor(breakdown.person1Contribution).toLocaleString('en-US')}</span>
-          </div>
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-700 dark:text-gray-300">{breakdown.person2Name} {breakdown.t('dashboard.contribution')}:</span>
-            <span className="font-mono font-bold text-gray-900 dark:text-gray-100">{getSymbol()}{Math.floor(breakdown.person2Contribution).toLocaleString('en-US')}</span>
-          </div>
-          <div className="border-t border-gray-300 dark:border-gray-600 pt-2 mt-2 flex justify-between items-center text-sm font-medium">
-            <span className="text-gray-700 dark:text-gray-300">{breakdown.t('dashboard.totalIncome')}:</span>
-            <span className="font-mono text-gray-900 dark:text-gray-100">{getSymbol()}{Math.floor(breakdown.person1Contribution + breakdown.person2Contribution).toLocaleString('en-US')}</span>
-          </div>
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-700 dark:text-gray-300">{breakdown.t('dashboard.totalExpenses')}:</span>
-            <span className="font-mono font-bold text-gray-900 dark:text-gray-100">-{getSymbol()}{Math.floor(breakdown.sharedExpensesTotal).toLocaleString('en-US')}</span>
-          </div>
-          <div className="border-t border-gray-300 dark:border-gray-600 pt-2 mt-2 flex justify-between items-center">
-            <span className="text-gray-700 dark:text-gray-300 font-medium">{breakdown.t('dashboard.balance')}:</span>
-            <span className={`font-mono font-bold text-lg ${breakdown.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{getSymbol()}{Math.floor(breakdown.balance).toLocaleString('en-US')}</span>
-          </div>
-        </div>
-      )}
-      
       {totalValue > 0 ? (
         <>
           <ResponsiveContainer width="100%" height={200}>
