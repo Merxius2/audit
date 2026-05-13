@@ -4,15 +4,15 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3 } from 'lucide-react';
+import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3, Tv, Receipt } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
-const SHARED_EXPENSE_CATEGORIES = ['House', 'Food', 'Utilities'];
-const PERSONAL_EXPENSE_CATEGORIES = ['Car', 'Healthcare', 'Leisure', 'Other'];
+const SHARED_EXPENSE_CATEGORIES = ['House', 'Food', 'Utilities', 'Insurance', 'Other', 'Subscriptions', 'Taxes', 'InternetTV', 'Car'];
+const PERSONAL_EXPENSE_CATEGORIES = ['Car', 'Healthcare', 'Leisure', 'Other', 'Phone', 'Subscriptions'];
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#8B5CF6', '#F97316'];
 
 const CATEGORY_ICONS = {
@@ -25,7 +25,9 @@ const CATEGORY_ICONS = {
   'Subscriptions': CreditCard,
   'Phone': Phone,
   'Insurance': Shield,
-  'Other': MoreHorizontal
+  'Other': MoreHorizontal,
+  'Taxes': Receipt,
+  'InternetTV': Tv
 };
 
 export default function Dashboard() {
