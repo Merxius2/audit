@@ -75,7 +75,20 @@ export default function TaxCalculator() {
     }
 
     // Convert monthly to yearly for calculation
-    const yearlyIncome = monthlyIncome * 12;
+    let yearlyIncome = monthlyIncome * 12;
+    let expatExemption = 0;
+    const exemptionCap = 244000; // 2026 income cap for 30% rule (Balkenende-norm)
+
+    // Apply 30% expat exemption if enabled
+    if (isExpat && yearlyIncome <= exemptionCap) {
+      // 30% of income is tax-free
+      expatExemption = yearlyIncome * 0.3;
+      // Taxable income is only 70% of gross
+      yearlyIncome = yearlyIncome * 0.7;
+    } else if (isExpat && yearlyIncome > exemptionCap) {
+      // For incomes above cap, no exemption applies
+      expatExemption = 0;
+    }
 
     const generalTaxCredit = getGeneralTaxCredit();
     const earnedIncomeCredit = getEarnedIncomeCredit();
@@ -87,27 +100,26 @@ export default function TaxCalculator() {
       result = calculateGrossFromNet(yearlyIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
     }
 
-    // Apply expat discount if enabled
-    if (isExpat) {
-      const discountedGross = result.grossIncome * 0.7;
-      result = calculateTaxBreakdown(discountedGross, taxBrackets, generalTaxCredit, earnedIncomeCredit);
-      result.expatDiscountApplied = true;
-      result.expatDiscountAmount = result.grossIncome * 0.4286; // 30% of original
-      result.originalGrossIncome = result.grossIncome / 0.7;
+    // Add expatExemption back to net income (it's tax-free)
+    if (isExpat && expatExemption > 0) {
+      result.expatExemption = expatExemption;
+      result.netIncome = result.netIncome + expatExemption;
+      result.effectiveRate = result.grossIncome + expatExemption > 0 
+        ? ((result.totalTax) / (result.grossIncome + expatExemption)) * 100 
+        : 0;
     }
 
     // Convert yearly results back to monthly
     return {
       ...result,
-      grossIncome: result.grossIncome / 12,
+      grossIncome: (result.grossIncome + (expatExemption || 0)) / 12,
       incomeTax: result.incomeTax / 12,
       generalTaxCredit: result.generalTaxCredit / 12,
       earnedIncomeCreditAmount: result.earnedIncomeCreditAmount / 12,
       totalCredits: result.totalCredits / 12,
       totalTax: result.totalTax / 12,
       netIncome: result.netIncome / 12,
-      expatDiscountAmount: result.expatDiscountAmount ? result.expatDiscountAmount / 12 : undefined,
-      originalGrossIncome: result.originalGrossIncome ? result.originalGrossIncome / 12 : undefined,
+      expatExemption: (expatExemption || 0) / 12,
       bracketsBreakdown: result.bracketsBreakdown.map(b => ({
         ...b,
         incomeInBracket: b.incomeInBracket / 12,
@@ -348,11 +360,17 @@ export default function TaxCalculator() {
             </div>
           </div>
 
-          {/* Expat Discount Info */}
-          {result.expatDiscountApplied && (
+          {/* Expat 30% Exemption Info */}
+          {result.expatExemption > 0 && (
             <div className="mt-8 card p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-              <p className="text-sm text-blue-900 dark:text-blue-200">
-                {t('tax.expatDiscountInfo')}: {getSymbol()}{Math.floor(result.expatDiscountAmount).toLocaleString('en-US')}
+              <p className="text-sm text-blue-900 dark:text-blue-200 font-medium mb-2">
+                {t('tax.expatExemption30Percent')}
+              </p>
+              <p className="text-sm text-blue-900 dark:text-blue-200 mb-2">
+                {t('tax.taxFreeAmount')}: {getSymbol()}{Math.floor(result.expatExemption).toLocaleString('en-US')} {t('tax.monthly')}
+              </p>
+              <p className="text-xs text-blue-800 dark:text-blue-300">
+                {t('tax.expatExemptionNote')}
               </p>
             </div>
           )}
