@@ -26,14 +26,14 @@ export default function MobileNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-[100] border-t border-gray-200 bg-white md:hidden dark:border-gray-800 dark:bg-gray-900">
-      <div className="flex items-end justify-center px-2 py-3">
+      <div className="flex items-center justify-center px-2 py-3">
         {navItems.map((item, index) => {
           const Icon = item.icon;
           return (
             <div key={item.path} className="flex-1 flex justify-center">
               <Link href={item.path}>
                 {item.isPrimary ? (
-                  <button className="relative -top-10 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary text-white shadow-lg shadow-brand-primary/30 transition-transform hover:scale-110">
+                  <button className="relative -top-8 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary text-white shadow-lg shadow-brand-primary/30 transition-transform hover:scale-110">
                     <Icon size={20} />
                   </button>
                 ) : (
