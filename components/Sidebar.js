@@ -79,9 +79,9 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 flex h-screen w-64 flex-col border-r border-gray-200 bg-white p-6 shadow-soft transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 ${
-          isLargeScreen ? 'translate-x-0 md:flex' : isSidebarOpen ? 'translate-x-0 z-40' : '-translate-x-full'
-        } hidden md:flex`}
+        className={`fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-gray-200 bg-white p-6 shadow-soft transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 ${
+          isLargeScreen ? 'translate-x-0' : isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
       {/* Logo */}
       <div className="mb-8 flex items-start justify-between">
