@@ -6,7 +6,10 @@ A modern, responsive financial analysis and planning web app built with Next.js,
 
 ### 🎯 Dashboard (Income & Expense Tracking)
 - Track monthly income, expenses, and savings
-- Predefined expense categories (House, Car, Food, Utilities, Healthcare, Leisure)
+- **Two Calculation Modes:**
+  - Shared Account: Combined household budget
+  - Separate Accounts: Two-person mode with income ratio-based shared expense splitting
+- Expanded expense categories with customizable person names
 - Real-time calculations for:
   - Total Monthly Expenses
   - Net Leftover (Income - Expenses)
