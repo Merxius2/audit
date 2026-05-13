@@ -11,6 +11,8 @@ import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
+const SHARED_EXPENSE_CATEGORIES = ['House', 'Food', 'Utilities'];
+const PERSONAL_EXPENSE_CATEGORIES = ['Car', 'Healthcare', 'Leisure', 'Other'];
 const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#8B5CF6', '#F97316'];
 
 const CATEGORY_ICONS = {
@@ -27,18 +29,38 @@ const CATEGORY_ICONS = {
 };
 
 export default function Dashboard() {
+  // Shared state for both modes
+  const [calculationType, setCalculationType] = useState('shared');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const saveCookieTimeout = useRef(null);
+  const { getSymbol } = useCurrency();
+  const { t } = useLanguage();
 
+  // Shared mode state (current mode)
   const [incomes, setIncomes] = useState([]);
   const [savings, setSavings] = useState('');
   const [includeSavingsInCalculations, setIncludeSavingsInCalculations] = useState(true);
   const [expenses, setExpenses] = useState(
     EXPENSE_CATEGORIES.reduce((acc, cat) => ({ ...acc, [cat]: '' }), {})
   );
-  const [isLoading, setIsLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const saveCookieTimeout = useRef(null);
-  const { getSymbol } = useCurrency();
-  const { t } = useLanguage();
+
+  // Separate mode state (two-person mode)
+  const [person1Incomes, setPerson1Incomes] = useState([]);
+  const [person1Savings, setPerson1Savings] = useState('');
+  const [person1Expenses, setPerson1Expenses] = useState(
+    PERSONAL_EXPENSE_CATEGORIES.reduce((acc, cat) => ({ ...acc, [cat]: '' }), {})
+  );
+  
+  const [person2Incomes, setPerson2Incomes] = useState([]);
+  const [person2Savings, setPerson2Savings] = useState('');
+  const [person2Expenses, setPerson2Expenses] = useState(
+    PERSONAL_EXPENSE_CATEGORIES.reduce((acc, cat) => ({ ...acc, [cat]: '' }), {})
+  );
+
+  const [sharedExpenses, setSharedExpenses] = useState(
+    SHARED_EXPENSE_CATEGORIES.reduce((acc, cat) => ({ ...acc, [cat]: '' }), {})
+  );
 
   // Detect mobile screen size
   useEffect(() => {
@@ -54,12 +76,26 @@ export default function Dashboard() {
   useEffect(() => {
     const savedData = loadFromCookie('huishoudboekje_data');
     if (savedData) {
+      if (savedData.calculationType) setCalculationType(savedData.calculationType);
+      
+      // Load shared mode data (backward compatible)
       if (savedData.incomes) setIncomes(savedData.incomes);
       if (savedData.savings) setSavings(savedData.savings);
       if (savedData.includeSavingsInCalculations !== undefined) {
         setIncludeSavingsInCalculations(savedData.includeSavingsInCalculations);
       }
       if (savedData.expenses) setExpenses(savedData.expenses);
+
+      // Load separate mode data
+      if (savedData.person1Incomes) setPerson1Incomes(savedData.person1Incomes);
+      if (savedData.person1Savings) setPerson1Savings(savedData.person1Savings);
+      if (savedData.person1Expenses) setPerson1Expenses(savedData.person1Expenses);
+      
+      if (savedData.person2Incomes) setPerson2Incomes(savedData.person2Incomes);
+      if (savedData.person2Savings) setPerson2Savings(savedData.person2Savings);
+      if (savedData.person2Expenses) setPerson2Expenses(savedData.person2Expenses);
+
+      if (savedData.sharedExpenses) setSharedExpenses(savedData.sharedExpenses);
     }
     setIsLoading(false);
   }, []);
@@ -71,10 +107,20 @@ export default function Dashboard() {
     }
     saveCookieTimeout.current = setTimeout(() => {
       saveToCookie('huishoudboekje_data', {
+        calculationType,
+        // Shared mode
         incomes,
         savings,
         includeSavingsInCalculations,
         expenses,
+        // Separate mode
+        person1Incomes,
+        person1Savings,
+        person1Expenses,
+        person2Incomes,
+        person2Savings,
+        person2Expenses,
+        sharedExpenses,
       });
     }, 500);
   };
@@ -83,7 +129,14 @@ export default function Dashboard() {
     if (!isLoading) {
       debouncedSave();
     }
-  }, [incomes, savings, includeSavingsInCalculations, expenses, isLoading]);
+  }, [
+    calculationType,
+    incomes, savings, includeSavingsInCalculations, expenses,
+    person1Incomes, person1Savings, person1Expenses,
+    person2Incomes, person2Savings, person2Expenses,
+    sharedExpenses,
+    isLoading
+  ]);
 
   // Calculate totals
   const totalIncome = incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
@@ -146,9 +199,38 @@ export default function Dashboard() {
             <BarChart3 size={36} className="text-brand-primary" />
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('dashboard.title')}</h1>
           </div>
+          
+          {/* Calculation Type Toggle */}
+          <div className="flex items-center gap-3 mt-4">
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('dashboard.calculationType')}:</span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCalculationType('shared')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  calculationType === 'shared'
+                    ? 'bg-brand-primary text-white shadow-lg'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t('dashboard.mode.shared')}
+              </button>
+              <button
+                onClick={() => setCalculationType('separate')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  calculationType === 'separate'
+                    ? 'bg-brand-primary text-white shadow-lg'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t('dashboard.mode.separate')}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Shared Mode Content */}
+      {calculationType === 'shared' && (
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Income Sources Card */}
         <div className="card-income p-8">
@@ -391,7 +473,360 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      )}
+
+      {/* Separate Mode Content */}
+      {calculationType === 'separate' && (
+      <SeparateModeContent
+        person1Incomes={person1Incomes}
+        setPerson1Incomes={setPerson1Incomes}
+        person1Savings={person1Savings}
+        setPerson1Savings={setPerson1Savings}
+        person1Expenses={person1Expenses}
+        setPerson1Expenses={setPerson1Expenses}
+        person2Incomes={person2Incomes}
+        setPerson2Incomes={setPerson2Incomes}
+        person2Savings={person2Savings}
+        setPerson2Savings={setPerson2Savings}
+        person2Expenses={person2Expenses}
+        setPerson2Expenses={setPerson2Expenses}
+        sharedExpenses={sharedExpenses}
+        setSharedExpenses={setSharedExpenses}
+        getSymbol={getSymbol}
+        t={t}
+        isMobile={isMobile}
+      />
+      )}
     </div>
   );
 }
+
+// Helper component for Person Income/Expenses management in separate mode
+function PersonSection({ 
+  personLabel, 
+  incomes, 
+  setIncomes, 
+  savings, 
+  setSavings, 
+  expenses, 
+  setExpenses,
+  getSymbol,
+  t,
+  isMobile,
+  isPersonOne = true
+}) {
+  const addIncome = () => {
+    const newId = Date.now().toString();
+    setIncomes([...incomes, { id: newId, label: `${personLabel} Income ${incomes.length + 1}`, amount: '' }]);
+  };
+
+  const updateIncome = (id, field, value) => {
+    setIncomes(incomes.map(income =>
+      income.id === id ? { ...income, [field]: value } : income
+    ));
+  };
+
+  const removeIncome = (id) => {
+    setIncomes(incomes.filter(income => income.id !== id));
+  };
+
+  const totalIncome = incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
+  const totalExpenses = Object.values(expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+  const savingsNum = parseFloat(savings) || 0;
+  const balance = totalIncome - savingsNum - totalExpenses;
+
+  return (
+    <div className="space-y-6">
+      {/* Income Card */}
+      <div className="card-income p-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            {isPersonOne ? t('dashboard.person1Income') : t('dashboard.person2Income')}
+          </h3>
+          <button
+            onClick={addIncome}
+            className="flex items-center gap-2 rounded-lg bg-brand-primary text-white px-4 py-2 font-medium hover:bg-brand-primary/90 transition-colors w-full sm:w-auto justify-center sm:justify-start"
+          >
+            <Plus size={18} />
+            {t('dashboard.addIncomeBtn')}
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {incomes.map((income) => (
+            <div key={income.id} className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
+                  {t('dashboard.sourceLabel')}
+                </label>
+                <input
+                  type="text"
+                  value={income.label}
+                  onChange={(e) => updateIncome(income.id, 'label', e.target.value)}
+                  placeholder={t('dashboard.placeholder.salaryFreelance')}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">
+                  {t('dashboard.amount')} ({getSymbol()})
+                </label>
+                <input
+                  type="number"
+                  value={income.amount}
+                  onChange={(e) => updateIncome(income.id, 'amount', e.target.value)}
+                  placeholder={t('dashboard.placeholder.amount')}
+                  className="amount w-full"
+                />
+              </div>
+              <button
+                onClick={() => removeIncome(income.id)}
+                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title={t('dashboard.removeIncome')}
+              >
+                <Trash2 size={20} />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {incomes.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-sm">{t('dashboard.noIncomeSources')}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Savings Card */}
+      <div className="card-savings p-6">
+        <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">
+          <PiggyBank size={18} className="text-brand-primary" />
+          {t('dashboard.savingsAmount')}
+        </label>
+        <input
+          type="number"
+          value={savings}
+          onChange={(e) => setSavings(e.target.value)}
+          placeholder={t('dashboard.placeholder.amount')}
+          className="mt-3 amount-large w-full border-0 bg-transparent text-gray-900 focus:ring-0"
+        />
+      </div>
+
+      {/* Personal Expenses */}
+      <div className="card-expenses p-8">
+        <h3 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">
+          {isPersonOne ? t('dashboard.person1Expenses') : t('dashboard.person2Expenses')}
+        </h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+          {PERSONAL_EXPENSE_CATEGORIES.map((category) => {
+            const IconComponent = CATEGORY_ICONS[category];
+            return (
+              <div key={category} className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-100">
+                  <IconComponent size={16} className="text-brand-primary" />
+                  {t(`dashboard.expenseCategories.${category}`)}
+                </label>
+                <input
+                  type="number"
+                  value={expenses[category] || ''}
+                  onChange={(e) => setExpenses({ ...expenses, [category]: e.target.value })}
+                  placeholder="0"
+                  className="amount w-full"
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Summary */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="card p-4">
+          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalIncome')}</p>
+          <p className="font-mono text-2xl font-bold text-brand-primary mt-2">{getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US')}</p>
+        </div>
+        <div className="card p-4">
+          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalExpenses')}</p>
+          <p className="font-mono text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{getSymbol()}{Math.floor(totalExpenses).toLocaleString('en-US')}</p>
+        </div>
+        <div className="card p-4">
+          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.person1Balance')}</p>
+          <p className={`font-mono text-2xl font-bold mt-2 ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+            {getSymbol()}{Math.floor(balance).toLocaleString('en-US')}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Separate mode main content component
+function SeparateModeContent({
+  person1Incomes,
+  setPerson1Incomes,
+  person1Savings,
+  setPerson1Savings,
+  person1Expenses,
+  setPerson1Expenses,
+  person2Incomes,
+  setPerson2Incomes,
+  person2Savings,
+  setPerson2Savings,
+  person2Expenses,
+  setPerson2Expenses,
+  sharedExpenses,
+  setSharedExpenses,
+  getSymbol,
+  t,
+  isMobile,
+}) {
+  // Calculate totals for both people
+  const person1Income = person1Incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
+  const person1PersonalExpenses = Object.values(person1Expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+  const person1SavingsNum = parseFloat(person1Savings) || 0;
+
+  const person2Income = person2Incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
+  const person2PersonalExpenses = Object.values(person2Expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+  const person2SavingsNum = parseFloat(person2Savings) || 0;
+
+  const totalIncome = person1Income + person2Income;
+  const sharedExpensesTotal = Object.values(sharedExpenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+
+  // Calculate income ratios
+  const person1Ratio = totalIncome > 0 ? person1Income / totalIncome : 0.5;
+  const person2Ratio = totalIncome > 0 ? person2Income / totalIncome : 0.5;
+
+  // Calculate contributions to shared account
+  const person1Contribution = sharedExpensesTotal * person1Ratio;
+  const person2Contribution = sharedExpensesTotal * person2Ratio;
+
+  // Calculate final balances
+  const person1Balance = person1Income - person1SavingsNum - person1PersonalExpenses - person1Contribution;
+  const person2Balance = person2Income - person2SavingsNum - person2PersonalExpenses - person2Contribution;
+  const sharedBalance = person1Contribution + person2Contribution - sharedExpensesTotal;
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
+      <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
+        {/* Person 1 Section */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.person1')}</h2>
+          <PersonSection
+            personLabel={t('dashboard.person1')}
+            incomes={person1Incomes}
+            setIncomes={setPerson1Incomes}
+            savings={person1Savings}
+            setSavings={setPerson1Savings}
+            expenses={person1Expenses}
+            setExpenses={setPerson1Expenses}
+            getSymbol={getSymbol}
+            t={t}
+            isMobile={isMobile}
+            isPersonOne={true}
+          />
+        </div>
+
+        {/* Person 2 Section */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.person2')}</h2>
+          <PersonSection
+            personLabel={t('dashboard.person2')}
+            incomes={person2Incomes}
+            setIncomes={setPerson2Incomes}
+            savings={person2Savings}
+            setSavings={setPerson2Savings}
+            expenses={person2Expenses}
+            setExpenses={setPerson2Expenses}
+            getSymbol={getSymbol}
+            t={t}
+            isMobile={isMobile}
+            isPersonOne={false}
+          />
+        </div>
+      </div>
+
+      {/* Shared Account Section */}
+      <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.sharedAccount')}</h2>
+
+        {/* Contributions Overview */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
+          <div className="card p-6">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.incomeRatio')}</p>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700 dark:text-gray-200 font-medium">{t('dashboard.person1')}:</span>
+                <span className="font-mono text-lg font-bold text-brand-primary">{(person1Ratio * 100).toFixed(1)}%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700 dark:text-gray-200 font-medium">{t('dashboard.person2')}:</span>
+                <span className="font-mono text-lg font-bold text-brand-primary">{(person2Ratio * 100).toFixed(1)}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="card p-6">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.person1Contribution')}</p>
+            <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">{getSymbol()}{Math.floor(person1Contribution).toLocaleString('en-US')}</p>
+          </div>
+
+          <div className="card p-6">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.person2Contribution')}</p>
+            <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">{getSymbol()}{Math.floor(person2Contribution).toLocaleString('en-US')}</p>
+          </div>
+        </div>
+
+        {/* Shared Expenses */}
+        <div className="card-expenses p-8 mb-6">
+          <h3 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.sharedExpensesBreakdown')}</h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {SHARED_EXPENSE_CATEGORIES.map((category) => {
+              const IconComponent = CATEGORY_ICONS[category];
+              return (
+                <div key={category} className="space-y-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-100">
+                    <IconComponent size={16} className="text-brand-primary" />
+                    {t(`dashboard.expenseCategories.${category}`)}
+                  </label>
+                  <input
+                    type="number"
+                    value={sharedExpenses[category] || ''}
+                    onChange={(e) => setSharedExpenses({ ...sharedExpenses, [category]: e.target.value })}
+                    placeholder="0"
+                    className="amount w-full"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Shared Account Summary */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="card p-4">
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalIncome')}</p>
+            <p className="font-mono text-2xl font-bold text-brand-primary mt-2">{getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US')}</p>
+          </div>
+          <div className="card p-4">
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalExpenses')}</p>
+            <p className="font-mono text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{getSymbol()}{Math.floor(sharedExpensesTotal).toLocaleString('en-US')}</p>
+          </div>
+          <div className="card p-4">
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.person1Balance')}</p>
+            <p className={`font-mono text-2xl font-bold mt-2 ${person1Balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              {getSymbol()}{Math.floor(person1Balance).toLocaleString('en-US')}
+            </p>
+          </div>
+          <div className="card p-4">
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.person2Balance')}</p>
+            <p className={`font-mono text-2xl font-bold mt-2 ${person2Balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              {getSymbol()}{Math.floor(person2Balance).toLocaleString('en-US')}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
