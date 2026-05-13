@@ -173,23 +173,27 @@ export default function Debt() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 md:px-8 lg:ml-64">
+    <div className="min-h-screen bg-white dark:bg-gray-900 pb-0 lg:ml-64">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={toggleSidebar}
-            className="max-md:hidden lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            title="Toggle menu"
-          >
-            <Menu size={24} className="text-gray-700 dark:text-gray-300" />
-          </button>
-          <CreditCard size={36} className="text-brand-primary" />
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">{t('debt.title')}</h1>
-          <div className="w-10" />
+      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <button
+              onClick={toggleSidebar}
+              className="max-md:hidden lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              aria-label="Toggle sidebar"
+            >
+              <Menu size={24} className="text-gray-700 dark:text-gray-300" />
+            </button>
+            <CreditCard size={36} className="text-brand-primary" />
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">{t('debt.title')}</h1>
+          </div>
         </div>
         <p className="text-gray-600 dark:text-gray-400">{t('debt.subtitle')}</p>
       </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
 
       {/* Input Form */}
       <div className="card p-6 md:p-8 mb-8">
@@ -367,6 +371,7 @@ export default function Debt() {
           <p className="text-gray-500 dark:text-gray-400">{t('debt.noData')}</p>
         </div>
       )}
+      </div>
     </div>
   );
 }

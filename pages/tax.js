@@ -141,23 +141,27 @@ export default function TaxCalculator() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 md:px-8 lg:ml-64 pb-24 md:pb-8">
+    <div className="min-h-screen bg-white dark:bg-gray-900 pb-24 lg:ml-64 md:pb-0">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={toggleSidebar}
-            className="hidden md:block lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            aria-label="Toggle sidebar"
-          >
-            <Menu size={24} className="text-gray-600 dark:text-gray-400" />
-          </button>
-          <Receipt size={36} className="text-brand-primary" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('tax.title')}</h1>
-          <div className="hidden md:block w-10" />
+      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <button
+              onClick={toggleSidebar}
+              className="max-md:hidden lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              aria-label="Toggle sidebar"
+            >
+              <Menu size={24} className="text-gray-600 dark:text-gray-400" />
+            </button>
+            <Receipt size={36} className="text-brand-primary" />
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">{t('tax.title')}</h1>
+          </div>
         </div>
         <p className="text-gray-600 dark:text-gray-400">{t('tax.subtitle')}</p>
       </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
 
       {/* Warning for estimated 2026 brackets */}
       {isEstimatedYear() && (
@@ -256,8 +260,8 @@ export default function TaxCalculator() {
           {t('tax.reset')}
         </button>
       </div>
-
-      {/* Results Section */}
+    </div>
+  );
       {result && (
         <>
           {/* Metric Cards */}
@@ -388,6 +392,8 @@ export default function TaxCalculator() {
           <p className="text-gray-500 dark:text-gray-400">{t('tax.noData')}</p>
         </div>
       )}
+      </div>
     </div>
+  );
   );
 }
