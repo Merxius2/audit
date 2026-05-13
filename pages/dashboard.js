@@ -663,46 +663,44 @@ function PersonSection({
         </div>
       </div>
 
-      {/* Summary */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="card p-3 sm:p-4 md:p-6">
-          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalIncome')}</p>
-          <p className="font-mono text-2xl font-bold text-brand-primary mt-2">{getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US')}</p>
-        </div>
-        <div className="card p-3 sm:p-4 md:p-6">
-          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalExpenses')}</p>
-          <p className="font-mono text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{getSymbol()}{Math.floor(totalExpenses).toLocaleString('en-US')}</p>
-        </div>
-        <div className="card p-3 sm:p-4 md:p-6">
-          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.balance')}</p>
-          <p className={`font-mono text-2xl font-bold mt-2 ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-            {getSymbol()}{Math.floor(balance).toLocaleString('en-US')}
-          </p>
+      {/* Summary and Contribution Breakdown Combined */}
+      <div className="card p-6 border-l-4 border-brand-primary">
+        <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t('dashboard.summary')}</h4>
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-700 dark:text-gray-300">{t('dashboard.totalIncome')}</span>
+            <span className="font-mono font-bold text-brand-primary">{getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US')}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-700 dark:text-gray-300">{t('dashboard.totalExpenses')}</span>
+            <span className="font-mono font-bold text-red-600 dark:text-red-400">-{getSymbol()}{Math.floor(totalExpenses).toLocaleString('en-US')}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-700 dark:text-gray-300">{t('dashboard.savingsAmount')}</span>
+            <span className="font-mono font-bold text-gray-900 dark:text-gray-100">-{getSymbol()}{Math.floor(savingsNum).toLocaleString('en-US')}</span>
+          </div>
+          <div className="border-t border-gray-300 dark:border-gray-600 pt-2 mt-2 flex justify-between items-center text-sm font-medium">
+            <span className="text-gray-700 dark:text-gray-300">{t('dashboard.balance')}</span>
+            <span className={`font-mono ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{getSymbol()}{Math.floor(balance).toLocaleString('en-US')}</span>
+          </div>
+
+          {/* Contribution to Shared Account (shown in separate mode) */}
+          {showContribution && (
+            <>
+              <div className="border-t border-gray-300 dark:border-gray-600 pt-2 mt-2 flex justify-between items-center">
+                <span className="text-gray-700 dark:text-gray-300">{t('dashboard.contribution')}</span>
+                <span className="font-mono font-bold text-gray-900 dark:text-gray-100">-{getSymbol()}{Math.floor(contribution).toLocaleString('en-US')}</span>
+              </div>
+              <div className="border-t border-gray-300 dark:border-gray-600 pt-2 mt-2 flex justify-between items-center">
+                <span className="font-medium text-gray-900 dark:text-gray-100">{t('dashboard.personalBalance')}</span>
+                <span className={`font-mono text-lg font-bold ${(balance - contribution) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {getSymbol()}{Math.floor(balance - contribution).toLocaleString('en-US')}
+                </span>
+              </div>
+            </>
+          )}
         </div>
       </div>
-
-      {/* Contribution to Shared Account (shown in separate mode) */}
-      {showContribution && (
-        <div className="card p-6 border-l-4 border-brand-primary">
-          <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.contribution')}</p>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700 dark:text-gray-300">Income - Personal Expenses - Savings</span>
-              <span className="font-mono font-bold text-gray-900 dark:text-gray-100">{getSymbol()}{Math.floor(balance).toLocaleString('en-US')}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700 dark:text-gray-300">Contribution to Shared Account</span>
-              <span className="font-mono font-bold text-gray-900 dark:text-gray-100">-{getSymbol()}{Math.floor(contribution).toLocaleString('en-US')}</span>
-            </div>
-            <div className="border-t border-gray-300 dark:border-gray-600 pt-2 mt-2 flex justify-between items-center">
-              <span className="font-medium text-gray-900 dark:text-gray-100">{t('dashboard.personalBalance')}</span>
-              <span className={`font-mono text-lg font-bold ${(balance - contribution) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                {getSymbol()}{Math.floor(balance - contribution).toLocaleString('en-US')}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
