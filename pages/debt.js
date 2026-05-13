@@ -322,6 +322,7 @@ export default function Debt() {
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" stroke="#6b7280" />
+              <YAxis dataKey="name" type="category" stroke="#6b7280" tick={false} width={0} />
               <Tooltip
                 formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
                 contentStyle={{
