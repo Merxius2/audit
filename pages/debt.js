@@ -147,6 +147,27 @@ export default function Debt() {
     setDurationMonths('');
   };
 
+  // Custom tooltip for balance chart to show interest paid
+  const CustomBalanceTooltip = ({ active, payload }) => {
+    if (active && payload && payload[0]) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-lg">
+          <p className="text-sm text-gray-200">
+            {t('debt.month')}: {data.month}
+          </p>
+          <p className="text-sm text-blue-400">
+            {t('debt.remainingBalance')}: {getSymbol()}{Math.floor(data.balance).toLocaleString('en-US')}
+          </p>
+          <p className="text-sm text-red-400">
+            {t('debt.interest')} ({t('debt.month')}): {getSymbol()}{Math.floor(data.interest).toLocaleString('en-US')}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 md:px-8 lg:ml-64">
       {/* Header */}
@@ -321,15 +342,7 @@ export default function Debt() {
                 label={{ value: t('debt.remainingBalance'), angle: -90, position: 'insideLeft' }}
                 stroke="#6b7280"
               />
-              <Tooltip 
-                formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
-                contentStyle={{
-                  backgroundColor: '#1f2937',
-                  border: 'none',
-                  borderRadius: '0.5rem',
-                  color: '#f3f4f6'
-                }}
-              />
+              <Tooltip content={<CustomBalanceTooltip />} />
               <Line 
                 type="monotone" 
                 dataKey="balance" 
