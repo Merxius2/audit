@@ -175,7 +175,6 @@ export default function RetirementProjection() {
             <TrendingUp size={36} className="text-brand-secondary" />
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('retirement.title')}</h1>
           </div>
-          <p className="text-gray-600 dark:text-gray-300">{t('retirement.subtitle')}</p>
         </div>
       </div>
 

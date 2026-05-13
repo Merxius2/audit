@@ -103,7 +103,6 @@ export default function SettingsPage() {
             <Settings size={36} className="text-brand-primary" />
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('settings.title')}</h1>
           </div>
-          <p className="text-gray-600">{t('settings.subtitle')}</p>
         </div>
       </div>
 

@@ -157,7 +157,6 @@ export default function TaxCalculator() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">{t('tax.title')}</h1>
           </div>
         </div>
-        <p className="text-gray-600 dark:text-gray-400">{t('tax.subtitle')}</p>
       </div>
 
       {/* Content */}
