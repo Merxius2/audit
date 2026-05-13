@@ -72,7 +72,7 @@ export default function Sidebar() {
       {/* Overlay for mobile/tablet when sidebar is open */}
       {!isLargeScreen && isSidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
           onClick={closeSidebar}
         />
       )}
@@ -105,7 +105,7 @@ export default function Sidebar() {
         {!isLargeScreen && (
           <button
             onClick={closeSidebar}
-            className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             aria-label="Close sidebar"
           >
             <X size={24} className="text-gray-600 dark:text-gray-400" />
