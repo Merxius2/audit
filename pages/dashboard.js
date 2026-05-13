@@ -239,39 +239,10 @@ export default function Dashboard() {
               {t('dashboard.mode.separate')}
             </button>
           </div>
-
-          {/* Person Names Editor (only show in separate mode) */}
-          {calculationType === 'separate' && (
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-100 mb-4">Edit Person Names</h4>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Person 1 Name</label>
-                  <input
-                    type="text"
-                    value={person1Name}
-                    onChange={(e) => setPerson1Name(e.target.value)}
-                    placeholder="Enter Person 1 name"
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 dark:bg-gray-800 dark:border-gray-600"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Person 2 Name</label>
-                  <input
-                    type="text"
-                    value={person2Name}
-                    onChange={(e) => setPerson2Name(e.target.value)}
-                    placeholder="Enter Person 2 name"
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 dark:bg-gray-800 dark:border-gray-600"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Shared Mode Content */}
+      {/* Shared Mode Content */}}
       {calculationType === 'shared' && (
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Income Sources Card */}
@@ -690,7 +661,7 @@ function PersonSection({
           <p className="font-mono text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{getSymbol()}{Math.floor(totalExpenses).toLocaleString('en-US')}</p>
         </div>
         <div className="card p-4">
-          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{personLabel} Balance</p>
+          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.balance')}</p>
           <p className={`font-mono text-2xl font-bold mt-2 ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
             {getSymbol()}{Math.floor(balance).toLocaleString('en-US')}
           </p>
@@ -752,7 +723,12 @@ function SeparateModeContent({
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
         {/* Person 1 Section */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{person1Name}</h2>
+          <input
+            type="text"
+            value={person1Name}
+            onChange={(e) => setPerson1Name(e.target.value)}
+            className="w-full text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-brand-primary focus:outline-none px-0 py-2 transition-colors"
+          />
           <PersonSection
             personLabel={person1Name}
             incomes={person1Incomes}
@@ -770,7 +746,12 @@ function SeparateModeContent({
 
         {/* Person 2 Section */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{person2Name}</h2>
+          <input
+            type="text"
+            value={person2Name}
+            onChange={(e) => setPerson2Name(e.target.value)}
+            className="w-full text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-brand-primary focus:outline-none px-0 py-2 transition-colors"
+          />
           <PersonSection
             personLabel={person2Name}
             incomes={person2Incomes}
@@ -854,13 +835,13 @@ function SeparateModeContent({
             <p className="font-mono text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{getSymbol()}{Math.floor(sharedExpensesTotal).toLocaleString('en-US')}</p>
           </div>
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{person1Name} Balance</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.balance')}</p>
             <p className={`font-mono text-2xl font-bold mt-2 ${person1Balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
               {getSymbol()}{Math.floor(person1Balance).toLocaleString('en-US')}
             </p>
           </div>
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{person2Name} Balance</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.balance')}</p>
             <p className={`font-mono text-2xl font-bold mt-2 ${person2Balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
               {getSymbol()}{Math.floor(person2Balance).toLocaleString('en-US')}
             </p>
