@@ -83,11 +83,13 @@ export default function Debt() {
       const monthlyPayment = principal / months;
       const schedule = [];
       let balance = principal;
+      let cumulativeInterest = 0;
       
       for (let i = 1; i <= months; i++) {
         const interest = 0;
         const principalPayment = monthlyPayment;
         balance -= principalPayment;
+        cumulativeInterest += interest;
         
         schedule.push({
           month: i,
@@ -95,6 +97,7 @@ export default function Debt() {
           principal: principalPayment,
           interest: interest,
           balance: Math.max(balance, 0),
+          cumulativeInterest: cumulativeInterest,
         });
       }
       
@@ -125,6 +128,7 @@ export default function Debt() {
         principal: principalPayment,
         interest: interest,
         balance: Math.max(balance, 0),
+        cumulativeInterest: totalInterest,
       });
     }
 
@@ -147,7 +151,7 @@ export default function Debt() {
     setDurationMonths('');
   };
 
-  // Custom tooltip for balance chart to show interest paid
+  // Custom tooltip for balance chart to show total interest paid
   const CustomBalanceTooltip = ({ active, payload }) => {
     if (active && payload && payload[0]) {
       const data = payload[0].payload;
@@ -160,7 +164,7 @@ export default function Debt() {
             {t('debt.remainingBalance')}: {getSymbol()}{Math.floor(data.balance).toLocaleString('en-US')}
           </p>
           <p className="text-sm text-red-400">
-            {t('debt.interest')} ({t('debt.month')}): {getSymbol()}{Math.floor(data.interest).toLocaleString('en-US')}
+            {t('debt.interest')} ({t('debt.title')}): {getSymbol()}{Math.floor(data.cumulativeInterest).toLocaleString('en-US')}
           </p>
         </div>
       );
