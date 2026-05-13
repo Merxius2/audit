@@ -147,13 +147,13 @@ export default function TaxCalculator() {
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={toggleSidebar}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="hidden md:block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             aria-label="Toggle sidebar"
           >
             <Menu size={24} className="text-gray-600 dark:text-gray-400" />
           </button>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('tax.title')}</h1>
-          <div className="w-10" />
+          <div className="hidden md:block w-10" />
         </div>
         <p className="text-gray-600 dark:text-gray-400">{t('tax.subtitle')}</p>
       </div>
