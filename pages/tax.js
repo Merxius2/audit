@@ -1,10 +1,10 @@
 /**
  * Tax Calculator Page - Netherlands Income Tax Calculation
  * Calculate net from gross, gross from net, with detailed tax breakdown
+ * Note: Income input is monthly; calculations are done on yearly basis and converted back to monthly
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -69,19 +69,22 @@ export default function TaxCalculator() {
 
   // Calculate taxes
   const calculateResults = () => {
-    const income = parseFloat(incomeInput) || 0;
-    if (income <= 0) {
+    const monthlyIncome = parseFloat(incomeInput) || 0;
+    if (monthlyIncome <= 0) {
       return null;
     }
+
+    // Convert monthly to yearly for calculation
+    const yearlyIncome = monthlyIncome * 12;
 
     const taxCredit = getTaxCredit();
     const socialSecurityRate = getSocialSecurityRate();
 
     let result;
     if (calculationMode === 'gross-to-net') {
-      result = calculateTaxBreakdown(income, taxBrackets, taxCredit, socialSecurityRate);
+      result = calculateTaxBreakdown(yearlyIncome, taxBrackets, taxCredit, socialSecurityRate);
     } else {
-      result = calculateGrossFromNet(income, taxBrackets, taxCredit, socialSecurityRate);
+      result = calculateGrossFromNet(yearlyIncome, taxBrackets, taxCredit, socialSecurityRate);
     }
 
     // Apply expat discount if enabled
@@ -93,20 +96,27 @@ export default function TaxCalculator() {
       result.originalGrossIncome = result.grossIncome / 0.7;
     }
 
-    return result;
+    // Convert yearly results back to monthly
+    return {
+      ...result,
+      grossIncome: result.grossIncome / 12,
+      incomeTax: result.incomeTax / 12,
+      socialSecurity: result.socialSecurity / 12,
+      totalTax: result.totalTax / 12,
+      netIncome: result.netIncome / 12,
+      taxCredit: result.taxCredit / 12,
+      expatDiscountAmount: result.expatDiscountAmount ? result.expatDiscountAmount / 12 : undefined,
+      originalGrossIncome: result.originalGrossIncome ? result.originalGrossIncome / 12 : undefined,
+      bracketsBreakdown: result.bracketsBreakdown.map(b => ({
+        ...b,
+        incomeInBracket: b.incomeInBracket / 12,
+        taxInBracket: b.taxInBracket / 12,
+        cumulativeTax: b.cumulativeTax / 12,
+      })),
+    };
   };
 
   const result = calculateResults();
-
-  // Format chart data
-  const chartData = result ? [
-    {
-      name: 'Breakdown',
-      income: result.grossIncome,
-      incomeTax: result.incomeTax,
-      socialSecurity: result.socialSecurity,
-    },
-  ] : [];
 
   const handleReset = () => {
     setIncomeInput('');
@@ -192,7 +202,7 @@ export default function TaxCalculator() {
           {/* Income Input */}
           <div>
             <label htmlFor="income" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {calculationMode === 'gross-to-net' ? t('tax.grossIncome') : t('tax.netIncome')}
+              {calculationMode === 'gross-to-net' ? t('tax.grossIncome') : t('tax.netIncome')} (Monthly)
             </label>
             <input
               id="income"
@@ -259,48 +269,6 @@ export default function TaxCalculator() {
               <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">
                 {getSymbol()}{Math.floor(result.netIncome).toLocaleString('en-US')}
               </p>
-            </div>
-          </div>
-
-          {/* Tax Breakdown Chart */}
-          <div className="card p-6 md:p-8 mb-8">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('tax.taxBreakdown')}</h2>
-            <ResponsiveContainer width="100%" height={isMobile ? 200 : 280}>
-              <BarChart
-                data={chartData}
-                layout="vertical"
-                margin={isMobile ? { top: 10, right: 10, left: 20, bottom: 10 } : { top: 15, right: 20, left: 20, bottom: 10 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis type="number" stroke="#6b7280" />
-                <YAxis dataKey="name" type="category" stroke="#6b7280" tick={false} width={0} />
-                <Tooltip
-                  formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
-                  contentStyle={{
-                    backgroundColor: '#1f2937',
-                    border: 'none',
-                    borderRadius: '0.5rem',
-                    color: '#f3f4f6',
-                  }}
-                />
-                <Bar dataKey="incomeTax" stackId="a" fill="#ef4444" name={t('tax.incomeTax')} />
-                <Bar dataKey="socialSecurity" stackId="a" fill="#f59e0b" name={t('tax.socialSecurity')} />
-              </BarChart>
-            </ResponsiveContainer>
-
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded bg-red-500" />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  {t('tax.incomeTax')}: {getSymbol()}{Math.floor(result.incomeTax).toLocaleString('en-US')}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded bg-amber-500" />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  {t('tax.socialSecurity')}: {getSymbol()}{Math.floor(result.socialSecurity).toLocaleString('en-US')}
-                </span>
-              </div>
             </div>
           </div>
 
