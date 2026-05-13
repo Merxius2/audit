@@ -27,19 +27,48 @@ const TAX_BRACKETS = {
   ],
 };
 
-// General tax credit (Algemene Heffingskorting) - annual values
+// General tax credit (Algemene Heffingskorting) - with phase-out brackets per year
 const GENERAL_TAX_CREDITS = {
-  2024: 2921,
-  2025: 2921,
-  2026: 2921,
+  2024: {
+    bracket1: { max: 27000, credit: 2921 },
+    bracket2: { start: 27001, end: 60000, baseCredit: 2921, phaseOutRate: 0.06 },
+    bracket3: { start: 60001, credit: 0 },
+  },
+  2025: {
+    bracket1: { max: 28406, credit: 3068 },
+    bracket2: { start: 28407, end: 76817, baseCredit: 3068, phaseOutRate: 0.06337 },
+    bracket3: { start: 76818, credit: 0 },
+  },
+  2026: {
+    bracket1: { max: 28406, credit: 3068 },
+    bracket2: { start: 28407, end: 76817, baseCredit: 3068, phaseOutRate: 0.06337 },
+    bracket3: { start: 76818, credit: 0 },
+  },
 };
 
-// Earned Income Credit (Arbeidskorting) - annual values
-// Decreasing credit system based on income level
+// Earned Income Credit (Arbeidskorting) - with detailed phase-out brackets per year
 const EARNED_INCOME_CREDITS = {
-  2024: { maxCredit: 5098, phaseOutStart: 30825, phaseOutRate: 0.0629 },
-  2025: { maxCredit: 5098, phaseOutStart: 30825, phaseOutRate: 0.0629 },
-  2026: { maxCredit: 5098, phaseOutStart: 30825, phaseOutRate: 0.0629 },
+  2024: [
+    { max: 11000, rate: 0.08 },
+    { min: 11001, max: 25000, base: 880, rate: 0.28 },
+    { min: 25001, max: 40000, base: 4760, rate: 0.025 },
+    { min: 40001, max: 130000, base: 5135, rate: -0.065 },
+    { min: 130001, credit: 0 },
+  ],
+  2025: [
+    { max: 12169, rate: 0.08053 },
+    { min: 12170, max: 26288, base: 980, rate: 0.30030 },
+    { min: 26289, max: 43071, base: 5220, rate: 0.02258 },
+    { min: 43072, max: 129078, base: 5599, rate: -0.06510 },
+    { min: 129079, credit: 0 },
+  ],
+  2026: [
+    { max: 12169, rate: 0.08053 },
+    { min: 12170, max: 26288, base: 980, rate: 0.30030 },
+    { min: 26289, max: 43071, base: 5220, rate: 0.02258 },
+    { min: 43072, max: 129078, base: 5599, rate: -0.06510 },
+    { min: 129079, credit: 0 },
+  ],
 };
 
 export function TaxProvider({ children }) {
