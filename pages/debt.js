@@ -318,11 +318,10 @@ export default function Debt() {
                 },
               ]}
               layout="vertical"
-              margin={isMobile ? { top: 10, right: 10, left: 50, bottom: 10 } : { top: 15, right: 20, left: 120, bottom: 10 }}
+              margin={isMobile ? { top: 10, right: 10, left: 20, bottom: 10 } : { top: 15, right: 20, left: 20, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" stroke="#6b7280" />
-              <YAxis dataKey="name" type="category" stroke="#6b7280" width={isMobile ? 45 : 110} />
               <Tooltip
                 formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
                 contentStyle={{
