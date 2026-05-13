@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -304,46 +304,51 @@ export default function Debt() {
         </div>
       )}
 
-      {/* Amortization Table */}
+      {/* Breakdown Chart */}
       {schedule.length > 0 && (
         <div className="card p-6 md:p-8">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('debt.amortizationSchedule')}</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b-2 border-gray-300 dark:border-gray-600">
-                  <th className="text-left py-3 px-2 font-semibold text-gray-700 dark:text-gray-200">{t('debt.month')}</th>
-                  <th className="text-right py-3 px-2 font-semibold text-gray-700 dark:text-gray-200">{t('debt.monthlyPayment')}</th>
-                  <th className="text-right py-3 px-2 font-semibold text-gray-700 dark:text-gray-200">{t('debt.principal')}</th>
-                  <th className="text-right py-3 px-2 font-semibold text-gray-700 dark:text-gray-200">{t('debt.interest')}</th>
-                  <th className="text-right py-3 px-2 font-semibold text-gray-700 dark:text-gray-200">{t('debt.remainingBalance')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {schedule.map((row, index) => (
-                  <tr 
-                    key={index} 
-                    className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800/50'
-                    }`}
-                  >
-                    <td className="py-3 px-2 text-gray-900 dark:text-gray-100">{row.month}</td>
-                    <td className="text-right py-3 px-2 font-mono text-gray-900 dark:text-gray-100">
-                      {getSymbol()}{Math.floor(row.payment).toLocaleString('en-US')}
-                    </td>
-                    <td className="text-right py-3 px-2 font-mono text-green-600 dark:text-green-400">
-                      {getSymbol()}{Math.floor(row.principal).toLocaleString('en-US')}
-                    </td>
-                    <td className="text-right py-3 px-2 font-mono text-red-600 dark:text-red-400">
-                      {getSymbol()}{Math.floor(row.interest).toLocaleString('en-US')}
-                    </td>
-                    <td className="text-right py-3 px-2 font-mono font-semibold text-gray-900 dark:text-gray-100">
-                      {getSymbol()}{Math.floor(row.balance).toLocaleString('en-US')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('debt.paymentBreakdown')}</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={[
+                {
+                  name: 'Payment Breakdown',
+                  principal: totalPayment - totalInterest,
+                  interest: totalInterest,
+                },
+              ]}
+              layout="vertical"
+              margin={{ top: 20, right: 30, left: 150, bottom: 20 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis type="number" stroke="#6b7280" />
+              <YAxis dataKey="name" type="category" stroke="#6b7280" width={140} />
+              <Tooltip
+                formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
+                contentStyle={{
+                  backgroundColor: '#1f2937',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  color: '#f3f4f6',
+                }}
+              />
+              <Bar dataKey="principal" stackId="a" fill="#10b981" name={t('debt.principal')} />
+              <Bar dataKey="interest" stackId="a" fill="#ef4444" name={t('debt.interest')} />
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded bg-green-500" />
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {t('debt.principal')}: {getSymbol()}{Math.floor(totalPayment - totalInterest).toLocaleString('en-US')}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded bg-red-500" />
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {t('debt.interest')}: {getSymbol()}{Math.floor(totalInterest).toLocaleString('en-US')}
+              </span>
+            </div>
           </div>
         </div>
       )}
