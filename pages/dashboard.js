@@ -824,7 +824,95 @@ function SeparateModeContent({
             </p>
           </div>
         </div>
+
+        {/* Pie Charts */}
+        <div className={`grid gap-6 mt-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
+          {/* Person 1 Pie Chart */}
+          <PieChartCard
+            title={t('dashboard.person1')}
+            data={[
+              { name: t('dashboard.totalExpenses'), value: person1PersonalExpenses },
+              { name: t('dashboard.savingsAmount'), value: person1SavingsNum },
+              { name: t('dashboard.remaining'), value: Math.max(person1Income - person1PersonalExpenses - person1SavingsNum - person1Contribution, 0) }
+            ]}
+            getSymbol={getSymbol}
+            isMobile={isMobile}
+          />
+
+          {/* Person 2 Pie Chart */}
+          <PieChartCard
+            title={t('dashboard.person2')}
+            data={[
+              { name: t('dashboard.totalExpenses'), value: person2PersonalExpenses },
+              { name: t('dashboard.savingsAmount'), value: person2SavingsNum },
+              { name: t('dashboard.remaining'), value: Math.max(person2Income - person2PersonalExpenses - person2SavingsNum - person2Contribution, 0) }
+            ]}
+            getSymbol={getSymbol}
+            isMobile={isMobile}
+          />
+
+          {/* Shared Account Pie Chart */}
+          <PieChartCard
+            title={t('dashboard.sharedAccount')}
+            data={[
+              { name: t('dashboard.person1Contribution'), value: person1Contribution },
+              { name: t('dashboard.person2Contribution'), value: person2Contribution }
+            ]}
+            getSymbol={getSymbol}
+            isMobile={isMobile}
+          />
+        </div>
       </div>
+    </div>
+  );
+}
+
+// Helper component for pie chart display
+function PieChartCard({ title, data, getSymbol, isMobile }) {
+  const totalValue = data.reduce((sum, item) => sum + item.value, 0);
+
+  return (
+    <div className="card p-6">
+      <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{title}</h4>
+      {totalValue > 0 ? (
+        <>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={data.filter(item => item.value > 0)}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                paddingAngle={2}
+                dataKey="value"
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="mt-4 space-y-2">
+            {data.map((entry, index) => {
+              const percentage = totalValue > 0 ? ((entry.value / totalValue) * 100).toFixed(1) : 0;
+              return (
+                <div key={`legend-${index}`} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                  <div className="w-3 h-3 rounded-full" style={{backgroundColor: CHART_COLORS[index % CHART_COLORS.length]}} />
+                  <span>{entry.name}: {getSymbol()}{Math.floor(entry.value).toLocaleString('en-US')} ({percentage}%)</span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div className="h-48 flex items-center justify-center text-gray-500">
+          <p className="text-center">No data to display</p>
+        </div>
+      )}
     </div>
   );
 }
