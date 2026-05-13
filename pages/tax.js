@@ -26,7 +26,7 @@ export default function TaxCalculator() {
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const { toggleSidebar } = useSidebar();
-  const { selectedYear, changeYear, taxBrackets, getTaxCredit, getSocialSecurityRate, isEstimatedYear } = useTax();
+  const { selectedYear, changeYear, taxBrackets, getGeneralTaxCredit, getEarnedIncomeCredit, isEstimatedYear } = useTax();
 
   // Detect mobile screen size
   useEffect(() => {
@@ -77,20 +77,20 @@ export default function TaxCalculator() {
     // Convert monthly to yearly for calculation
     const yearlyIncome = monthlyIncome * 12;
 
-    const taxCredit = getTaxCredit();
-    const socialSecurityRate = getSocialSecurityRate();
+    const generalTaxCredit = getGeneralTaxCredit();
+    const earnedIncomeCredit = getEarnedIncomeCredit();
 
     let result;
     if (calculationMode === 'gross-to-net') {
-      result = calculateTaxBreakdown(yearlyIncome, taxBrackets, taxCredit, socialSecurityRate);
+      result = calculateTaxBreakdown(yearlyIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
     } else {
-      result = calculateGrossFromNet(yearlyIncome, taxBrackets, taxCredit, socialSecurityRate);
+      result = calculateGrossFromNet(yearlyIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
     }
 
     // Apply expat discount if enabled
     if (isExpat) {
       const discountedGross = result.grossIncome * 0.7;
-      result = calculateTaxBreakdown(discountedGross, taxBrackets, taxCredit, socialSecurityRate);
+      result = calculateTaxBreakdown(discountedGross, taxBrackets, generalTaxCredit, earnedIncomeCredit);
       result.expatDiscountApplied = true;
       result.expatDiscountAmount = result.grossIncome * 0.4286; // 30% of original
       result.originalGrossIncome = result.grossIncome / 0.7;
@@ -101,10 +101,11 @@ export default function TaxCalculator() {
       ...result,
       grossIncome: result.grossIncome / 12,
       incomeTax: result.incomeTax / 12,
-      socialSecurity: result.socialSecurity / 12,
+      generalTaxCredit: result.generalTaxCredit / 12,
+      earnedIncomeCreditAmount: result.earnedIncomeCreditAmount / 12,
+      totalCredits: result.totalCredits / 12,
       totalTax: result.totalTax / 12,
       netIncome: result.netIncome / 12,
-      taxCredit: result.taxCredit / 12,
       expatDiscountAmount: result.expatDiscountAmount ? result.expatDiscountAmount / 12 : undefined,
       originalGrossIncome: result.originalGrossIncome ? result.originalGrossIncome / 12 : undefined,
       bracketsBreakdown: result.bracketsBreakdown.map(b => ({
@@ -293,7 +294,7 @@ export default function TaxCalculator() {
                         {getSymbol()}
                         {Math.floor(bracket.min / 12).toLocaleString('en-US')} - {bracket.max === Infinity ? '∞' : `${getSymbol()}${Math.floor(bracket.max / 12).toLocaleString('en-US')}`}
                       </td>
-                      <td className="text-right px-4 py-2 text-gray-900 dark:text-gray-100">{bracket.label}</td>
+                      <td className="text-right px-4 py-2 text-gray-900 dark:text-gray-100 text-xs">{bracket.label}<br /><span className="text-gray-500 text-xs">(incl. verzek.)</span></td>
                       <td className="text-right px-4 py-2 text-gray-900 dark:text-gray-100">
                         {getSymbol()}
                         {Math.floor(bracket.incomeInBracket).toLocaleString('en-US')}
@@ -304,41 +305,39 @@ export default function TaxCalculator() {
                       </td>
                     </tr>
                   ))}
-                  {/* Tax Credit Row */}
-                  <tr className="border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
-                    <td colSpan="3" className="px-4 py-2 text-gray-900 dark:text-gray-100 font-medium">
-                      {t('tax.taxCredit')}
-                    </td>
-                    <td className="text-right px-4 py-2 text-green-600 dark:text-green-400 font-medium">
-                      -{getSymbol()}
-                      {Math.floor(result.taxCredit).toLocaleString('en-US')}
-                    </td>
-                  </tr>
-                  {/* Subtotal Income Tax */}
+                  {/* Subtotal Before Credits */}
                   <tr className="border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
                     <td colSpan="3" className="px-4 py-2 text-gray-900 dark:text-gray-100 font-bold">
-                      {t('tax.incomeTaxAfterCredit')}
+                      {t('tax.subtotalBeforeCredits')}
                     </td>
                     <td className="text-right px-4 py-2 text-red-600 dark:text-red-400 font-bold">
                       {getSymbol()}
-                      {Math.floor(result.incomeTax).toLocaleString('en-US')}
+                      {Math.floor(result.bracketsBreakdown.reduce((sum, b) => sum + b.taxInBracket, 0)).toLocaleString('en-US')}
                     </td>
                   </tr>
-                  {/* Social Security Row */}
+                  {/* General Tax Credit Row */}
                   <tr className="border-b border-gray-100 dark:border-gray-700">
                     <td colSpan="3" className="px-4 py-2 text-gray-900 dark:text-gray-100">
-                      {t('tax.socialSecurity')}
+                      {t('tax.generalTaxCredit')}
                     </td>
-                    <td className="text-right px-4 py-2 text-amber-600 dark:text-amber-400 font-medium">
-                      {getSymbol()}
-                      {Math.floor(result.socialSecurity).toLocaleString('en-US')}
+                    <td className="text-right px-4 py-2 text-green-600 dark:text-green-400 font-medium">
+                      -{getSymbol()}
+                      {Math.floor(result.generalTaxCredit).toLocaleString('en-US')}
                     </td>
                   </tr>
-                  {/* Total Row */}
-                  <tr className="bg-blue-50 dark:bg-blue-900/20 font-bold">
+                  {/* Earned Income Credit Row */}
+                  <tr className="border-b border-gray-100 dark:border-gray-700">
                     <td colSpan="3" className="px-4 py-2 text-gray-900 dark:text-gray-100">
-                      {t('tax.totalTax')}
+                      {t('tax.earnedIncomeCredit')}
                     </td>
+                    <td className="text-right px-4 py-2 text-green-600 dark:text-green-400 font-medium">
+                      -{getSymbol()}
+                      {Math.floor(result.earnedIncomeCreditAmount).toLocaleString('en-US')}
+                    </td>
+                  </tr>
+                  {/* Total Tax */}
+                  <tr className="bg-blue-50 dark:bg-blue-900/20 font-bold">
+                    <td colSpan="3" className="px-4 py-2 text-gray-900 dark:text-gray-100">{t('tax.totalTax')}</td>
                     <td className="text-right px-4 py-2 text-blue-600 dark:text-blue-400">
                       {getSymbol()}
                       {Math.floor(result.totalTax).toLocaleString('en-US')}

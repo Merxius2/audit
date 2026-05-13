@@ -5,40 +5,41 @@ const TaxContext = createContext();
 
 // Netherlands Tax Brackets for different years
 // Source: Belastingdienst (Dutch Tax Authority)
+// IMPORTANT: Rates include both income tax AND mandatory social security contributions (premies volksverzekeringen)
 const TAX_BRACKETS = {
   2024: [
-    { min: 0, max: 22000, rate: 0.0965, label: '9.65%' },
-    { min: 22001, max: 69398, rate: 0.3735, label: '37.35%' },
-    { min: 69399, max: 187001, rate: 0.495, label: '49.50%' },
-    { min: 187002, max: Infinity, rate: 0.495, label: '49.50%' },
+    { min: 0, max: 69398, rate: 0.3735, label: '37.35%', description: 'Including social security' },
+    { min: 69399, max: 187001, rate: 0.495, label: '49.50%', description: 'Including social security' },
+    { min: 187002, max: Infinity, rate: 0.495, label: '49.50%', description: 'Including social security' },
   ],
   2025: [
-    { min: 0, max: 23200, rate: 0.0965, label: '9.65%' },
-    { min: 23201, max: 73508, rate: 0.3735, label: '37.35%' },
-    { min: 73509, max: 198266, rate: 0.495, label: '49.50%' },
-    { min: 198267, max: Infinity, rate: 0.495, label: '49.50%' },
+    { min: 0, max: 73508, rate: 0.3735, label: '37.35%', description: 'Including social security' },
+    { min: 73509, max: 198266, rate: 0.495, label: '49.50%', description: 'Including social security' },
+    { min: 198267, max: Infinity, rate: 0.495, label: '49.50%', description: 'Including social security' },
   ],
   2026: [
     // NOTE: 2026 brackets are estimated based on inflation indexing
     // These are NOT YET SET by the Dutch government
     // Please verify and update when official rates are published
-    { min: 0, max: 24441, rate: 0.0965, label: '9.65%', isEstimated: true },
-    { min: 24442, max: 77885, rate: 0.3735, label: '37.35%', isEstimated: true },
-    { min: 77886, max: 211134, rate: 0.495, label: '49.50%', isEstimated: true },
-    { min: 211135, max: Infinity, rate: 0.495, label: '49.50%', isEstimated: true },
+    { min: 0, max: 77885, rate: 0.3735, label: '37.35%', description: 'Including social security', isEstimated: true },
+    { min: 77886, max: 211134, rate: 0.495, label: '49.50%', description: 'Including social security', isEstimated: true },
+    { min: 211135, max: Infinity, rate: 0.495, label: '49.50%', description: 'Including social security', isEstimated: true },
   ],
 };
 
-// Netherlands social security contributions (approximate)
-const SOCIAL_SECURITY_RATES = {
-  employee: 0.31, // Approximately 31% for employee contributions
+// General tax credit (Algemene Heffingskorting) - annual values
+const GENERAL_TAX_CREDITS = {
+  2024: 2921,
+  2025: 2921,
+  2026: 2921,
 };
 
-// General tax credit (approximate annual value)
-const TAX_CREDITS = {
-  2024: 3000,
-  2025: 3000,
-  2026: 3000,
+// Earned Income Credit (Arbeidskorting) - annual values
+// Decreasing credit system based on income level
+const EARNED_INCOME_CREDITS = {
+  2024: { maxCredit: 5098, phaseOutStart: 30825, phaseOutRate: 0.0629 },
+  2025: { maxCredit: 5098, phaseOutStart: 30825, phaseOutRate: 0.0629 },
+  2026: { maxCredit: 5098, phaseOutStart: 30825, phaseOutRate: 0.0629 },
 };
 
 export function TaxProvider({ children }) {
@@ -84,12 +85,12 @@ export function TaxProvider({ children }) {
     }
   };
 
-  const getTaxCredit = () => {
-    return TAX_CREDITS[selectedYear] || TAX_CREDITS[2025];
+  const getGeneralTaxCredit = () => {
+    return GENERAL_TAX_CREDITS[selectedYear] || GENERAL_TAX_CREDITS[2025];
   };
 
-  const getSocialSecurityRate = () => {
-    return SOCIAL_SECURITY_RATES.employee;
+  const getEarnedIncomeCredit = () => {
+    return EARNED_INCOME_CREDITS[selectedYear] || EARNED_INCOME_CREDITS[2025];
   };
 
   const isEstimatedYear = () => {
@@ -104,8 +105,8 @@ export function TaxProvider({ children }) {
       changeFilingStatus,
       taxBrackets,
       updateTaxBrackets,
-      getTaxCredit,
-      getSocialSecurityRate,
+      getGeneralTaxCredit,
+      getEarnedIncomeCredit,
       isEstimatedYear,
       TAX_BRACKETS,
       isLoading,
