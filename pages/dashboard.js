@@ -242,7 +242,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Shared Mode Content */}}
+      {/* Shared Mode Content */}
       {calculationType === 'shared' && (
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Income Sources Card */}
