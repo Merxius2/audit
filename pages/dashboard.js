@@ -584,9 +584,7 @@ function PersonSection({
       {/* Income Card */}
       <div className="card-income p-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {isPersonOne ? t('dashboard.person1Income') : t('dashboard.person2Income')}
-          </h3>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Income</h3>
           <button
             onClick={addIncome}
             className="flex items-center gap-2 rounded-lg bg-brand-primary text-white px-4 py-2 font-medium hover:bg-brand-primary/90 transition-colors w-full sm:w-auto justify-center sm:justify-start"
@@ -658,9 +656,7 @@ function PersonSection({
 
       {/* Personal Expenses */}
       <div className="card-expenses p-8">
-        <h3 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">
-          {isPersonOne ? t('dashboard.person1Expenses') : t('dashboard.person2Expenses')}
-        </h3>
+        <h3 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">Expenses</h3>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
           {PERSONAL_EXPENSE_CATEGORIES.map((category) => {
             const IconComponent = CATEGORY_ICONS[category];
