@@ -167,7 +167,7 @@ export default function RetirementProjection() {
           <div className="flex items-center gap-3 mb-2">
             <button
               onClick={toggleSidebar}
-              className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="max-md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               aria-label="Toggle sidebar"
             >
               <Menu size={24} className="text-gray-600 dark:text-gray-400" />
