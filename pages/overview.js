@@ -103,10 +103,42 @@ export default function Overview() {
     const retirementData = loadFromCookie('retirement_data');
 
     if (dashboardData) {
-      const incomes = dashboardData.incomes || [];
-      const totalIncome = incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
-      const savingsAmount = parseFloat(dashboardData.savings) || 0;
-      const expenses = dashboardData.expenses || {};
+      let totalIncome = 0;
+      let savingsAmount = 0;
+      let expenses = {};
+
+      // Check if using separate mode
+      if (dashboardData.calculationType === 'separate') {
+        // Combine data from both persons
+        const person1Incomes = dashboardData.person1Incomes || [];
+        const person2Incomes = dashboardData.person2Incomes || [];
+        const allIncomes = [...person1Incomes, ...person2Incomes];
+        
+        totalIncome = allIncomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
+        
+        const person1Savings = parseFloat(dashboardData.person1Savings) || 0;
+        const person2Savings = parseFloat(dashboardData.person2Savings) || 0;
+        savingsAmount = person1Savings + person2Savings;
+        
+        // Combine personal expenses from both persons
+        const person1Expenses = dashboardData.person1Expenses || {};
+        const person2Expenses = dashboardData.person2Expenses || {};
+        const sharedExpenses = dashboardData.sharedExpenses || {};
+        
+        // Merge all expenses
+        EXPENSE_CATEGORIES.forEach(cat => {
+          const p1 = parseFloat(person1Expenses[cat]) || 0;
+          const p2 = parseFloat(person2Expenses[cat]) || 0;
+          const shared = parseFloat(sharedExpenses[cat]) || 0;
+          expenses[cat] = p1 + p2 + shared;
+        });
+      } else {
+        // Shared mode - use original structure
+        const incomes = dashboardData.incomes || [];
+        totalIncome = incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
+        savingsAmount = parseFloat(dashboardData.savings) || 0;
+        expenses = dashboardData.expenses || {};
+      }
 
       const totalExpenses = Object.values(expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
 
