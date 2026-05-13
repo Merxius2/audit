@@ -826,30 +826,6 @@ function SeparateModeContent({
           </div>
         </div>
 
-        {/* Shared Account Summary */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalIncome')}</p>
-            <p className="font-mono text-2xl font-bold text-brand-primary mt-2">{getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US')}</p>
-          </div>
-          <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalExpenses')}</p>
-            <p className="font-mono text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{getSymbol()}{Math.floor(sharedExpensesTotal).toLocaleString('en-US')}</p>
-          </div>
-          <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.balance')}</p>
-            <p className={`font-mono text-2xl font-bold mt-2 ${person1Balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-              {getSymbol()}{Math.floor(person1Balance).toLocaleString('en-US')}
-            </p>
-          </div>
-          <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.balance')}</p>
-            <p className={`font-mono text-2xl font-bold mt-2 ${person2Balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-              {getSymbol()}{Math.floor(person2Balance).toLocaleString('en-US')}
-            </p>
-          </div>
-        </div>
-
         {/* Pie Charts */}
         <div className={`grid gap-6 mt-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
           {/* Person 1 Pie Chart */}
@@ -857,6 +833,7 @@ function SeparateModeContent({
             title={person1Name}
             data={[
               { name: t('dashboard.totalExpenses'), value: person1PersonalExpenses },
+              { name: t('dashboard.contribution'), value: person1Contribution },
               { name: t('dashboard.savingsAmount'), value: person1SavingsNum },
               { name: t('dashboard.remaining'), value: Math.max(person1Income - person1PersonalExpenses - person1SavingsNum - person1Contribution, 0) }
             ]}
@@ -869,6 +846,7 @@ function SeparateModeContent({
             title={person2Name}
             data={[
               { name: t('dashboard.totalExpenses'), value: person2PersonalExpenses },
+              { name: t('dashboard.contribution'), value: person2Contribution },
               { name: t('dashboard.savingsAmount'), value: person2SavingsNum },
               { name: t('dashboard.remaining'), value: Math.max(person2Income - person2PersonalExpenses - person2SavingsNum - person2Contribution, 0) }
             ]}
