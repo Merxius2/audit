@@ -203,7 +203,7 @@ export default function Dashboard() {
 
           {incomes.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              <p className="text-sm">No income sources yet. Click "Add Income" to get started.</p>
+              <p className="text-sm">{t('dashboard.noIncomeSources')}</p>
             </div>
           )}
         </div>
