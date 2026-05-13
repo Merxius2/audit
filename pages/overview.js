@@ -78,9 +78,11 @@ export default function Overview() {
 
       let retirementBreakdown = { contributions: 0, gains: 0 };
       let monthlyInvest = 0;
+      let finalProjection = null;
+      
       if (retirementData) {
         const isBackward = retirementData.calculationType === 'backward';
-        const projection = isBackward
+        const projectionArray = isBackward
           ? generateBackwardProjection(
               retirementData.currentAge || '30',
               retirementData.retirementAge || '65',
@@ -93,10 +95,15 @@ export default function Overview() {
               retirementData.monthlyInvestment || '1000',
               retirementData.annualReturn || '7'
             );
-        retirementBreakdown = {
-          contributions: projection.contributions,
-          gains: projection.gains,
-        };
+        
+        // Extract final breakdown from projection array
+        finalProjection = projectionArray[projectionArray.length - 1];
+        if (finalProjection) {
+          retirementBreakdown = {
+            contributions: finalProjection.contributions,
+            gains: finalProjection.gains,
+          };
+        }
         
         // Calculate monthly investment
         if (isBackward) {
@@ -122,7 +129,7 @@ export default function Overview() {
         savingsAmount,
         includeSavingsInCalculations: dashboardData.includeSavingsInCalculations !== false,
         expenses,
-        retirementProjection: retirementData?.finalBalance || 0,
+        retirementProjection: finalProjection?.balance || 0,
         retirementBreakdown,
         monthlyInvestment: monthlyInvest,
       });
