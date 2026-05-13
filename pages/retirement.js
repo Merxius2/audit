@@ -5,11 +5,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Menu } from 'lucide-react';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
+import { useSidebar } from '../context/SidebarContext';
 
 export default function RetirementProjection() {
   const [calculationType, setCalculationType] = useState('forward'); // 'forward' or 'backward'
@@ -27,6 +28,7 @@ export default function RetirementProjection() {
   const saveCookieTimeout = useRef(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
+  const { toggleSidebar } = useSidebar();
   const { isDarkMode } = useDarkMode();
 
   // Load data from cookies on mount
@@ -154,15 +156,22 @@ export default function RetirementProjection() {
   })();
 
   if (isLoading) {
-    return <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0" />;
+    return <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0" />;
   }
 
   return (
-    <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0">
+    <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
+            <button
+              onClick={toggleSidebar}
+              className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              aria-label="Toggle sidebar"
+            >
+              <Menu size={24} className="text-gray-600 dark:text-gray-400" />
+            </button>
             <TrendingUp size={36} className="text-brand-secondary" />
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('retirement.title')}</h1>
           </div>

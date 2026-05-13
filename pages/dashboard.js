@@ -4,11 +4,12 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3, Tv, Receipt } from 'lucide-react';
+import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3, Tv, Receipt, Menu } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useSidebar } from '../context/SidebarContext';
 
 const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
 const SHARED_EXPENSE_CATEGORIES = ['House', 'Food', 'Utilities', 'Insurance', 'Other', 'Subscriptions', 'Taxes', 'InternetTV', 'Car'];
@@ -38,6 +39,7 @@ export default function Dashboard() {
   const saveCookieTimeout = useRef(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
+  const { toggleSidebar } = useSidebar();
 
   // Shared mode state (current mode)
   const [incomes, setIncomes] = useState([]);
@@ -200,15 +202,22 @@ export default function Dashboard() {
   };
 
   if (isLoading) {
-    return <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0" />;
+    return <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0" />;
   }
 
   return (
-    <div className="min-h-screen bg-white pb-32 md:ml-64 md:pb-0">
+    <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0">
       {/* Header with Age Bracket Badge */}
       <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
+            <button
+              onClick={toggleSidebar}
+              className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              aria-label="Toggle sidebar"
+            >
+              <Menu size={24} className="text-gray-600 dark:text-gray-400" />
+            </button>
             <BarChart3 size={36} className="text-brand-primary" />
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('dashboard.title')}</h1>
           </div>

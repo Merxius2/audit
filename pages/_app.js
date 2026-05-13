@@ -9,6 +9,7 @@ import { LanguageProvider } from '../context/LanguageContext';
 import { CurrencyProvider } from '../context/CurrencyContext';
 import { DarkModeProvider } from '../context/DarkModeContext';
 import { SecretSettingsProvider } from '../context/SecretSettingsContext';
+import { SidebarProvider } from '../context/SidebarContext';
 import Sidebar from '../components/Sidebar';
 import MobileNav from '../components/MobileNav';
 import SecretSettingsModal from '../components/SecretSettingsModal';
@@ -74,10 +75,12 @@ function MyApp({ Component, pageProps }) {
       <LanguageProvider>
         <CurrencyProvider>
           <FinancialProvider>
-            <SecretSettingsProvider>
-              <SecretSettingsModal />
-              <AppContent Component={Component} pageProps={pageProps} />
-            </SecretSettingsProvider>
+            <SidebarProvider>
+              <SecretSettingsProvider>
+                <SecretSettingsModal />
+                <AppContent Component={Component} pageProps={pageProps} />
+              </SecretSettingsProvider>
+            </SidebarProvider>
           </FinancialProvider>
         </CurrencyProvider>
       </LanguageProvider>

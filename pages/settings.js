@@ -4,13 +4,14 @@
  */
 
 import { useState } from 'react';
-import { Settings, Trash2, Globe, DollarSign, Moon, Sun } from 'lucide-react';
+import { Settings, Trash2, Globe, DollarSign, Moon, Sun, Menu } from 'lucide-react';
 import { deleteCookie } from '../lib/cookieStorage';
 import { useRouter } from 'next/router';
 import { useLanguage } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useSecretSettings } from '../context/SecretSettingsContext';
+import { useSidebar } from '../context/SidebarContext';
 import Image from 'next/image';
 
 const LANGUAGES = [
@@ -44,6 +45,7 @@ export default function SettingsPage() {
   const { currency, changeCurrency } = useCurrency();
   const { isDarkMode, toggleDarkMode, isAutoMode, toggleAutoMode } = useDarkMode();
   const { openSecretSettings } = useSecretSettings();
+  const { toggleSidebar } = useSidebar();
 
   const handleResetData = () => {
     setShowConfirmation(true);
@@ -84,11 +86,18 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-40 md:ml-64 md:pb-0">
+    <div className="min-h-screen bg-white pb-40 lg:ml-64 md:pb-0">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
+            <button
+              onClick={toggleSidebar}
+              className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              aria-label="Toggle sidebar"
+            >
+              <Menu size={24} className="text-gray-600 dark:text-gray-400" />
+            </button>
             <Settings size={36} className="text-brand-primary" />
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('settings.title')}</h1>
           </div>

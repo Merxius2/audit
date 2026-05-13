@@ -6,19 +6,32 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { BarChart3, TrendingUp, Eye, Settings } from 'lucide-react';
+import { BarChart3, TrendingUp, Eye, Settings, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSecretSettings } from '../context/SecretSettingsContext';
+import { useSidebar } from '../context/SidebarContext';
 import { useState, useRef, useEffect } from 'react';
 
 export default function Sidebar() {
   const router = useRouter();
   const { t, language } = useLanguage();
   const { openSecretSettings } = useSecretSettings();
+  const { isSidebarOpen, toggleSidebar, closeSidebar, isLargeScreen } = useSidebar();
   const [clickCount, setClickCount] = useState(0);
   const clickTimeout = useRef(null);
 
   const isActive = (path) => router.pathname === path;
+
+  // Close sidebar when navigating to a new page on mobile/tablet
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (!isLargeScreen) {
+        closeSidebar();
+      }
+    };
+    router.events.on('routeChangeStart', handleRouteChange);
+    return () => router.events.off('routeChangeStart', handleRouteChange);
+  }, [router.events, isLargeScreen, closeSidebar]);
 
   const handleLogoClick = () => {
     setClickCount(prev => prev + 1);
@@ -55,10 +68,24 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="hidden md:fixed md:left-0 md:top-0 md:flex md:h-screen md:w-64 md:flex-col md:border-r md:border-gray-200 md:bg-white md:p-6 md:shadow-soft dark:border-gray-800 dark:bg-gray-900">
+    <>
+      {/* Overlay for mobile/tablet when sidebar is open */}
+      {!isLargeScreen && isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`fixed left-0 top-0 flex h-screen w-64 flex-col border-r border-gray-200 bg-white p-6 shadow-soft transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 ${
+          isLargeScreen ? 'translate-x-0 md:flex' : isSidebarOpen ? 'translate-x-0 z-40' : '-translate-x-full'
+        } hidden md:flex`}
+      >
       {/* Logo */}
-      <div className="mb-8">
-        <div className="flex flex-col items-center gap-3 mb-2">
+      <div className="mb-8 flex items-start justify-between">
+        <div className="flex flex-col items-center gap-3 mb-2 flex-1">
           <button
             onClick={handleLogoClick}
             className="cursor-pointer transition-transform hover:scale-105 active:scale-95"
@@ -70,7 +97,16 @@ export default function Sidebar() {
             Aap-FT
           </h1>
         </div>
-        <p className="mt-1 text-xs font-medium text-gray-500 text-center">Financial Tools</p>
+        {/* Close button for mobile/tablet */}
+        {!isLargeScreen && (
+          <button
+            onClick={closeSidebar}
+            className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            aria-label="Close sidebar"
+          >
+            <X size={24} className="text-gray-600 dark:text-gray-400" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -98,7 +134,8 @@ export default function Sidebar() {
       <div className="border-t border-gray-200 pt-4 text-xs text-gray-500 dark:border-gray-800 dark:text-gray-400">
         <p>© 2026 Aap Financial Tools</p>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
