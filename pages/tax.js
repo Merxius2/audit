@@ -263,8 +263,9 @@ export default function TaxCalculator() {
                 {calculationMode === 'gross-to-net' ? t('tax.grossIncome') : t('tax.calculatedGross')}
               </p>
               <p className="font-mono text-2xl font-bold text-brand-primary">
-                {getSymbol()}{Math.floor(result.grossIncome).toLocaleString('en-US')}
+                {getSymbol()}{Math.floor(result.grossIncome * 12).toLocaleString('en-US')}
               </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('tax.yearly')}</p>
             </div>
 
             <div className="card p-6">
