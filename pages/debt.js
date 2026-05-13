@@ -3,13 +3,16 @@
  * Calculate monthly payments, generate amortization schedule, visualize balance over time
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
+import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useSidebar } from '../context/SidebarContext';
-import { Menu, RotateCcw, CreditCard } from 'lucide-react';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
+import PageHeader from '../components/PageHeader';
+import { RotateCcw, CreditCard } from 'lucide-react';
 
 export default function Debt() {
   // State
@@ -17,23 +20,19 @@ export default function Debt() {
   const [interestRate, setInterestRate] = useState('');
   const [durationMonths, setDurationMonths] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const saveCookieTimeout = useRef(null);
 
   // Hooks
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const { toggleSidebar } = useSidebar();
+  const isMobile = useIsMobile();
 
-  // Detect mobile screen size
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Debounced cookie save
+  const debouncedSave = useDebouncedCookie('debt_calculator_data', {
+    loanAmount,
+    interestRate,
+    durationMonths,
+  });
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -46,20 +45,7 @@ export default function Debt() {
     setIsLoading(false);
   }, []);
 
-  // Save to cookie with debounce
-  const debouncedSave = () => {
-    if (saveCookieTimeout.current) {
-      clearTimeout(saveCookieTimeout.current);
-    }
-    saveCookieTimeout.current = setTimeout(() => {
-      saveToCookie('debt_calculator_data', {
-        loanAmount,
-        interestRate,
-        durationMonths,
-      });
-    }, 500);
-  };
-
+  // Save to cookie when state changes
   useEffect(() => {
     if (!isLoading) {
       debouncedSave();
@@ -175,21 +161,7 @@ export default function Debt() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 pb-0 lg:ml-64">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <button
-              onClick={toggleSidebar}
-              className="max-md:hidden lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              aria-label="Toggle sidebar"
-            >
-              <Menu size={24} className="text-gray-700 dark:text-gray-300" />
-            </button>
-            <CreditCard size={36} className="text-brand-primary" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">{t('debt.title')}</h1>
-          </div>
-        </div>
-      </div>
+      <PageHeader icon={CreditCard} titleKey="debt.title" />
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
