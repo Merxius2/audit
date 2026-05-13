@@ -97,17 +97,14 @@ export default function TaxCalculator() {
       }
       result = calculateTaxBreakdown(grossIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
     } else {
-      // NET-TO-GROSS: NO expatExemption logic here - user enters their desired NET income
-      // We simply find the gross that yields this net, then apply expatExemption if needed
-      result = calculateGrossFromNet(yearlyIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
-      // After finding gross, check if expat exemption should be applied
-      if (isExpat && result.grossIncome <= exemptionCap) {
-        expatExemption = result.grossIncome * 0.3;
-      }
+      // NET-TO-GROSS: Pass applyExpatExemption flag to binary search
+      // This ensures correct gross is found that yields desired net income
+      result = calculateGrossFromNet(yearlyIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit, isExpat);
     }
 
-    // Add expatExemption back to net income (it's tax-free)
-    if (isExpat && expatExemption > 0) {
+    // Add expatExemption back to net income (it's tax-free) - only for gross-to-net
+    // For net-to-gross, expatExemption is already handled in calculateGrossFromNet
+    if (calculationMode === 'gross-to-net' && isExpat && expatExemption > 0) {
       result.expatExemption = expatExemption;
       result.netIncome = result.netIncome + expatExemption;
       result.effectiveRate = result.grossIncome + expatExemption > 0 
