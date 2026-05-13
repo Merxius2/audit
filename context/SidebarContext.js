@@ -54,7 +54,15 @@ export const SidebarProvider = ({ children }) => {
 export const useSidebar = () => {
   const context = useContext(SidebarContext);
   if (!context) {
-    throw new Error('useSidebar must be used within SidebarProvider');
+    // Return safe defaults during SSR or if used outside provider
+    return {
+      isSidebarOpen: false,
+      setIsSidebarOpen: () => {},
+      toggleSidebar: () => {},
+      closeSidebar: () => {},
+      isLargeScreen: false,
+      isLoading: true,
+    };
   }
   return context;
 };
