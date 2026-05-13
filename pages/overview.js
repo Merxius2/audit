@@ -248,25 +248,25 @@ export default function Overview() {
           <div className="card p-8">
             <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('overview.retirementProjectionBreakdown')}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-6">
-              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-blue-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
+              <div className="rounded-2xl border border-gray-100 p-3 sm:p-4 md:p-6 shadow-soft bg-gradient-to-br from-blue-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.breakdown.contributions')}</p>
                 <p className="amount-large mt-3 text-gray-900 dark:text-gray-100">
                   {getSymbol()}{Math.floor(data.retirementBreakdown.contributions).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
-              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-green-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
+              <div className="rounded-2xl border border-gray-100 p-3 sm:p-4 md:p-6 shadow-soft bg-gradient-to-br from-green-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.breakdown.investmentGains')}</p>
                 <p className="amount-large mt-3 text-green-600 dark:text-green-400">
                   {getSymbol()}{Math.floor(data.retirementBreakdown.gains).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
-              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-purple-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
+              <div className="rounded-2xl border border-gray-100 p-3 sm:p-4 md:p-6 shadow-soft bg-gradient-to-br from-purple-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.monthlyInvestment')}</p>
                 <p className="amount-large mt-3 text-purple-600 dark:text-purple-400">
                   {getSymbol()}{Math.floor(data.monthlyInvestment).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </p>
               </div>
-              <div className="rounded-2xl border border-gray-100 p-6 shadow-soft bg-gradient-to-br from-brand-secondary/10 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
+              <div className="rounded-2xl border border-gray-100 p-3 sm:p-4 md:p-6 shadow-soft bg-gradient-to-br from-brand-secondary/10 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.totalProjectedBalance')}</p>
                 <p className="amount-large mt-3 text-brand-secondary dark:text-brand-secondary">
                   {getSymbol()}{Math.floor(data.retirementProjection).toLocaleString('en-US', { minimumFractionDigits: 0 })}
