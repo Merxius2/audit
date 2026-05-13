@@ -539,7 +539,9 @@ function PersonSection({
   getSymbol,
   t,
   isMobile,
-  isPersonOne = true
+  isPersonOne = true,
+  contribution = 0,
+  showContribution = false
 }) {
   const addIncome = () => {
     const newId = Date.now().toString();
@@ -678,6 +680,29 @@ function PersonSection({
           </p>
         </div>
       </div>
+
+      {/* Contribution to Shared Account (shown in separate mode) */}
+      {showContribution && (
+        <div className="card p-6 border-l-4 border-brand-primary">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.contribution')}</p>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-700 dark:text-gray-300">Income - Personal Expenses - Savings</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-gray-100">{getSymbol()}{Math.floor(balance).toLocaleString('en-US')}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-700 dark:text-gray-300">Contribution to Shared Account</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-gray-100">-{getSymbol()}{Math.floor(contribution).toLocaleString('en-US')}</span>
+            </div>
+            <div className="border-t border-gray-300 dark:border-gray-600 pt-2 mt-2 flex justify-between items-center">
+              <span className="font-medium text-gray-900 dark:text-gray-100">{t('dashboard.personalBalance')}</span>
+              <span className={`font-mono text-lg font-bold ${(balance - contribution) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                {getSymbol()}{Math.floor(balance - contribution).toLocaleString('en-US')}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -752,6 +777,8 @@ function SeparateModeContent({
             t={t}
             isMobile={isMobile}
             isPersonOne={true}
+            contribution={person1Contribution}
+            showContribution={true}
           />
         </div>
 
@@ -775,6 +802,8 @@ function SeparateModeContent({
             t={t}
             isMobile={isMobile}
             isPersonOne={false}
+            contribution={person2Contribution}
+            showContribution={true}
           />
         </div>
       </div>
