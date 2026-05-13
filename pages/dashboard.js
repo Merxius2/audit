@@ -774,6 +774,31 @@ function SeparateModeContent({
       <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.sharedAccount')}</h2>
 
+        {/* Shared Expenses */}
+        <div className="card-expenses p-8 mb-6">
+          <h3 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.sharedExpensesBreakdown')}</h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {SHARED_EXPENSE_CATEGORIES.map((category) => {
+              const IconComponent = CATEGORY_ICONS[category];
+              return (
+                <div key={category} className="space-y-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-100">
+                    <IconComponent size={16} className="text-brand-primary" />
+                    {t(`dashboard.expenseCategories.${category}`)}
+                  </label>
+                  <input
+                    type="number"
+                    value={sharedExpenses[category] || ''}
+                    onChange={(e) => setSharedExpenses({ ...sharedExpenses, [category]: e.target.value })}
+                    placeholder="0"
+                    className="amount w-full"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Contributions Overview */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
           <div className="card p-6">
@@ -798,31 +823,6 @@ function SeparateModeContent({
           <div className="card p-6">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.contribution')}</p>
             <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">{getSymbol()}{Math.floor(person2Contribution).toLocaleString('en-US')}</p>
-          </div>
-        </div>
-
-        {/* Shared Expenses */}
-        <div className="card-expenses p-8 mb-6">
-          <h3 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.sharedExpensesBreakdown')}</h3>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {SHARED_EXPENSE_CATEGORIES.map((category) => {
-              const IconComponent = CATEGORY_ICONS[category];
-              return (
-                <div key={category} className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-100">
-                    <IconComponent size={16} className="text-brand-primary" />
-                    {t(`dashboard.expenseCategories.${category}`)}
-                  </label>
-                  <input
-                    type="number"
-                    value={sharedExpenses[category] || ''}
-                    onChange={(e) => setSharedExpenses({ ...sharedExpenses, [category]: e.target.value })}
-                    placeholder="0"
-                    className="amount w-full"
-                  />
-                </div>
-              );
-            })}
           </div>
         </div>
 
