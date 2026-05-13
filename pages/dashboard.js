@@ -375,22 +375,22 @@ export default function Dashboard() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="card-summary p-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="card-summary p-3 sm:p-4 md:p-6">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('dashboard.totalIncome')}</p>
             <p className="amount-large mt-2 text-gray-900">
               {getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
-          <div className="card-summary p-6">
+          <div className="card-summary p-3 sm:p-4 md:p-6">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('dashboard.totalExpenses')}</p>
             <p className="amount-large mt-2 text-gray-900">
               {getSymbol()}{Math.floor(totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 0 })}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-100 p-6 shadow-soft"
+          <div className="rounded-2xl border border-gray-100 p-3 sm:p-4 md:p-6 shadow-soft"
             style={{
               background: leftover >= 0
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.5) 100%)'
@@ -466,8 +466,8 @@ export default function Dashboard() {
         )}
 
         {/* Status Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="card p-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="card p-3 sm:p-4 md:p-6">
             <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.expenseRatio')}</p>
             <p className={`font-mono text-3xl font-bold tracking-tight mt-2 ${
               totalIncome > 0 && ((totalExpenses / totalIncome) * 100) <= 70
@@ -478,7 +478,7 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <div className="card p-4">
+          <div className="card p-3 sm:p-4 md:p-6">
             <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.savingsRate')}</p>
             <p className={`font-mono text-3xl font-bold tracking-tight mt-2 ${
               totalIncome > 0 && ((savingsNum / totalIncome) * 100) >= 20
@@ -662,16 +662,16 @@ function PersonSection({
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="card p-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="card p-3 sm:p-4 md:p-6">
           <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalIncome')}</p>
           <p className="font-mono text-2xl font-bold text-brand-primary mt-2">{getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US')}</p>
         </div>
-        <div className="card p-4">
+        <div className="card p-3 sm:p-4 md:p-6">
           <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.totalExpenses')}</p>
           <p className="font-mono text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{getSymbol()}{Math.floor(totalExpenses).toLocaleString('en-US')}</p>
         </div>
-        <div className="card p-4">
+        <div className="card p-3 sm:p-4 md:p-6">
           <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.balance')}</p>
           <p className={`font-mono text-2xl font-bold mt-2 ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
             {getSymbol()}{Math.floor(balance).toLocaleString('en-US')}
@@ -786,7 +786,7 @@ function SeparateModeContent({
         {/* Shared Expenses */}
         <div className="card-expenses p-8 mb-6">
           <h3 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.sharedExpensesBreakdown')}</h3>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {SHARED_EXPENSE_CATEGORIES.map((category) => {
               const IconComponent = CATEGORY_ICONS[category];
               return (
@@ -809,8 +809,8 @@ function SeparateModeContent({
         </div>
 
         {/* Contributions Overview */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
-          <div className="card p-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-6">
+          <div className="card p-3 sm:p-4 md:p-6">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.incomeRatio')}</p>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
@@ -824,7 +824,7 @@ function SeparateModeContent({
             </div>
           </div>
 
-          <div className="card p-6">
+          <div className="card p-3 sm:p-4 md:p-6">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.contribution')}</p>
             <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">{getSymbol()}{Math.floor(person1Contribution).toLocaleString('en-US')}</p>
           </div>
