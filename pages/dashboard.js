@@ -857,10 +857,10 @@ function SeparateModeContent({
           {/* Shared Account Pie Chart */}
           <PieChartCard
             title={t('dashboard.sharedAccount')}
-            data={[
-              { name: t('dashboard.contribution'), value: person1Contribution },
-              { name: t('dashboard.contribution'), value: person2Contribution }
-            ]}
+            data={Object.entries(sharedExpenses).map(([category, value]) => ({
+              name: t(`dashboard.sharedExpenseCategories.${category}`),
+              value: parseFloat(value) || 0
+            })).filter(item => item.value > 0)}
             getSymbol={getSymbol}
             isMobile={isMobile}
           />
