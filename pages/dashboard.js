@@ -503,7 +503,9 @@ export default function Dashboard() {
       {calculationType === 'separate' && (
       <SeparateModeContent
         person1Name={person1Name}
+        setPerson1Name={setPerson1Name}
         person2Name={person2Name}
+        setPerson2Name={setPerson2Name}
         person1Incomes={person1Incomes}
         setPerson1Incomes={setPerson1Incomes}
         person1Savings={person1Savings}
@@ -708,7 +710,9 @@ function PersonSection({
 // Separate mode main content component
 function SeparateModeContent({
   person1Name,
+  setPerson1Name,
   person2Name,
+  setPerson2Name,
   person1Incomes,
   setPerson1Incomes,
   person1Savings,
