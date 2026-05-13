@@ -37,14 +37,14 @@ export default function MobileNav() {
                   </button>
                 ) : (
                   <div
-                    className={`flex flex-col items-center justify-center transition-colors ${
+                    className={`flex flex-col items-center space-y-0.5 px-1 py-1 transition-colors ${
                       isActive(item.path)
                         ? 'text-brand-primary'
                         : 'text-gray-500 hover:text-gray-900'
                     }`}
-                    title={t(item.labelKey)}
                   >
                     <Icon size={20} />
+                    <span className="text-[10px] font-medium whitespace-nowrap">{t(item.labelKey)}</span>
                   </div>
                 )}
               </Link>
