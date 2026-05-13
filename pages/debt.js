@@ -267,47 +267,9 @@ export default function Debt() {
         </div>
       )}
 
-      {/* Chart */}
-      {chartData.length > 0 && (
-        <div className="card p-6 md:p-8 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('debt.balanceOverTime')}</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis 
-                dataKey="month" 
-                label={{ value: t('debt.month'), position: 'insideBottomRight', offset: -5 }}
-                stroke="#6b7280"
-              />
-              <YAxis 
-                label={{ value: t('debt.remainingBalance'), angle: -90, position: 'insideLeft' }}
-                stroke="#6b7280"
-              />
-              <Tooltip 
-                formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
-                contentStyle={{
-                  backgroundColor: '#1f2937',
-                  border: 'none',
-                  borderRadius: '0.5rem',
-                  color: '#f3f4f6'
-                }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="balance" 
-                stroke="#3b82f6" 
-                strokeWidth={2}
-                dot={{ fill: '#3b82f6', r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
       {/* Breakdown Chart */}
       {schedule.length > 0 && (
-        <div className="card p-6 md:p-8">
+        <div className="card p-6 md:p-8 mb-8">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('debt.paymentBreakdown')}</h2>
           <ResponsiveContainer width="100%" height={isMobile ? 200 : 280}>
             <BarChart
@@ -351,6 +313,44 @@ export default function Debt() {
               </span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Chart */}
+      {chartData.length > 0 && (
+        <div className="card p-6 md:p-8">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('debt.balanceOverTime')}</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis 
+                dataKey="month" 
+                label={{ value: t('debt.month'), position: 'insideBottomRight', offset: -5 }}
+                stroke="#6b7280"
+              />
+              <YAxis 
+                label={{ value: t('debt.remainingBalance'), angle: -90, position: 'insideLeft' }}
+                stroke="#6b7280"
+              />
+              <Tooltip 
+                formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
+                contentStyle={{
+                  backgroundColor: '#1f2937',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  color: '#f3f4f6'
+                }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="balance" 
+                stroke="#3b82f6" 
+                strokeWidth={2}
+                dot={{ fill: '#3b82f6', r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       )}
 
