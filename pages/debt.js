@@ -308,7 +308,7 @@ export default function Debt() {
       {schedule.length > 0 && (
         <div className="card p-6 md:p-8">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('debt.paymentBreakdown')}</h2>
-          <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
+          <ResponsiveContainer width="100%" height={isMobile ? 200 : 280}>
             <BarChart
               data={[
                 {
@@ -318,11 +318,11 @@ export default function Debt() {
                 },
               ]}
               layout="vertical"
-              margin={isMobile ? { top: 20, right: 20, left: 80, bottom: 20 } : { top: 20, right: 30, left: 150, bottom: 20 }}
+              margin={isMobile ? { top: 10, right: 10, left: 50, bottom: 10 } : { top: 15, right: 20, left: 120, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" stroke="#6b7280" />
-              <YAxis dataKey="name" type="category" stroke="#6b7280" width={isMobile ? 70 : 140} />
+              <YAxis dataKey="name" type="category" stroke="#6b7280" width={isMobile ? 45 : 110} />
               <Tooltip
                 formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
                 contentStyle={{
