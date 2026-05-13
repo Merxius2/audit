@@ -4,16 +4,16 @@
  */
 
 import { useState, useEffect } from 'react';
-
-import { Wallet, TrendingUp, Eye, Menu } from 'lucide-react';
+import { Wallet, TrendingUp, Eye } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { EXPENSE_CATEGORIES, CHART_COLORS } from '../lib/constants';
 import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useSidebar } from '../context/SidebarContext';
-
-const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
-const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#06B6D4', '#8B5CF6'];
+import { useIsMobile } from '../hooks/useIsMobile';
+import { generateForwardProjection, generateBackwardProjection } from '../lib/retirementCalculator';
+import PageHeader from '../components/PageHeader';
 
 export default function Overview() {
   const [data, setData] = useState({
@@ -26,78 +26,10 @@ export default function Overview() {
     retirementBreakdown: { contributions: 0, gains: 0 },
     monthlyInvestment: 0,
   });
-  const [isMobile, setIsMobile] = useState(false);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const { toggleSidebar } = useSidebar();
-
-  // Detect mobile screen size
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const generateForwardProjection = (currentAge, retirementAge, monthlyInvestment, annualReturn) => {
-    const current = parseInt(currentAge) || 0;
-    const retirement = parseInt(retirementAge) || 65;
-    const monthly = parseFloat(monthlyInvestment) || 0;
-    const rate = (parseFloat(annualReturn) || 7) / 100 / 12;
-
-    let balance = 0;
-    for (let age = current; age < retirement; age++) {
-      for (let month = 0; month < 12; month++) {
-        balance = balance * (1 + rate) + monthly;
-      }
-    }
-
-    const yearsElapsed = retirement - current;
-    const totalContributions = yearsElapsed * 12 * monthly;
-    const gains = Math.floor(balance - totalContributions);
-
-    return {
-      finalBalance: Math.floor(balance),
-      contributions: Math.floor(totalContributions),
-      gains: gains,
-    };
-  };
-
-  const generateBackwardProjection = (currentAge, retirementAge, goalBalance, annualReturn) => {
-    const current = parseInt(currentAge) || 0;
-    const retirement = parseInt(retirementAge) || 65;
-    const goal = parseFloat(goalBalance) || 500000;
-    const rate = (parseFloat(annualReturn) || 7) / 100 / 12;
-    const months = (retirement - current) * 12;
-
-    // Calculate required monthly investment using the future value formula
-    let requiredMonthly = 0;
-    if (rate === 0) {
-      requiredMonthly = months > 0 ? goal / months : 0;
-    } else {
-      const factor = (Math.pow(1 + rate, months) - 1) / rate;
-      requiredMonthly = factor > 0 ? goal / factor : 0;
-    }
-
-    let balance = 0;
-    for (let age = current; age < retirement; age++) {
-      for (let month = 0; month < 12; month++) {
-        balance = balance * (1 + rate) + requiredMonthly;
-      }
-    }
-
-    const yearsElapsed = retirement - current;
-    const totalContributions = yearsElapsed * 12 * requiredMonthly;
-    const gains = Math.floor(balance - totalContributions);
-
-    return {
-      finalBalance: Math.floor(balance),
-      contributions: Math.floor(totalContributions),
-      gains: gains,
-    };
-  };
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Load dashboard data from cookies
@@ -225,22 +157,7 @@ export default function Overview() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 pb-32 lg:ml-64 md:pb-0">
-      {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <button
-              onClick={toggleSidebar}
-              className="max-md:hidden lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              aria-label="Toggle sidebar"
-            >
-              <Menu size={24} className="text-gray-600 dark:text-gray-400" />
-            </button>
-            <Eye size={36} className="text-brand-primary" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">{t('overview.title')}</h1>
-          </div>
-        </div>
-      </div>
+      <PageHeader icon={Eye} titleKey="overview.title" />
 
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Retirement Breakdown */}

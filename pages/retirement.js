@@ -3,14 +3,18 @@
  * Plan retirement with compound growth projections
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Menu } from 'lucide-react';
-import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
+import { TrendingUp } from 'lucide-react';
+import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useSidebar } from '../context/SidebarContext';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
+import { generateForwardProjection, generateBackwardProjection } from '../lib/retirementCalculator';
+import PageHeader from '../components/PageHeader';
 
 export default function RetirementProjection() {
   const [calculationType, setCalculationType] = useState('forward'); // 'forward' or 'backward'
@@ -25,11 +29,21 @@ export default function RetirementProjection() {
   const [goalBalance, setGoalBalance] = useState('500000');
 
   const [isLoading, setIsLoading] = useState(true);
-  const saveCookieTimeout = useRef(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const { toggleSidebar } = useSidebar();
   const { isDarkMode } = useDarkMode();
+  const isMobile = useIsMobile();
+
+  // Debounced cookie save
+  const debouncedSave = useDebouncedCookie('retirement_data', {
+    calculationType,
+    currentAge,
+    retirementAge,
+    monthlyInvestment,
+    goalBalance,
+    annualReturn,
+  });
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -45,100 +59,17 @@ export default function RetirementProjection() {
     setIsLoading(false);
   }, []);
 
-  // Save to cookie with debounce
-  const debouncedSave = () => {
-    if (saveCookieTimeout.current) {
-      clearTimeout(saveCookieTimeout.current);
-    }
-    saveCookieTimeout.current = setTimeout(() => {
-      const projectionData = isForward ? generateForwardProjection() : generateBackwardProjection();
-      const finalBalance = projectionData[projectionData.length - 1]?.balance || 0;
-      saveToCookie('retirement_data', {
-        calculationType,
-        currentAge,
-        retirementAge,
-        monthlyInvestment,
-        goalBalance,
-        annualReturn,
-        finalBalance,
-      });
-    }, 500);
-  };
-
+  // Save to cookie when state changes
   useEffect(() => {
     if (!isLoading) {
       debouncedSave();
     }
-  }, [currentAge, retirementAge, monthlyInvestment, goalBalance, annualReturn, calculationType, isLoading]);
-
-  // Forward calculation: input monthly investment, calculate final balance
-  const generateForwardProjection = () => {
-    const data = [];
-    const current = parseInt(currentAge) || 0;
-    const retirement = parseInt(retirementAge) || 65;
-    const monthly = parseFloat(monthlyInvestment) || 0;
-    const rate = (parseFloat(annualReturn) || 7) / 100 / 12;
-
-    let balance = 0;
-    for (let age = current; age <= retirement; age++) {
-      for (let month = 0; month < 12; month++) {
-        balance = balance * (1 + rate) + monthly;
-      }
-      const yearsElapsed = age - current;
-      const totalContributions = yearsElapsed * 12 * monthly;
-      const gains = Math.floor(balance - totalContributions);
-      
-      data.push({ 
-        age, 
-        balance: Math.floor(balance),
-        contributions: Math.floor(totalContributions),
-        gains: gains,
-      });
-    }
-    return data;
-  };
-
-  // Backward calculation: input goal balance, calculate required monthly investment
-  const generateBackwardProjection = () => {
-    const data = [];
-    const current = parseInt(currentAge) || 0;
-    const retirement = parseInt(retirementAge) || 65;
-    const goal = parseFloat(goalBalance) || 500000;
-    const rate = (parseFloat(annualReturn) || 7) / 100 / 12;
-    const months = (retirement - current) * 12;
-
-    // Calculate required monthly investment using the future value formula
-    // FV = PMT * (((1 + r)^n - 1) / r)
-    // PMT = FV / (((1 + r)^n - 1) / r)
-    let requiredMonthly = 0;
-    if (rate === 0) {
-      requiredMonthly = months > 0 ? goal / months : 0;
-    } else {
-      const factor = (Math.pow(1 + rate, months) - 1) / rate;
-      requiredMonthly = factor > 0 ? goal / factor : 0;
-    }
-
-    let balance = 0;
-    for (let age = current; age <= retirement; age++) {
-      for (let month = 0; month < 12; month++) {
-        balance = balance * (1 + rate) + requiredMonthly;
-      }
-      const yearsElapsed = age - current;
-      const totalContributions = yearsElapsed * 12 * requiredMonthly;
-      const gains = Math.floor(balance - totalContributions);
-      
-      data.push({ 
-        age, 
-        balance: Math.floor(balance),
-        contributions: Math.floor(totalContributions),
-        gains: gains,
-      });
-    }
-    return data;
-  };
+  }, [calculationType, currentAge, retirementAge, monthlyInvestment, goalBalance, annualReturn, isLoading]);
 
   const isForward = calculationType === 'forward';
-  const projectionData = isForward ? generateForwardProjection() : generateBackwardProjection();
+  const projectionData = isForward 
+    ? generateForwardProjection(currentAge, retirementAge, monthlyInvestment, annualReturn) 
+    : generateBackwardProjection(currentAge, retirementAge, goalBalance, annualReturn);
   const finalBalance = projectionData[projectionData.length - 1]?.balance || 0;
   
   const currentAgeNum = parseInt(currentAge) || 0;
@@ -161,22 +92,7 @@ export default function RetirementProjection() {
 
   return (
     <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0">
-      {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-2">
-            <button
-              onClick={toggleSidebar}
-              className="max-md:hidden lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              aria-label="Toggle sidebar"
-            >
-              <Menu size={24} className="text-gray-600 dark:text-gray-400" />
-            </button>
-            <TrendingUp size={36} className="text-brand-secondary" />
-            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('retirement.title')}</h1>
-          </div>
-        </div>
-      </div>
+      <PageHeader icon={TrendingUp} titleKey="retirement.title" />
 
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Calculation Type Selector */}

@@ -3,43 +3,26 @@
  * Main page for tracking monthly finances with median comparisons
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3, Tv, Receipt, Menu } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3, Tv, Receipt } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
+import { EXPENSE_CATEGORIES, SHARED_EXPENSE_CATEGORIES, PERSONAL_EXPENSE_CATEGORIES, CHART_COLORS, CATEGORY_ICONS } from '../lib/constants';
+import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useSidebar } from '../context/SidebarContext';
-
-const EXPENSE_CATEGORIES = ['House', 'Car', 'Food', 'Utilities', 'Healthcare', 'Leisure', 'Subscriptions', 'Phone', 'Insurance', 'Other'];
-const SHARED_EXPENSE_CATEGORIES = ['House', 'Food', 'Utilities', 'Insurance', 'Other', 'Subscriptions', 'Taxes', 'InternetTV', 'Car'];
-const PERSONAL_EXPENSE_CATEGORIES = ['Car', 'Healthcare', 'Leisure', 'Other', 'Phone', 'Subscriptions'];
-const CHART_COLORS = ['#EC4899', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#06B6D4', '#14B8A6', '#EF4444', '#8B5CF6', '#F97316'];
-
-const CATEGORY_ICONS = {
-  'House': Home,
-  'Car': Car,
-  'Food': UtensilsCrossed,
-  'Utilities': Zap,
-  'Healthcare': Heart,
-  'Leisure': Smile,
-  'Subscriptions': CreditCard,
-  'Phone': Phone,
-  'Insurance': Shield,
-  'Other': MoreHorizontal,
-  'Taxes': Receipt,
-  'InternetTV': Tv
-};
+import { useIsMobile } from '../hooks/useIsMobile';
+import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
+import PageHeader from '../components/PageHeader';
 
 export default function Dashboard() {
   // Shared state for both modes
   const [calculationType, setCalculationType] = useState('shared');
   const [isLoading, setIsLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const saveCookieTimeout = useRef(null);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const { toggleSidebar } = useSidebar();
+  const isMobile = useIsMobile();
 
   // Shared mode state (current mode)
   const [incomes, setIncomes] = useState([]);
@@ -70,15 +53,6 @@ export default function Dashboard() {
   const [person1Name, setPerson1Name] = useState('Person 1');
   const [person2Name, setPerson2Name] = useState('Person 2');
 
-  // Detect mobile screen size
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -112,32 +86,25 @@ export default function Dashboard() {
     setIsLoading(false);
   }, []);
 
-  // Save to cookie with debounce
-  const debouncedSave = () => {
-    if (saveCookieTimeout.current) {
-      clearTimeout(saveCookieTimeout.current);
-    }
-    saveCookieTimeout.current = setTimeout(() => {
-      saveToCookie('huishoudboekje_data', {
-        calculationType,
-        // Shared mode
-        incomes,
-        savings,
-        includeSavingsInCalculations,
-        expenses,
-        // Separate mode
-        person1Incomes,
-        person1Savings,
-        person1Expenses,
-        person2Incomes,
-        person2Savings,
-        person2Expenses,
-        sharedExpenses,
-        person1Name,
-        person2Name,
-      });
-    }, 500);
-  };
+  // Debounced cookie save
+  const debouncedSave = useDebouncedCookie('huishoudboekje_data', {
+    calculationType,
+    // Shared mode
+    incomes,
+    savings,
+    includeSavingsInCalculations,
+    expenses,
+    // Separate mode
+    person1Incomes,
+    person1Savings,
+    person1Expenses,
+    person2Incomes,
+    person2Savings,
+    person2Expenses,
+    sharedExpenses,
+    person1Name,
+    person2Name,
+  });
 
   useEffect(() => {
     if (!isLoading) {
@@ -207,22 +174,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0">
-      {/* Header with Age Bracket Badge */}
-      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <button
-              onClick={toggleSidebar}
-              className="max-md:hidden lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              aria-label="Toggle sidebar"
-            >
-              <Menu size={24} className="text-gray-600 dark:text-gray-400" />
-            </button>
-            <BarChart3 size={36} className="text-brand-primary" />
-            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{t('dashboard.title')}</h1>
-          </div>
-        </div>
-      </div>
+      <PageHeader icon={BarChart3} titleKey="dashboard.title" />
 
       <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
         {/* Calculation Type Toggle */}
