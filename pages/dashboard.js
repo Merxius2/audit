@@ -856,12 +856,12 @@ function SeparateModeContent({
           </div>
 
           <div className="card p-3 sm:p-4 md:p-6">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.contribution')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{person1Name}: {t('dashboard.contribution')}</p>
             <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">{getSymbol()}{Math.floor(person1Contribution).toLocaleString('en-US')}</p>
           </div>
 
           <div className="card p-6">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.contribution')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{person2Name}: {t('dashboard.contribution')}</p>
             <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">{getSymbol()}{Math.floor(person2Contribution).toLocaleString('en-US')}</p>
           </div>
         </div>
