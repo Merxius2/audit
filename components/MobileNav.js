@@ -45,7 +45,7 @@ export default function MobileNav() {
                     }`}
                   >
                     <Icon size={18} />
-                    <span className="text-[9px] font-medium whitespace-nowrap">{t(item.labelKey)}</span>
+                    <span className="text-[9px] font-medium w-14 leading-tight text-center break-words">{t(item.labelKey)}</span>
                   </div>
                 )}
               </Link>
