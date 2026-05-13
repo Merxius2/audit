@@ -10,6 +10,7 @@ import { CurrencyProvider } from '../context/CurrencyContext';
 import { DarkModeProvider } from '../context/DarkModeContext';
 import { SecretSettingsProvider } from '../context/SecretSettingsContext';
 import { SidebarProvider } from '../context/SidebarContext';
+import { TaxProvider } from '../context/TaxContext';
 import Sidebar from '../components/Sidebar';
 import MobileNav from '../components/MobileNav';
 import SecretSettingsModal from '../components/SecretSettingsModal';
@@ -74,14 +75,16 @@ function MyApp({ Component, pageProps }) {
     <DarkModeProvider>
       <LanguageProvider>
         <CurrencyProvider>
-          <FinancialProvider>
-            <SidebarProvider>
-              <SecretSettingsProvider>
-                <SecretSettingsModal />
-                <AppContent Component={Component} pageProps={pageProps} />
-              </SecretSettingsProvider>
-            </SidebarProvider>
-          </FinancialProvider>
+          <TaxProvider>
+            <FinancialProvider>
+              <SidebarProvider>
+                <SecretSettingsProvider>
+                  <SecretSettingsModal />
+                  <AppContent Component={Component} pageProps={pageProps} />
+                </SecretSettingsProvider>
+              </SidebarProvider>
+            </FinancialProvider>
+          </TaxProvider>
         </CurrencyProvider>
       </LanguageProvider>
     </DarkModeProvider>

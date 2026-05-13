@@ -6,7 +6,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { BarChart3, TrendingUp, Eye, Settings, X, DollarSign } from 'lucide-react';
+import { BarChart3, TrendingUp, Eye, Settings, X, DollarSign, Receipt } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSecretSettings } from '../context/SecretSettingsContext';
 import { useSidebar } from '../context/SidebarContext';
@@ -65,6 +65,7 @@ export default function Sidebar() {
     { path: '/dashboard', labelKey: 'navigation.householdBudget', icon: BarChart3 },
     { path: '/retirement', labelKey: 'navigation.retirement', icon: TrendingUp },
     { path: '/debt', labelKey: 'navigation.debtCalculator', icon: DollarSign },
+    { path: '/tax', labelKey: 'navigation.taxCalculator', icon: Receipt },
     { path: '/settings', labelKey: 'navigation.settings', icon: Settings },
   ];
 
