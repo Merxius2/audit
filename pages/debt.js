@@ -141,10 +141,6 @@ export default function Debt() {
   // Format for chart (show every 12 months or all if less than 24 months)
   const chartData = schedule.length <= 24 ? schedule : schedule.filter((item) => item.month % 12 === 0);
 
-  // Calculate years and months for duration display
-  const years = Math.floor((parseInt(durationMonths) || 0) / 12);
-  const months = (parseInt(durationMonths) || 0) % 12;
-
   const handleReset = () => {
     setLoanAmount('');
     setInterestRate('');
@@ -255,13 +251,6 @@ export default function Debt() {
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('debt.totalPayment')}</p>
             <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">
               {getSymbol()}{Math.floor(totalPayment).toLocaleString('en-US')}
-            </p>
-          </div>
-
-          <div className="card p-6">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('debt.duration')}</p>
-            <p className="font-mono text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {years > 0 && `${years}y `}{months}m
             </p>
           </div>
         </div>
