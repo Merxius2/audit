@@ -79,25 +79,31 @@ export default function TaxCalculator() {
     let expatExemption = 0;
     const exemptionCap = 244000; // 2026 income cap for 30% rule (Balkenende-norm)
 
-    // Apply 30% expat exemption if enabled
-    if (isExpat && yearlyIncome <= exemptionCap) {
-      // 30% of income is tax-free
-      expatExemption = yearlyIncome * 0.3;
-      // Taxable income is only 70% of gross
-      yearlyIncome = yearlyIncome * 0.7;
-    } else if (isExpat && yearlyIncome > exemptionCap) {
-      // For incomes above cap, no exemption applies
-      expatExemption = 0;
-    }
-
     const generalTaxCredit = getGeneralTaxCredit();
     const earnedIncomeCredit = getEarnedIncomeCredit();
 
     let result;
     if (calculationMode === 'gross-to-net') {
-      result = calculateTaxBreakdown(yearlyIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
+      // GROSS-TO-NET: Apply 30% expat exemption to the GROSS income before calculation
+      let grossIncome = yearlyIncome;
+      if (isExpat && grossIncome <= exemptionCap) {
+        // 30% of income is tax-free
+        expatExemption = grossIncome * 0.3;
+        // Taxable income is only 70% of gross
+        grossIncome = grossIncome * 0.7;
+      } else if (isExpat && grossIncome > exemptionCap) {
+        // For incomes above cap, no exemption applies
+        expatExemption = 0;
+      }
+      result = calculateTaxBreakdown(grossIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
     } else {
+      // NET-TO-GROSS: NO expatExemption logic here - user enters their desired NET income
+      // We simply find the gross that yields this net, then apply expatExemption if needed
       result = calculateGrossFromNet(yearlyIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
+      // After finding gross, check if expat exemption should be applied
+      if (isExpat && result.grossIncome <= exemptionCap) {
+        expatExemption = result.grossIncome * 0.3;
+      }
     }
 
     // Add expatExemption back to net income (it's tax-free)
