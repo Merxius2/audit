@@ -4,7 +4,6 @@
  */
 
 import '../styles/globals.css';
-import { FinancialProvider } from '../context/FinancialContext';
 import { LanguageProvider } from '../context/LanguageContext';
 import { CurrencyProvider } from '../context/CurrencyContext';
 import { DarkModeProvider } from '../context/DarkModeContext';
@@ -55,15 +54,13 @@ function AppContent({ Component, pageProps }) {
     <DarkModeProvider>
       <LanguageProvider>
         <CurrencyProvider>
-          <FinancialProvider>
-            {!isHomePage && (
-              <>
-                <Sidebar />
-                <MobileNav />
-              </>
-            )}
-            <Component {...pageProps} />
-          </FinancialProvider>
+          {!isHomePage && (
+            <>
+              <Sidebar />
+              <MobileNav />
+            </>
+          )}
+          <Component {...pageProps} />
         </CurrencyProvider>
       </LanguageProvider>
     </DarkModeProvider>
@@ -76,14 +73,12 @@ function MyApp({ Component, pageProps }) {
       <LanguageProvider>
         <CurrencyProvider>
           <TaxProvider>
-            <FinancialProvider>
-              <SidebarProvider>
-                <SecretSettingsProvider>
-                  <SecretSettingsModal />
-                  <AppContent Component={Component} pageProps={pageProps} />
-                </SecretSettingsProvider>
-              </SidebarProvider>
-            </FinancialProvider>
+            <SidebarProvider>
+              <SecretSettingsProvider>
+                <SecretSettingsModal />
+                <AppContent Component={Component} pageProps={pageProps} />
+              </SecretSettingsProvider>
+            </SidebarProvider>
           </TaxProvider>
         </CurrencyProvider>
       </LanguageProvider>

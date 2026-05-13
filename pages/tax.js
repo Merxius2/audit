@@ -4,14 +4,17 @@
  * Note: Income input is monthly; calculations are done on yearly basis and converted back to monthly
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
-import { useCurrency } from '../context/CurrencyContext';
-import { useLanguage } from '../context/LanguageContext';
-import { useSidebar } from '../context/SidebarContext';
+import { useState, useEffect } from 'react';
+import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useTax } from '../context/TaxContext';
 import { calculateTaxBreakdown, calculateGrossFromNet } from '../lib/taxCalculator';
-import { Menu, RotateCcw, Receipt } from 'lucide-react';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
+import { useLanguage } from '../context/LanguageContext';
+import { useCurrency } from '../context/CurrencyContext';
+import { useSidebar } from '../context/SidebarContext';
+import PageHeader from '../components/PageHeader';
+import { RotateCcw, Receipt } from 'lucide-react';
 
 export default function TaxCalculator() {
   // State
@@ -19,24 +22,20 @@ export default function TaxCalculator() {
   const [incomeInput, setIncomeInput] = useState('');
   const [isExpat, setIsExpat] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const saveCookieTimeout = useRef(null);
 
   // Hooks
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const { toggleSidebar } = useSidebar();
+  const isMobile = useIsMobile();
   const { selectedYear, changeYear, taxBrackets, getGeneralTaxCredit, getEarnedIncomeCredit, isEstimatedYear } = useTax();
 
-  // Detect mobile screen size
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Debounced cookie save
+  const debouncedSave = useDebouncedCookie('tax_calculator_data', {
+    incomeInput,
+    calculationMode,
+    isExpat,
+  });
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -49,23 +48,12 @@ export default function TaxCalculator() {
     setIsLoading(false);
   }, []);
 
-  // Save to cookie with debounce
-  const debouncedSave = () => {
-    if (saveCookieTimeout.current) {
-      clearTimeout(saveCookieTimeout.current);
-    }
-    saveCookieTimeout.current = setTimeout(() => {
-      saveToCookie('tax_calculator_data', {
-        incomeInput,
-        calculationMode,
-        isExpat,
-      }, 365);
-    }, 500);
-  };
-
+  // Save to cookie when state changes
   useEffect(() => {
-    debouncedSave();
-  }, [incomeInput, calculationMode, isExpat]);
+    if (!isLoading) {
+      debouncedSave();
+    }
+  }, [incomeInput, calculationMode, isExpat, isLoading]);
 
   // Calculate taxes
   const calculateResults = () => {
@@ -143,21 +131,7 @@ export default function TaxCalculator() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 pb-24 lg:ml-64 md:pb-0">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <button
-              onClick={toggleSidebar}
-              className="max-md:hidden lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              aria-label="Toggle sidebar"
-            >
-              <Menu size={24} className="text-gray-600 dark:text-gray-400" />
-            </button>
-            <Receipt size={36} className="text-brand-primary" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">{t('tax.title')}</h1>
-          </div>
-        </div>
-      </div>
+      <PageHeader icon={Receipt} titleKey="tax.title" />
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
