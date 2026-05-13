@@ -11,7 +11,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useSidebar } from '../context/SidebarContext';
 import { useTax } from '../context/TaxContext';
 import { calculateTaxBreakdown, calculateGrossFromNet } from '../lib/taxCalculator';
-import { Menu, RotateCcw } from 'lucide-react';
+import { Menu, RotateCcw, Receipt } from 'lucide-react';
 
 export default function TaxCalculator() {
   // State
@@ -152,6 +152,7 @@ export default function TaxCalculator() {
           >
             <Menu size={24} className="text-gray-600 dark:text-gray-400" />
           </button>
+          <Receipt size={36} className="text-brand-primary" />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('tax.title')}</h1>
           <div className="hidden md:block w-10" />
         </div>

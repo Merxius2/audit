@@ -9,7 +9,7 @@ import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useSidebar } from '../context/SidebarContext';
-import { Menu, RotateCcw } from 'lucide-react';
+import { Menu, RotateCcw, CreditCard } from 'lucide-react';
 
 export default function Debt() {
   // State
@@ -184,6 +184,7 @@ export default function Debt() {
           >
             <Menu size={24} className="text-gray-700 dark:text-gray-300" />
           </button>
+          <CreditCard size={36} className="text-brand-primary" />
           <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">{t('debt.title')}</h1>
           <div className="w-10" />
         </div>
