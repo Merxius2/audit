@@ -294,32 +294,30 @@ export default function TaxCalculator() {
           </div>
 
           {/* Tax Brackets Breakdown */}
-          <div className="card p-4 md:p-8">
-            <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 md:mb-6">{t('tax.taxBrackets')}</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 md:mb-4">({t('tax.monthlyBasis')})</p>
-            <div className="overflow-x-auto -mx-4 md:mx-0">
-              <table className="w-full text-xs md:text-sm">
+          <div className="card p-2 sm:p-4 md:p-8">
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 md:mb-6 px-2 sm:px-0">{t('tax.taxBrackets')}</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 md:mb-4 px-2 sm:px-0">({t('tax.monthlyBasis')})</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs md:text-sm whitespace-nowrap leading-tight">
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th className="text-left px-1 sm:px-2 md:px-4 py-1 md:py-2 font-medium text-gray-700 dark:text-gray-300">{t('tax.range')}</th>
-                    <th className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 font-medium text-gray-700 dark:text-gray-300">{t('tax.rate')}</th>
-                    <th className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 font-medium text-gray-700 dark:text-gray-300">{t('tax.incomeInBracket')}</th>
-                    <th className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 font-medium text-gray-700 dark:text-gray-300">{t('tax.taxAmount')}</th>
+                    <th className="text-left px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 font-medium text-gray-700 dark:text-gray-300 text-xs md:text-sm">{t('tax.range')}</th>
+                    <th className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 font-medium text-gray-700 dark:text-gray-300 text-xs md:text-sm">{t('tax.rate')}</th>
+                    <th className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 font-medium text-gray-700 dark:text-gray-300 text-xs md:text-sm">{t('tax.incomeInBracket')}</th>
+                    <th className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 font-medium text-gray-700 dark:text-gray-300 text-xs md:text-sm">{t('tax.taxAmount')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {result.bracketsBreakdown.map((bracket, idx) => (
                     <tr key={idx} className="border-b border-gray-100 dark:border-gray-700">
-                      <td className="px-1 sm:px-2 md:px-4 py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">
-                        {getSymbol()}
-                        {Math.floor(bracket.min / 12).toLocaleString('en-US')} - {bracket.max === Infinity ? '∞' : `${getSymbol()}${Math.floor(bracket.max / 12).toLocaleString('en-US')}`}
+                      <td className="px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">
+                        {getSymbol()}{Math.floor(bracket.min / 12).toLocaleString('en-US')} - {bracket.max === Infinity ? '∞' : `${getSymbol()}${Math.floor(bracket.max / 12).toLocaleString('en-US')}`}
                       </td>
-                      <td className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs">{bracket.label}<br /><span className="text-gray-500 text-xs">(incl. verzek.)</span></td>
-                      <td className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">
-                        {getSymbol()}
-                        {Math.floor(bracket.incomeInBracket).toLocaleString('en-US')}
+                      <td className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">{bracket.label}</td>
+                      <td className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">
+                        {getSymbol()}{Math.floor(bracket.incomeInBracket).toLocaleString('en-US')}
                       </td>
-                      <td className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 text-red-600 dark:text-red-400 font-medium text-xs md:text-sm">
+                      <td className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-red-600 dark:text-red-400 font-medium text-xs md:text-sm">
                         {getSymbol()}
                         {Math.floor(bracket.taxInBracket).toLocaleString('en-US')}
                       </td>
@@ -327,38 +325,38 @@ export default function TaxCalculator() {
                   ))}
                   {/* Subtotal Before Credits */}
                   <tr className="border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
-                    <td colSpan="3" className="px-1 sm:px-2 md:px-4 py-1 md:py-2 text-gray-900 dark:text-gray-100 font-bold text-xs md:text-sm">
+                    <td colSpan="3" className="px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-gray-900 dark:text-gray-100 font-bold text-xs md:text-sm">
                       {t('tax.subtotalBeforeCredits')}
                     </td>
-                    <td className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 text-red-600 dark:text-red-400 font-bold text-xs md:text-sm">
+                    <td className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-red-600 dark:text-red-400 font-bold text-xs md:text-sm">
                       {getSymbol()}
                       {Math.floor(result.bracketsBreakdown.reduce((sum, b) => sum + b.taxInBracket, 0)).toLocaleString('en-US')}
                     </td>
                   </tr>
                   {/* General Tax Credit Row */}
                   <tr className="border-b border-gray-100 dark:border-gray-700">
-                    <td colSpan="3" className="px-1 sm:px-2 md:px-4 py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">
+                    <td colSpan="3" className="px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">
                       {t('tax.generalTaxCredit')}
                     </td>
-                    <td className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 text-green-600 dark:text-green-400 font-medium text-xs md:text-sm">
+                    <td className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-green-600 dark:text-green-400 font-medium text-xs md:text-sm">
                       -{getSymbol()}
                       {Math.floor(result.generalTaxCredit).toLocaleString('en-US')}
                     </td>
                   </tr>
                   {/* Earned Income Credit Row */}
                   <tr className="border-b border-gray-100 dark:border-gray-700">
-                    <td colSpan="3" className="px-1 sm:px-2 md:px-4 py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">
+                    <td colSpan="3" className="px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">
                       {t('tax.earnedIncomeCredit')}
                     </td>
-                    <td className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 text-green-600 dark:text-green-400 font-medium text-xs md:text-sm">
+                    <td className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-green-600 dark:text-green-400 font-medium text-xs md:text-sm">
                       -{getSymbol()}
                       {Math.floor(result.earnedIncomeCreditAmount).toLocaleString('en-US')}
                     </td>
                   </tr>
                   {/* Total Tax */}
                   <tr className="bg-blue-50 dark:bg-blue-900/20 font-bold">
-                    <td colSpan="3" className="px-1 sm:px-2 md:px-4 py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">{t('tax.totalTax')}</td>
-                    <td className="text-right px-1 sm:px-2 md:px-4 py-1 md:py-2 text-blue-600 dark:text-blue-400 text-xs md:text-sm">
+                    <td colSpan="3" className="px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-gray-900 dark:text-gray-100 text-xs md:text-sm">{t('tax.totalTax')}</td>
+                    <td className="text-right px-1 sm:px-2 md:px-4 py-0.5 sm:py-1 md:py-2 text-blue-600 dark:text-blue-400 text-xs md:text-sm">
                       {getSymbol()}
                       {Math.floor(result.totalTax).toLocaleString('en-US')}
                     </td>
