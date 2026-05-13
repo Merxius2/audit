@@ -173,10 +173,10 @@ export default function TaxCalculator() {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
             {t('tax.calculationMode')}
           </label>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
               onClick={() => setCalculationMode('gross-to-net')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors ${
                 calculationMode === 'gross-to-net'
                   ? 'bg-brand-primary text-white'
                   : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100'
@@ -186,7 +186,7 @@ export default function TaxCalculator() {
             </button>
             <button
               onClick={() => setCalculationMode('net-to-gross')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors ${
                 calculationMode === 'net-to-gross'
                   ? 'bg-brand-primary text-white'
                   : 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100'
@@ -249,7 +249,7 @@ export default function TaxCalculator() {
         {/* Reset Button */}
         <button
           onClick={handleReset}
-          className="mt-6 flex items-center gap-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          className="mt-6 w-full sm:w-auto flex items-center justify-center sm:justify-start gap-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 sm:px-4 py-2 text-sm sm:text-base font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
         >
           <RotateCcw size={18} />
           {t('tax.reset')}
