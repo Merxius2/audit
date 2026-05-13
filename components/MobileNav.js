@@ -6,7 +6,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { BarChart3, TrendingUp, Eye, Settings } from 'lucide-react';
+import { BarChart3, TrendingUp, Eye, Settings, DollarSign } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function MobileNav() {
@@ -19,6 +19,7 @@ export default function MobileNav() {
     { path: '/dashboard', icon: BarChart3, labelKey: 'navigation.householdBudget' },
     { path: '/retirement', icon: TrendingUp, labelKey: 'navigation.retirement' },
     { path: '/overview', icon: Eye, labelKey: 'navigation.overview', isPrimary: true },
+    { path: '/debt', icon: DollarSign, labelKey: 'navigation.debtCalculator' },
     { path: '/settings', icon: Settings, labelKey: 'navigation.settings' },
   ];
 
