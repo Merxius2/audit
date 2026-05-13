@@ -147,7 +147,7 @@ export default function TaxCalculator() {
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={toggleSidebar}
-            className="hidden md:block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="hidden md:block lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             aria-label="Toggle sidebar"
           >
             <Menu size={24} className="text-gray-600 dark:text-gray-400" />
