@@ -62,6 +62,10 @@ export default function Dashboard() {
     SHARED_EXPENSE_CATEGORIES.reduce((acc, cat) => ({ ...acc, [cat]: '' }), {})
   );
 
+  // Custom names for person 1 and 2
+  const [person1Name, setPerson1Name] = useState('Person 1');
+  const [person2Name, setPerson2Name] = useState('Person 2');
+
   // Detect mobile screen size
   useEffect(() => {
     setIsMobile(window.innerWidth < 768);
@@ -96,6 +100,10 @@ export default function Dashboard() {
       if (savedData.person2Expenses) setPerson2Expenses(savedData.person2Expenses);
 
       if (savedData.sharedExpenses) setSharedExpenses(savedData.sharedExpenses);
+
+      // Load custom names
+      if (savedData.person1Name) setPerson1Name(savedData.person1Name);
+      if (savedData.person2Name) setPerson2Name(savedData.person2Name);
     }
     setIsLoading(false);
   }, []);
@@ -121,6 +129,8 @@ export default function Dashboard() {
         person2Savings,
         person2Expenses,
         sharedExpenses,
+        person1Name,
+        person2Name,
       });
     }, 500);
   };
@@ -135,6 +145,7 @@ export default function Dashboard() {
     person1Incomes, person1Savings, person1Expenses,
     person2Incomes, person2Savings, person2Expenses,
     sharedExpenses,
+    person1Name, person2Name,
     isLoading
   ]);
 
@@ -228,6 +239,35 @@ export default function Dashboard() {
               {t('dashboard.mode.separate')}
             </button>
           </div>
+
+          {/* Person Names Editor (only show in separate mode) */}
+          {calculationType === 'separate' && (
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-100 mb-4">Edit Person Names</h4>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Person 1 Name</label>
+                  <input
+                    type="text"
+                    value={person1Name}
+                    onChange={(e) => setPerson1Name(e.target.value)}
+                    placeholder="Enter Person 1 name"
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 dark:bg-gray-800 dark:border-gray-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Person 2 Name</label>
+                  <input
+                    type="text"
+                    value={person2Name}
+                    onChange={(e) => setPerson2Name(e.target.value)}
+                    placeholder="Enter Person 2 name"
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 dark:bg-gray-800 dark:border-gray-600"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -480,6 +520,8 @@ export default function Dashboard() {
       {/* Separate Mode Content */}
       {calculationType === 'separate' && (
       <SeparateModeContent
+        person1Name={person1Name}
+        person2Name={person2Name}
         person1Incomes={person1Incomes}
         setPerson1Incomes={setPerson1Incomes}
         person1Savings={person1Savings}
@@ -652,7 +694,7 @@ function PersonSection({
           <p className="font-mono text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{getSymbol()}{Math.floor(totalExpenses).toLocaleString('en-US')}</p>
         </div>
         <div className="card p-4">
-          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.person1Balance')}</p>
+          <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{personLabel} Balance</p>
           <p className={`font-mono text-2xl font-bold mt-2 ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
             {getSymbol()}{Math.floor(balance).toLocaleString('en-US')}
           </p>
@@ -664,6 +706,8 @@ function PersonSection({
 
 // Separate mode main content component
 function SeparateModeContent({
+  person1Name,
+  person2Name,
   person1Incomes,
   setPerson1Incomes,
   person1Savings,
@@ -712,9 +756,9 @@ function SeparateModeContent({
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
         {/* Person 1 Section */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.person1')}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{person1Name}</h2>
           <PersonSection
-            personLabel={t('dashboard.person1')}
+            personLabel={person1Name}
             incomes={person1Incomes}
             setIncomes={setPerson1Incomes}
             savings={person1Savings}
@@ -730,9 +774,9 @@ function SeparateModeContent({
 
         {/* Person 2 Section */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.person2')}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{person2Name}</h2>
           <PersonSection
-            personLabel={t('dashboard.person2')}
+            personLabel={person2Name}
             incomes={person2Incomes}
             setIncomes={setPerson2Incomes}
             savings={person2Savings}
@@ -757,23 +801,23 @@ function SeparateModeContent({
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.incomeRatio')}</p>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-gray-700 dark:text-gray-200 font-medium">{t('dashboard.person1')}:</span>
+                <span className="text-gray-700 dark:text-gray-200 font-medium">{person1Name}:</span>
                 <span className="font-mono text-lg font-bold text-brand-primary">{(person1Ratio * 100).toFixed(1)}%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-700 dark:text-gray-200 font-medium">{t('dashboard.person2')}:</span>
+                <span className="text-gray-700 dark:text-gray-200 font-medium">{person2Name}:</span>
                 <span className="font-mono text-lg font-bold text-brand-primary">{(person2Ratio * 100).toFixed(1)}%</span>
               </div>
             </div>
           </div>
 
           <div className="card p-6">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.person1Contribution')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{person1Name} Contribution</p>
             <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">{getSymbol()}{Math.floor(person1Contribution).toLocaleString('en-US')}</p>
           </div>
 
           <div className="card p-6">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.person2Contribution')}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{person2Name} Contribution</p>
             <p className="font-mono text-2xl font-bold text-green-600 dark:text-green-400">{getSymbol()}{Math.floor(person2Contribution).toLocaleString('en-US')}</p>
           </div>
         </div>
@@ -814,13 +858,13 @@ function SeparateModeContent({
             <p className="font-mono text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{getSymbol()}{Math.floor(sharedExpensesTotal).toLocaleString('en-US')}</p>
           </div>
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.person1Balance')}</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{person1Name} Balance</p>
             <p className={`font-mono text-2xl font-bold mt-2 ${person1Balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
               {getSymbol()}{Math.floor(person1Balance).toLocaleString('en-US')}
             </p>
           </div>
           <div className="card p-4">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{t('dashboard.person2Balance')}</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">{person2Name} Balance</p>
             <p className={`font-mono text-2xl font-bold mt-2 ${person2Balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
               {getSymbol()}{Math.floor(person2Balance).toLocaleString('en-US')}
             </p>
@@ -831,7 +875,7 @@ function SeparateModeContent({
         <div className={`grid gap-6 mt-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
           {/* Person 1 Pie Chart */}
           <PieChartCard
-            title={t('dashboard.person1')}
+            title={person1Name}
             data={[
               { name: t('dashboard.totalExpenses'), value: person1PersonalExpenses },
               { name: t('dashboard.savingsAmount'), value: person1SavingsNum },
@@ -843,7 +887,7 @@ function SeparateModeContent({
 
           {/* Person 2 Pie Chart */}
           <PieChartCard
-            title={t('dashboard.person2')}
+            title={person2Name}
             data={[
               { name: t('dashboard.totalExpenses'), value: person2PersonalExpenses },
               { name: t('dashboard.savingsAmount'), value: person2SavingsNum },
@@ -857,8 +901,8 @@ function SeparateModeContent({
           <PieChartCard
             title={t('dashboard.sharedAccount')}
             data={[
-              { name: t('dashboard.person1Contribution'), value: person1Contribution },
-              { name: t('dashboard.person2Contribution'), value: person2Contribution }
+              { name: `${person1Name} Contribution`, value: person1Contribution },
+              { name: `${person2Name} Contribution`, value: person2Contribution }
             ]}
             getSymbol={getSymbol}
             isMobile={isMobile}
