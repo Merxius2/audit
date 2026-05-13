@@ -110,7 +110,7 @@ html.dark .amount {
 }
 
 .amount-large {
-  @apply font-mono text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-tight text-gray-900;
+  @apply font-mono text-lg sm:text-xl md:text-xl lg:text-3xl font-bold tracking-tight text-gray-900;
 }
 
 html.dark .amount-large {

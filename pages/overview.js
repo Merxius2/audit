@@ -247,7 +247,7 @@ export default function Overview() {
         {data.retirementProjection > 0 && (
           <div className="card p-8">
             <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('overview.retirementProjectionBreakdown')}</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
               <div className="rounded-2xl border border-gray-100 p-3 sm:p-4 md:p-6 shadow-soft bg-gradient-to-br from-blue-50 to-white dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('overview.breakdown.contributions')}</p>
                 <p className="amount-large mt-3 text-gray-900 dark:text-gray-100">
