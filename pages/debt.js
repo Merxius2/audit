@@ -232,7 +232,7 @@ export default function Debt() {
 
       {/* Metrics Cards */}
       {schedule.length > 0 && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-8">
           <div className="card p-6">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('debt.monthlyPayment')}</p>
             <p className="font-mono text-2xl font-bold text-brand-primary">
