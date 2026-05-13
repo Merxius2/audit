@@ -260,8 +260,7 @@ export default function TaxCalculator() {
           {t('tax.reset')}
         </button>
       </div>
-    </div>
-  );
+
       {result && (
         <>
           {/* Metric Cards */}
