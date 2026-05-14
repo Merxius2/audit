@@ -3,53 +3,31 @@
  * Calculate monthly payments, generate amortization schedule, visualize balance over time
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
+import { useCookieStorage } from '../hooks/useCookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import PageHeader from '../components/PageHeader';
 import { RotateCcw, CreditCard } from 'lucide-react';
 import { MONTHS_PER_YEAR } from '../lib/appConstants';
 
 export default function Debt() {
-  // State
-  const [loanAmount, setLoanAmount] = useState('');
-  const [interestRate, setInterestRate] = useState('');
-  const [durationMonths, setDurationMonths] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-
   // Hooks
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const isMobile = useIsMobile();
 
-  // Debounced cookie save
-  const debouncedSave = useDebouncedCookie('AUDIT_DEBT_DATA', {
-    loanAmount,
-    interestRate,
-    durationMonths,
+  // Cookie storage with automatic loading and debounced saving
+  const { data: debtData, isLoading, updateData } = useCookieStorage('AUDIT_DEBT_DATA', {
+    loanAmount: '',
+    interestRate: '',
+    durationMonths: '',
   });
 
-  // Load data from cookies on mount
-  useEffect(() => {
-    const savedData = loadFromCookie('AUDIT_DEBT_DATA');
-    if (savedData) {
-      if (savedData.loanAmount) setLoanAmount(savedData.loanAmount);
-      if (savedData.interestRate) setInterestRate(savedData.interestRate);
-      if (savedData.durationMonths) setDurationMonths(savedData.durationMonths);
-    }
-    setIsLoading(false);
-  }, []);
-
-  // Save to cookie when state changes
-  useEffect(() => {
-    if (!isLoading) {
-      debouncedSave();
-    }
-  }, [loanAmount, interestRate, durationMonths, isLoading]);
+  // Destructure for easier access
+  const { loanAmount, interestRate, durationMonths } = debtData;
 
   // Memoize debt metrics calculation - expensive amortization loop
   const { schedule, monthlyPayment, totalInterest, totalPayment } = useMemo(() => {
@@ -129,9 +107,9 @@ export default function Debt() {
   const chartData = schedule.length <= 24 ? schedule : schedule.filter((item) => item.month % MONTHS_PER_YEAR === 0);
 
   const handleReset = () => {
-    setLoanAmount('');
-    setInterestRate('');
-    setDurationMonths('');
+    updateData('loanAmount', '');
+    updateData('interestRate', '');
+    updateData('durationMonths', '');
   };
 
   // Custom tooltip for balance chart to show total interest paid
@@ -175,7 +153,7 @@ export default function Debt() {
             <input
               type="number"
               value={loanAmount}
-              onChange={(e) => setLoanAmount(e.target.value)}
+              onChange={(e) => updateData('loanAmount', e.target.value)}
               placeholder="0"
               min="0"
               step="1000"
@@ -192,7 +170,7 @@ export default function Debt() {
               <input
                 type="number"
                 value={interestRate}
-                onChange={(e) => setInterestRate(e.target.value)}
+                onChange={(e) => updateData('interestRate', e.target.value)}
                 placeholder="0"
                 min="0"
                 step="0.1"
@@ -210,7 +188,7 @@ export default function Debt() {
             <input
               type="number"
               value={durationMonths}
-              onChange={(e) => setDurationMonths(e.target.value)}
+              onChange={(e) => updateData('durationMonths', e.target.value)}
               placeholder="0"
               min="0"
               step="1"

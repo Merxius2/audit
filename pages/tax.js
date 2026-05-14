@@ -4,12 +4,11 @@
  * Note: Income input is monthly; calculations are done on yearly basis and converted back to monthly
  */
 
-import { useState, useEffect, useMemo } from 'react';
-import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
+import { useMemo } from 'react';
 import { useTax } from '../context/TaxContext';
 import { calculateTaxBreakdown, calculateGrossFromNet } from '../lib/taxCalculator';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
+import { useCookieStorage } from '../hooks/useCookieStorage';
 import { useLanguage } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
 import PageHeader from '../components/PageHeader';
@@ -17,42 +16,21 @@ import { RotateCcw, Receipt } from 'lucide-react';
 import { EXPAT_INCOME_CAP_2026, EXPAT_EXEMPTION_RATE } from '../lib/appConstants';
 
 export default function TaxCalculator() {
-  // State
-  const [calculationMode, setCalculationMode] = useState('gross-to-net');
-  const [incomeInput, setIncomeInput] = useState('');
-  const [isExpat, setIsExpat] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
   // Hooks
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const isMobile = useIsMobile();
   const { selectedYear, changeYear, taxBrackets, getGeneralTaxCredit, getEarnedIncomeCredit, isEstimatedYear } = useTax();
 
-  // Debounced cookie save
-  const debouncedSave = useDebouncedCookie('AUDIT_TAX_DATA', {
-    incomeInput,
-    calculationMode,
-    isExpat,
+  // Cookie storage with automatic loading and debounced saving
+  const { data: taxData, isLoading, updateData } = useCookieStorage('AUDIT_TAX_DATA', {
+    calculationMode: 'gross-to-net',
+    incomeInput: '',
+    isExpat: false,
   });
 
-  // Load data from cookies on mount
-  useEffect(() => {
-    const savedData = loadFromCookie('AUDIT_TAX_DATA');
-    if (savedData) {
-      if (savedData.incomeInput) setIncomeInput(savedData.incomeInput);
-      if (savedData.calculationMode) setCalculationMode(savedData.calculationMode);
-      if (savedData.isExpat !== undefined) setIsExpat(savedData.isExpat);
-    }
-    setIsLoading(false);
-  }, []);
-
-  // Save to cookie when state changes
-  useEffect(() => {
-    if (!isLoading) {
-      debouncedSave();
-    }
-  }, [incomeInput, calculationMode, isExpat, isLoading]);
+  // Destructure for easier access in component
+  const { incomeInput, calculationMode, isExpat } = taxData;
 
   // Memoize tax calculation - expensive tax breakdown calculation
   const result = useMemo(() => {
@@ -120,9 +98,9 @@ export default function TaxCalculator() {
   }, [incomeInput, calculationMode, isExpat, getGeneralTaxCredit, getEarnedIncomeCredit, taxBrackets]);
 
   const handleReset = () => {
-    setIncomeInput('');
-    setCalculationMode('gross-to-net');
-    setIsExpat(false);
+    updateData('incomeInput', '');
+    updateData('calculationMode', 'gross-to-net');
+    updateData('isExpat', false);
   };
 
   return (
@@ -150,7 +128,7 @@ export default function TaxCalculator() {
           </label>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
-              onClick={() => setCalculationMode('gross-to-net')}
+              onClick={() => updateData('calculationMode', 'gross-to-net')}
               className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors ${
                 calculationMode === 'gross-to-net'
                   ? 'bg-brand-primary text-white'
@@ -160,7 +138,7 @@ export default function TaxCalculator() {
               {t('tax.grossToNet')}
             </button>
             <button
-              onClick={() => setCalculationMode('net-to-gross')}
+              onClick={() => updateData('calculationMode', 'net-to-gross')}
               className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors ${
                 calculationMode === 'net-to-gross'
                   ? 'bg-brand-primary text-white'
@@ -199,7 +177,7 @@ export default function TaxCalculator() {
               id="income"
               type="number"
               value={incomeInput}
-              onChange={(e) => setIncomeInput(e.target.value)}
+              onChange={(e) => updateData('incomeInput', e.target.value)}
               placeholder="0"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400"
               min="0"
@@ -213,7 +191,7 @@ export default function TaxCalculator() {
             id="expat"
             type="checkbox"
             checked={isExpat}
-            onChange={(e) => setIsExpat(e.target.checked)}
+            onChange={(e) => updateData('isExpat', e.target.checked)}
             className="w-4 h-4 text-brand-primary bg-gray-100 border-gray-300 rounded cursor-pointer"
           />
           <label htmlFor="expat" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">

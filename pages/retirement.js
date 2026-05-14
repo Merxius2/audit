@@ -3,15 +3,14 @@
  * Plan retirement with compound growth projections
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from 'lucide-react';
-import { loadFromCookie } from '../lib/cookieStorage';
+import { useCookieStorage } from '../hooks/useCookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import { generateForwardProjection, generateBackwardProjection } from '../lib/retirementCalculator';
 import PageHeader from '../components/PageHeader';
 import {
@@ -23,53 +22,23 @@ import {
 } from '../lib/appConstants';
 
 export default function RetirementProjection() {
-  const [calculationType, setCalculationType] = useState('forward'); // 'forward' or 'backward'
-  
-  // Forward calculation inputs
-  const [currentAge, setCurrentAge] = useState(String(DEFAULT_CURRENT_AGE));
-  const [retirementAge, setRetirementAge] = useState(String(DEFAULT_RETIREMENT_AGE));
-  const [monthlyInvestment, setMonthlyInvestment] = useState(String(DEFAULT_MONTHLY_INVESTMENT));
-  const [annualReturn, setAnnualReturn] = useState(String(DEFAULT_ANNUAL_INVESTMENT_RETURN));
-
-  // Backward calculation inputs
-  const [goalBalance, setGoalBalance] = useState(String(DEFAULT_RETIREMENT_GOAL));
-
-  const [isLoading, setIsLoading] = useState(true);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const { isDarkMode } = useDarkMode();
   const isMobile = useIsMobile();
 
-  // Debounced cookie save
-  const debouncedSave = useDebouncedCookie('AUDIT_RETIREMENT_DATA', {
-    calculationType,
-    currentAge,
-    retirementAge,
-    monthlyInvestment,
-    goalBalance,
-    annualReturn,
+  // Cookie storage with automatic loading and debounced saving
+  const { data: retirementData, isLoading, updateData } = useCookieStorage('AUDIT_RETIREMENT_DATA', {
+    calculationType: 'forward',
+    currentAge: String(DEFAULT_CURRENT_AGE),
+    retirementAge: String(DEFAULT_RETIREMENT_AGE),
+    monthlyInvestment: String(DEFAULT_MONTHLY_INVESTMENT),
+    annualReturn: String(DEFAULT_ANNUAL_INVESTMENT_RETURN),
+    goalBalance: String(DEFAULT_RETIREMENT_GOAL),
   });
 
-  // Load data from cookies on mount
-  useEffect(() => {
-    const savedData = loadFromCookie('AUDIT_RETIREMENT_DATA');
-    if (savedData) {
-      if (savedData.calculationType) setCalculationType(savedData.calculationType);
-      if (savedData.currentAge) setCurrentAge(savedData.currentAge);
-      if (savedData.retirementAge) setRetirementAge(savedData.retirementAge);
-      if (savedData.monthlyInvestment) setMonthlyInvestment(savedData.monthlyInvestment);
-      if (savedData.goalBalance) setGoalBalance(savedData.goalBalance);
-      if (savedData.annualReturn) setAnnualReturn(savedData.annualReturn);
-    }
-    setIsLoading(false);
-  }, []);
-
-  // Save to cookie when state changes
-  useEffect(() => {
-    if (!isLoading) {
-      debouncedSave();
-    }
-  }, [calculationType, currentAge, retirementAge, monthlyInvestment, goalBalance, annualReturn, isLoading]);
+  // Destructure for easier access
+  const { calculationType, currentAge, retirementAge, monthlyInvestment, annualReturn, goalBalance } = retirementData;
 
   const isForward = calculationType === 'forward';
   
@@ -133,15 +102,15 @@ export default function RetirementProjection() {
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {(isForward ? [
-              { label: t('retirement.currentAge'), value: currentAge, setValue: setCurrentAge, placeholder: '30' },
-              { label: t('retirement.retirementAge'), value: retirementAge, setValue: setRetirementAge, placeholder: '65' },
-              { label: t('retirement.monthlyInvestment'), value: monthlyInvestment, setValue: setMonthlyInvestment, placeholder: '1000' },
-              { label: t('retirement.annualReturn'), value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
+              { label: t('retirement.currentAge'), value: currentAge, field: 'currentAge', placeholder: '30' },
+              { label: t('retirement.retirementAge'), value: retirementAge, field: 'retirementAge', placeholder: '65' },
+              { label: t('retirement.monthlyInvestment'), value: monthlyInvestment, field: 'monthlyInvestment', placeholder: '1000' },
+              { label: t('retirement.annualReturn'), value: annualReturn, field: 'annualReturn', placeholder: '7' },
             ] : [
-              { label: t('retirement.currentAge'), value: currentAge, setValue: setCurrentAge, placeholder: '30' },
-              { label: t('retirement.retirementAge'), value: retirementAge, setValue: setRetirementAge, placeholder: '65' },
-              { label: t('retirement.goalBalance'), value: goalBalance, setValue: setGoalBalance, placeholder: '500000' },
-              { label: t('retirement.annualReturn'), value: annualReturn, setValue: setAnnualReturn, placeholder: '7' },
+              { label: t('retirement.currentAge'), value: currentAge, field: 'currentAge', placeholder: '30' },
+              { label: t('retirement.retirementAge'), value: retirementAge, field: 'retirementAge', placeholder: '65' },
+              { label: t('retirement.goalBalance'), value: goalBalance, field: 'goalBalance', placeholder: '500000' },
+              { label: t('retirement.annualReturn'), value: annualReturn, field: 'annualReturn', placeholder: '7' },
             ]).map((field, idx) => (
             <div key={idx} className="card p-4">
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">
@@ -150,12 +119,12 @@ export default function RetirementProjection() {
               <input
                 type="number"
                 value={field.value}
-                onChange={(e) => field.setValue(e.target.value)}
+                onChange={(e) => updateData(field.field, e.target.value)}
                 placeholder={field.placeholder}
                 className="amount-large w-full border-0 bg-transparent text-gray-900 focus:ring-0"
               />
             </div>
-          ))}
+          ))}\n
         </div>
 
         {/* Chart Section */}
