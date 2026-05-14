@@ -3,7 +3,7 @@
  * Plan retirement with compound growth projections
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from 'lucide-react';
 import { loadFromCookie } from '../lib/cookieStorage';
@@ -65,9 +65,14 @@ export default function RetirementProjection() {
   }, [calculationType, currentAge, retirementAge, monthlyInvestment, goalBalance, annualReturn, isLoading]);
 
   const isForward = calculationType === 'forward';
-  const projectionData = isForward 
-    ? generateForwardProjection(currentAge, retirementAge, monthlyInvestment, annualReturn) 
-    : generateBackwardProjection(currentAge, retirementAge, goalBalance, annualReturn);
+  
+  // Memoize projection calculation - expensive operation
+  const projectionData = useMemo(() => {
+    return isForward 
+      ? generateForwardProjection(currentAge, retirementAge, monthlyInvestment, annualReturn) 
+      : generateBackwardProjection(currentAge, retirementAge, goalBalance, annualReturn);
+  }, [isForward, currentAge, retirementAge, monthlyInvestment, annualReturn, goalBalance]);
+  
   const finalBalance = projectionData[projectionData.length - 1]?.balance || 0;
   
   const currentAgeNum = parseInt(currentAge) || 0;

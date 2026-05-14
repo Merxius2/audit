@@ -3,7 +3,7 @@
  * Calculate monthly payments, generate amortization schedule, visualize balance over time
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
@@ -50,8 +50,8 @@ export default function Debt() {
     }
   }, [loanAmount, interestRate, durationMonths, isLoading]);
 
-  // Calculate debt metrics
-  const calculateDebtMetrics = () => {
+  // Memoize debt metrics calculation - expensive amortization loop
+  const { schedule, monthlyPayment, totalInterest, totalPayment } = useMemo(() => {
     const principal = parseFloat(loanAmount) || 0;
     const annualRate = parseFloat(interestRate) || 0;
     const months = parseInt(durationMonths) || 0;
@@ -122,9 +122,7 @@ export default function Debt() {
       totalInterest,
       totalPayment: principal + totalInterest,
     };
-  };
-
-  const { schedule, monthlyPayment, totalInterest, totalPayment } = calculateDebtMetrics();
+  }, [loanAmount, interestRate, durationMonths]);
 
   // Format for chart (show every 12 months or all if less than 24 months)
   const chartData = schedule.length <= 24 ? schedule : schedule.filter((item) => item.month % 12 === 0);

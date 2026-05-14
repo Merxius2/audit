@@ -4,7 +4,7 @@
  * Note: Income input is monthly; calculations are done on yearly basis and converted back to monthly
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useTax } from '../context/TaxContext';
 import { calculateTaxBreakdown, calculateGrossFromNet } from '../lib/taxCalculator';
@@ -53,8 +53,8 @@ export default function TaxCalculator() {
     }
   }, [incomeInput, calculationMode, isExpat, isLoading]);
 
-  // Calculate taxes
-  const calculateResults = () => {
+  // Memoize tax calculation - expensive tax breakdown calculation
+  const result = useMemo(() => {
     const monthlyIncome = parseFloat(incomeInput) || 0;
     if (monthlyIncome <= 0) {
       return null;
@@ -68,7 +68,7 @@ export default function TaxCalculator() {
     const generalTaxCredit = getGeneralTaxCredit();
     const earnedIncomeCredit = getEarnedIncomeCredit();
 
-    let result;
+    let taxResult;
     if (calculationMode === 'gross-to-net') {
       // GROSS-TO-NET: Apply 30% expat exemption to the GROSS income before calculation
       let grossIncome = yearlyIncome;
@@ -81,44 +81,42 @@ export default function TaxCalculator() {
         // For incomes above cap, no exemption applies
         expatExemption = 0;
       }
-      result = calculateTaxBreakdown(grossIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
+      taxResult = calculateTaxBreakdown(grossIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit);
     } else {
       // NET-TO-GROSS: Pass applyExpatExemption flag to binary search
       // This ensures correct gross is found that yields desired net income
-      result = calculateGrossFromNet(yearlyIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit, isExpat);
+      taxResult = calculateGrossFromNet(yearlyIncome, taxBrackets, generalTaxCredit, earnedIncomeCredit, isExpat);
     }
 
     // Add expatExemption back to net income (it's tax-free) - only for gross-to-net
     // For net-to-gross, expatExemption is already handled in calculateGrossFromNet
     if (calculationMode === 'gross-to-net' && isExpat && expatExemption > 0) {
-      result.expatExemption = expatExemption;
-      result.netIncome = result.netIncome + expatExemption;
-      result.effectiveRate = result.grossIncome + expatExemption > 0 
-        ? ((result.totalTax) / (result.grossIncome + expatExemption)) * 100 
+      taxResult.expatExemption = expatExemption;
+      taxResult.netIncome = taxResult.netIncome + expatExemption;
+      taxResult.effectiveRate = taxResult.grossIncome + expatExemption > 0 
+        ? ((taxResult.totalTax) / (taxResult.grossIncome + expatExemption)) * 100 
         : 0;
     }
 
     // Convert yearly results back to monthly
     return {
-      ...result,
-      grossIncome: (result.grossIncome + (expatExemption || 0)) / 12,
-      incomeTax: result.incomeTax / 12,
-      generalTaxCredit: result.generalTaxCredit / 12,
-      earnedIncomeCreditAmount: result.earnedIncomeCreditAmount / 12,
-      totalCredits: result.totalCredits / 12,
-      totalTax: result.totalTax / 12,
-      netIncome: result.netIncome / 12,
+      ...taxResult,
+      grossIncome: (taxResult.grossIncome + (expatExemption || 0)) / 12,
+      incomeTax: taxResult.incomeTax / 12,
+      generalTaxCredit: taxResult.generalTaxCredit / 12,
+      earnedIncomeCreditAmount: taxResult.earnedIncomeCreditAmount / 12,
+      totalCredits: taxResult.totalCredits / 12,
+      totalTax: taxResult.totalTax / 12,
+      netIncome: taxResult.netIncome / 12,
       expatExemption: (expatExemption || 0) / 12,
-      bracketsBreakdown: result.bracketsBreakdown.map(b => ({
+      bracketsBreakdown: taxResult.bracketsBreakdown.map(b => ({
         ...b,
         incomeInBracket: b.incomeInBracket / 12,
         taxInBracket: b.taxInBracket / 12,
         cumulativeTax: b.cumulativeTax / 12,
       })),
     };
-  };
-
-  const result = calculateResults();
+  }, [incomeInput, calculationMode, isExpat, getGeneralTaxCredit, getEarnedIncomeCredit, taxBrackets]);
 
   const handleReset = () => {
     setIncomeInput('');

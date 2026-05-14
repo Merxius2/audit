@@ -3,7 +3,7 @@
  * Displays key metrics from all pages in a unified view
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Wallet, TrendingUp, Eye } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { EXPENSE_CATEGORIES, CHART_COLORS } from '../lib/constants';
@@ -29,10 +29,65 @@ export default function Overview() {
   const { t } = useLanguage();
   const isMobile = useIsMobile();
 
+  // Memoize retirement projection calculation - expensive operation
+  const retirementMetrics = useMemo(() => {
+    const retirementData = loadFromCookie('AUDIT_RETIREMENT_DATA');
+    if (!retirementData) return { retirementProjection: 0, retirementBreakdown: { contributions: 0, gains: 0 }, monthlyInvestment: 0 };
+
+    const isBackward = retirementData.calculationType === 'backward';
+    const projectionArray = isBackward
+      ? generateBackwardProjection(
+          retirementData.currentAge || '30',
+          retirementData.retirementAge || '65',
+          retirementData.goalBalance || '500000',
+          retirementData.annualReturn || '7'
+        )
+      : generateForwardProjection(
+          retirementData.currentAge || '30',
+          retirementData.retirementAge || '65',
+          retirementData.monthlyInvestment || '1000',
+          retirementData.annualReturn || '7'
+        );
+    
+    // Extract final breakdown from projection array
+    const finalProjection = projectionArray[projectionArray.length - 1];
+    let retirementBreakdown = { contributions: 0, gains: 0 };
+    
+    if (finalProjection) {
+      retirementBreakdown = {
+        contributions: finalProjection.contributions,
+        gains: finalProjection.gains,
+      };
+    }
+    
+    // Calculate monthly investment
+    let monthlyInvest = 0;
+    if (isBackward) {
+      const current = parseInt(retirementData.currentAge) || 0;
+      const retirement = parseInt(retirementData.retirementAge) || 65;
+      const goal = parseFloat(retirementData.goalBalance) || 500000;
+      const rate = (parseFloat(retirementData.annualReturn) || 7) / 100 / 12;
+      const months = (retirement - current) * 12;
+      if (rate === 0) {
+        monthlyInvest = months > 0 ? Math.floor(goal / months) : 0;
+      } else {
+        const factor = (Math.pow(1 + rate, months) - 1) / rate;
+        monthlyInvest = factor > 0 ? Math.floor(goal / factor) : 0;
+      }
+    } else {
+      monthlyInvest = Math.floor(parseFloat(retirementData.monthlyInvestment) || 0);
+    }
+
+    return {
+      retirementProjection: finalProjection?.balance || 0,
+      retirementBreakdown,
+      monthlyInvestment: monthlyInvest,
+    };
+  }, []);
+
   useEffect(() => {
     // Load dashboard data from cookies
     const dashboardData = loadFromCookie('AUDIT_DASHBOARD_DATA');
-    const retirementData = loadFromCookie('AUDIT_RETIREMENT_DATA');
 
     if (dashboardData) {
       let totalIncome = 0;
@@ -74,65 +129,18 @@ export default function Overview() {
 
       const totalExpenses = Object.values(expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
 
-      let retirementBreakdown = { contributions: 0, gains: 0 };
-      let monthlyInvest = 0;
-      let finalProjection = null;
-      
-      if (retirementData) {
-        const isBackward = retirementData.calculationType === 'backward';
-        const projectionArray = isBackward
-          ? generateBackwardProjection(
-              retirementData.currentAge || '30',
-              retirementData.retirementAge || '65',
-              retirementData.goalBalance || '500000',
-              retirementData.annualReturn || '7'
-            )
-          : generateForwardProjection(
-              retirementData.currentAge || '30',
-              retirementData.retirementAge || '65',
-              retirementData.monthlyInvestment || '1000',
-              retirementData.annualReturn || '7'
-            );
-        
-        // Extract final breakdown from projection array
-        finalProjection = projectionArray[projectionArray.length - 1];
-        if (finalProjection) {
-          retirementBreakdown = {
-            contributions: finalProjection.contributions,
-            gains: finalProjection.gains,
-          };
-        }
-        
-        // Calculate monthly investment
-        if (isBackward) {
-          const current = parseInt(retirementData.currentAge) || 0;
-          const retirement = parseInt(retirementData.retirementAge) || 65;
-          const goal = parseFloat(retirementData.goalBalance) || 500000;
-          const rate = (parseFloat(retirementData.annualReturn) || 7) / 100 / 12;
-          const months = (retirement - current) * 12;
-          if (rate === 0) {
-            monthlyInvest = months > 0 ? Math.floor(goal / months) : 0;
-          } else {
-            const factor = (Math.pow(1 + rate, months) - 1) / rate;
-            monthlyInvest = factor > 0 ? Math.floor(goal / factor) : 0;
-          }
-        } else {
-          monthlyInvest = Math.floor(parseFloat(retirementData.monthlyInvestment) || 0);
-        }
-      }
-
       setData({
         totalIncome,
         totalExpenses,
         savingsAmount,
         includeSavingsInCalculations: dashboardData.includeSavingsInCalculations !== false,
         expenses,
-        retirementProjection: finalProjection?.balance || 0,
-        retirementBreakdown,
-        monthlyInvestment: monthlyInvest,
+        retirementProjection: retirementMetrics.retirementProjection,
+        retirementBreakdown: retirementMetrics.retirementBreakdown,
+        monthlyInvestment: retirementMetrics.monthlyInvestment,
       });
     }
-  }, []);
+  }, [retirementMetrics]);
 
   const savingsRate = data.totalIncome > 0 
     ? ((data.savingsAmount / data.totalIncome) * 100).toFixed(1)
