@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BarChart3, TrendingUp, ArrowRight, DollarSign, Receipt } from 'lucide-react';
+import { BarChart3, TrendingUp, ArrowRight, CreditCard, Receipt } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
 
@@ -132,7 +132,7 @@ export default function Home() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                 <Link href="/debt">
                   <div className="card p-4 cursor-pointer hover:shadow-lg transition-shadow">
-                    <DollarSign className="mx-auto mb-2 text-brand-primary" size={24} />
+                    <CreditCard className="mx-auto mb-2 text-brand-primary" size={24} />
                     <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{t('navigation.debtCalculator')}</h3>
                     <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{t('landing.debtCalcDesc')}</p>
                   </div>
