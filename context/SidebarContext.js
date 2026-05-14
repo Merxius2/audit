@@ -10,7 +10,7 @@ export const SidebarProvider = ({ children }) => {
   // Detect screen size on mount and on resize
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsLargeScreen(window.innerWidth >= 1024); // lg breakpoint
+      setIsLargeScreen(window.innerWidth >= 768); // md breakpoint (consistent with Tailwind)
     };
 
     checkScreenSize();

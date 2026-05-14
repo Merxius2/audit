@@ -69,19 +69,15 @@ function AppContent({ Component, pageProps }) {
   }, [language]);
 
   return (
-    <DarkModeProvider>
-      <LanguageProvider>
-        <CurrencyProvider>
-          {!isHomePage && (
-            <>
-              <Sidebar />
-              <MobileNav />
-            </>
-          )}
-          <Component {...pageProps} />
-        </CurrencyProvider>
-      </LanguageProvider>
-    </DarkModeProvider>
+    <>
+      {!isHomePage && (
+        <>
+          <Sidebar />
+          <MobileNav />
+        </>
+      )}
+      <Component {...pageProps} />
+    </>
   );
 }
 
