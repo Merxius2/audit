@@ -11,6 +11,7 @@ import { SecretSettingsProvider } from '../context/SecretSettingsContext';
 import { SidebarProvider } from '../context/SidebarContext';
 import { TaxProvider } from '../context/TaxContext';
 import Sidebar from '../components/Sidebar';
+import ErrorBoundary from '../components/ErrorBoundary';
 import MobileNav from '../components/MobileNav';
 import SecretSettingsModal from '../components/SecretSettingsModal';
 import { useRouter } from 'next/router';
@@ -83,20 +84,22 @@ function AppContent({ Component, pageProps }) {
 
 function MyApp({ Component, pageProps }) {
   return (
-    <DarkModeProvider>
-      <LanguageProvider>
-        <CurrencyProvider>
-          <TaxProvider>
-            <SidebarProvider>
-              <SecretSettingsProvider>
-                <SecretSettingsModal />
-                <AppContent Component={Component} pageProps={pageProps} />
-              </SecretSettingsProvider>
-            </SidebarProvider>
-          </TaxProvider>
-        </CurrencyProvider>
-      </LanguageProvider>
-    </DarkModeProvider>
+    <ErrorBoundary>
+      <DarkModeProvider>
+        <LanguageProvider>
+          <CurrencyProvider>
+            <TaxProvider>
+              <SidebarProvider>
+                <SecretSettingsProvider>
+                  <SecretSettingsModal />
+                  <AppContent Component={Component} pageProps={pageProps} />
+                </SecretSettingsProvider>
+              </SidebarProvider>
+            </TaxProvider>
+          </CurrencyProvider>
+        </LanguageProvider>
+      </DarkModeProvider>
+    </ErrorBoundary>
   );
 }
 

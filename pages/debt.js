@@ -12,6 +12,7 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import PageHeader from '../components/PageHeader';
 import { RotateCcw, CreditCard } from 'lucide-react';
+import { MONTHS_PER_YEAR } from '../lib/appConstants';
 
 export default function Debt() {
   // State
@@ -60,7 +61,7 @@ export default function Debt() {
       return { schedule: [], monthlyPayment: 0, totalInterest: 0, totalPayment: 0 };
     }
 
-    const monthlyRate = annualRate / 100 / 12;
+    const monthlyRate = annualRate / 100 / MONTHS_PER_YEAR;
     
     // Handle 0% interest
     if (monthlyRate === 0) {
@@ -125,7 +126,7 @@ export default function Debt() {
   }, [loanAmount, interestRate, durationMonths]);
 
   // Format for chart (show every 12 months or all if less than 24 months)
-  const chartData = schedule.length <= 24 ? schedule : schedule.filter((item) => item.month % 12 === 0);
+  const chartData = schedule.length <= 24 ? schedule : schedule.filter((item) => item.month % MONTHS_PER_YEAR === 0);
 
   const handleReset = () => {
     setLoanAmount('');

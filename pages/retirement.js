@@ -14,18 +14,25 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import { generateForwardProjection, generateBackwardProjection } from '../lib/retirementCalculator';
 import PageHeader from '../components/PageHeader';
+import {
+  DEFAULT_CURRENT_AGE,
+  DEFAULT_RETIREMENT_AGE,
+  DEFAULT_MONTHLY_INVESTMENT,
+  DEFAULT_ANNUAL_INVESTMENT_RETURN,
+  DEFAULT_RETIREMENT_GOAL,
+} from '../lib/appConstants';
 
 export default function RetirementProjection() {
   const [calculationType, setCalculationType] = useState('forward'); // 'forward' or 'backward'
   
   // Forward calculation inputs
-  const [currentAge, setCurrentAge] = useState('30');
-  const [retirementAge, setRetirementAge] = useState('65');
-  const [monthlyInvestment, setMonthlyInvestment] = useState('1000');
-  const [annualReturn, setAnnualReturn] = useState('7');
+  const [currentAge, setCurrentAge] = useState(String(DEFAULT_CURRENT_AGE));
+  const [retirementAge, setRetirementAge] = useState(String(DEFAULT_RETIREMENT_AGE));
+  const [monthlyInvestment, setMonthlyInvestment] = useState(String(DEFAULT_MONTHLY_INVESTMENT));
+  const [annualReturn, setAnnualReturn] = useState(String(DEFAULT_ANNUAL_INVESTMENT_RETURN));
 
   // Backward calculation inputs
-  const [goalBalance, setGoalBalance] = useState('500000');
+  const [goalBalance, setGoalBalance] = useState(String(DEFAULT_RETIREMENT_GOAL));
 
   const [isLoading, setIsLoading] = useState(true);
   const { getSymbol } = useCurrency();

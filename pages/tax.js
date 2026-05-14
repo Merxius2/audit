@@ -14,6 +14,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
 import PageHeader from '../components/PageHeader';
 import { RotateCcw, Receipt } from 'lucide-react';
+import { EXPAT_INCOME_CAP_2026, EXPAT_EXEMPTION_RATE } from '../lib/appConstants';
 
 export default function TaxCalculator() {
   // State
@@ -63,7 +64,7 @@ export default function TaxCalculator() {
     // Convert monthly to yearly for calculation
     let yearlyIncome = monthlyIncome * 12;
     let expatExemption = 0;
-    const exemptionCap = 244000; // 2026 income cap for 30% rule (Balkenende-norm)
+    const exemptionCap = EXPAT_INCOME_CAP_2026;
 
     const generalTaxCredit = getGeneralTaxCredit();
     const earnedIncomeCredit = getEarnedIncomeCredit();
@@ -74,9 +75,9 @@ export default function TaxCalculator() {
       let grossIncome = yearlyIncome;
       if (isExpat && grossIncome <= exemptionCap) {
         // 30% of income is tax-free
-        expatExemption = grossIncome * 0.3;
+        expatExemption = grossIncome * EXPAT_EXEMPTION_RATE;
         // Taxable income is only 70% of gross
-        grossIncome = grossIncome * 0.7;
+        grossIncome = grossIncome * (1 - EXPAT_EXEMPTION_RATE);
       } else if (isExpat && grossIncome > exemptionCap) {
         // For incomes above cap, no exemption applies
         expatExemption = 0;
