@@ -9,7 +9,7 @@ export function RainbowModeProvider({ children }) {
 
   // Load from cookie on mount
   useEffect(() => {
-    const savedRainbow = loadFromCookie('rainbow_mode_preference');
+    const savedRainbow = loadFromCookie('AUDIT_RAINBOW_MODE_PREFERENCE');
     if (savedRainbow !== null) {
       setIsRainbow(savedRainbow);
     }
@@ -19,7 +19,7 @@ export function RainbowModeProvider({ children }) {
   const toggleRainbow = () => {
     const newValue = !isRainbow;
     setIsRainbow(newValue);
-    saveToCookie('rainbow_mode_preference', newValue, 365);
+    saveToCookie('AUDIT_RAINBOW_MODE_PREFERENCE', newValue, 365);
   };
 
   return (

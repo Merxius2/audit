@@ -8,7 +8,6 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
-import { useSidebar } from '../context/SidebarContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import PageHeader from '../components/PageHeader';
@@ -24,11 +23,10 @@ export default function Debt() {
   // Hooks
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
-  const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
 
   // Debounced cookie save
-  const debouncedSave = useDebouncedCookie('debt_calculator_data', {
+  const debouncedSave = useDebouncedCookie('AUDIT_DEBT_DATA', {
     loanAmount,
     interestRate,
     durationMonths,
@@ -36,7 +34,7 @@ export default function Debt() {
 
   // Load data from cookies on mount
   useEffect(() => {
-    const savedData = loadFromCookie('debt_calculator_data');
+    const savedData = loadFromCookie('AUDIT_DEBT_DATA');
     if (savedData) {
       if (savedData.loanAmount) setLoanAmount(savedData.loanAmount);
       if (savedData.interestRate) setInterestRate(savedData.interestRate);

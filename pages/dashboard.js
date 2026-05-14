@@ -10,7 +10,6 @@ import { EXPENSE_CATEGORIES, SHARED_EXPENSE_CATEGORIES, PERSONAL_EXPENSE_CATEGOR
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
-import { useSidebar } from '../context/SidebarContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import PageHeader from '../components/PageHeader';
@@ -21,7 +20,6 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
-  const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
 
   // Shared mode state (current mode)
@@ -56,7 +54,7 @@ export default function Dashboard() {
 
   // Load data from cookies on mount
   useEffect(() => {
-    const savedData = loadFromCookie('huishoudboekje_data');
+    const savedData = loadFromCookie('AUDIT_DASHBOARD_DATA');
     if (savedData) {
       if (savedData.calculationType) setCalculationType(savedData.calculationType);
       
@@ -87,7 +85,7 @@ export default function Dashboard() {
   }, []);
 
   // Debounced cookie save
-  const debouncedSave = useDebouncedCookie('huishoudboekje_data', {
+  const debouncedSave = useDebouncedCookie('AUDIT_DASHBOARD_DATA', {
     calculationType,
     // Shared mode
     incomes,

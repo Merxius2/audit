@@ -10,7 +10,6 @@ import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
-import { useSidebar } from '../context/SidebarContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import { generateForwardProjection, generateBackwardProjection } from '../lib/retirementCalculator';
@@ -31,12 +30,11 @@ export default function RetirementProjection() {
   const [isLoading, setIsLoading] = useState(true);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
-  const { toggleSidebar } = useSidebar();
   const { isDarkMode } = useDarkMode();
   const isMobile = useIsMobile();
 
   // Debounced cookie save
-  const debouncedSave = useDebouncedCookie('retirement_data', {
+  const debouncedSave = useDebouncedCookie('AUDIT_RETIREMENT_DATA', {
     calculationType,
     currentAge,
     retirementAge,
@@ -47,7 +45,7 @@ export default function RetirementProjection() {
 
   // Load data from cookies on mount
   useEffect(() => {
-    const savedData = loadFromCookie('retirement_data');
+    const savedData = loadFromCookie('AUDIT_RETIREMENT_DATA');
     if (savedData) {
       if (savedData.calculationType) setCalculationType(savedData.calculationType);
       if (savedData.currentAge) setCurrentAge(savedData.currentAge);

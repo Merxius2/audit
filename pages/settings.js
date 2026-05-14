@@ -72,8 +72,8 @@ export default function SettingsPage() {
 
   const confirmReset = () => {
     try {
-      deleteCookie('huishoudboekje_data');
-      deleteCookie('retirement_data');
+      deleteCookie('AUDIT_DASHBOARD_DATA');
+      deleteCookie('AUDIT_RETIREMENT_DATA');
       setResetMessage(t('settings.success'));
       setShowConfirmation(false);
       

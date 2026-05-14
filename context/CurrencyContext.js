@@ -17,7 +17,7 @@ export function CurrencyProvider({ children }) {
 
   // Load currency from cookies on mount
   useEffect(() => {
-    const savedCurrency = loadFromCookie('currency_preference');
+    const savedCurrency = loadFromCookie('AUDIT_CURRENCY_PREFERENCE');
     if (savedCurrency && savedCurrency.currency) {
       setCurrency(savedCurrency.currency);
     }
@@ -26,7 +26,7 @@ export function CurrencyProvider({ children }) {
 
   const changeCurrency = (curr) => {
     setCurrency(curr);
-    saveToCookie('currency_preference', { currency: curr }, 365);
+    saveToCookie('AUDIT_CURRENCY_PREFERENCE', { currency: curr }, 365);
   };
 
   const getSymbol = () => {

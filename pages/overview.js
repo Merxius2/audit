@@ -10,7 +10,6 @@ import { EXPENSE_CATEGORIES, CHART_COLORS } from '../lib/constants';
 import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
-import { useSidebar } from '../context/SidebarContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { generateForwardProjection, generateBackwardProjection } from '../lib/retirementCalculator';
 import PageHeader from '../components/PageHeader';
@@ -28,13 +27,12 @@ export default function Overview() {
   });
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
-  const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
 
   useEffect(() => {
     // Load dashboard data from cookies
-    const dashboardData = loadFromCookie('huishoudboekje_data');
-    const retirementData = loadFromCookie('retirement_data');
+    const dashboardData = loadFromCookie('AUDIT_DASHBOARD_DATA');
+    const retirementData = loadFromCookie('AUDIT_RETIREMENT_DATA');
 
     if (dashboardData) {
       let totalIncome = 0;

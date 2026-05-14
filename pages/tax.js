@@ -12,7 +12,6 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import { useLanguage } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
-import { useSidebar } from '../context/SidebarContext';
 import PageHeader from '../components/PageHeader';
 import { RotateCcw, Receipt } from 'lucide-react';
 
@@ -26,12 +25,11 @@ export default function TaxCalculator() {
   // Hooks
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
-  const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
   const { selectedYear, changeYear, taxBrackets, getGeneralTaxCredit, getEarnedIncomeCredit, isEstimatedYear } = useTax();
 
   // Debounced cookie save
-  const debouncedSave = useDebouncedCookie('tax_calculator_data', {
+  const debouncedSave = useDebouncedCookie('AUDIT_TAX_DATA', {
     incomeInput,
     calculationMode,
     isExpat,
@@ -39,7 +37,7 @@ export default function TaxCalculator() {
 
   // Load data from cookies on mount
   useEffect(() => {
-    const savedData = loadFromCookie('tax_calculator_data');
+    const savedData = loadFromCookie('AUDIT_TAX_DATA');
     if (savedData) {
       if (savedData.incomeInput) setIncomeInput(savedData.incomeInput);
       if (savedData.calculationMode) setCalculationMode(savedData.calculationMode);

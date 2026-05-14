@@ -10,7 +10,7 @@ export function LanguageProvider({ children }) {
 
   // Load language from cookies on mount
   useEffect(() => {
-    const savedLanguage = loadFromCookie('language_preference');
+    const savedLanguage = loadFromCookie('AUDIT_LANGUAGE_PREFERENCE');
     if (savedLanguage && savedLanguage.language) {
       setLanguage(savedLanguage.language);
     }
@@ -19,7 +19,7 @@ export function LanguageProvider({ children }) {
 
   const changeLanguage = (lang) => {
     setLanguage(lang);
-    saveToCookie('language_preference', { language: lang }, 365);
+    saveToCookie('AUDIT_LANGUAGE_PREFERENCE', { language: lang }, 365);
   };
 
   const t = (key) => {

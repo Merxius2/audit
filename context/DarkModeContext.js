@@ -10,8 +10,8 @@ export const DarkModeProvider = ({ children }) => {
 
   // Load dark mode preferences from cookies on mount
   useEffect(() => {
-    const savedDarkMode = loadFromCookie('dark_mode_preference');
-    const savedAutoMode = loadFromCookie('dark_mode_auto');
+    const savedDarkMode = loadFromCookie('AUDIT_DARK_MODE_PREFERENCE');
+    const savedAutoMode = loadFromCookie('AUDIT_DARK_MODE_AUTO');
     
     if (savedAutoMode !== null) {
       setIsAutoMode(savedAutoMode === 'true');
@@ -58,14 +58,14 @@ export const DarkModeProvider = ({ children }) => {
     const newValue = !isDarkMode;
     setIsDarkMode(newValue);
     if (!isAutoMode) {
-      saveToCookie('dark_mode_preference', newValue ? 'true' : 'false', 365);
+      saveToCookie('AUDIT_DARK_MODE_PREFERENCE', newValue ? 'true' : 'false', 365);
     }
   };
 
   const toggleAutoMode = () => {
     const newAutoMode = !isAutoMode;
     setIsAutoMode(newAutoMode);
-    saveToCookie('dark_mode_auto', newAutoMode ? 'true' : 'false', 365);
+    saveToCookie('AUDIT_DARK_MODE_AUTO', newAutoMode ? 'true' : 'false', 365);
     
     if (newAutoMode) {
       // Detect and apply system preference

@@ -79,7 +79,7 @@ export function TaxProvider({ children }) {
 
   // Load tax preferences from cookies on mount
   useEffect(() => {
-    const savedPreferences = loadFromCookie('tax_preferences');
+    const savedPreferences = loadFromCookie('AUDIT_TAX_PREFERENCES');
     if (savedPreferences?.selectedYear) {
       setSelectedYear(savedPreferences.selectedYear);
       setTaxBrackets(TAX_BRACKETS[savedPreferences.selectedYear] || TAX_BRACKETS[2025]);
@@ -93,7 +93,7 @@ export function TaxProvider({ children }) {
   const changeYear = (year) => {
     setSelectedYear(year);
     setTaxBrackets(TAX_BRACKETS[year] || TAX_BRACKETS[2025]);
-    saveToCookie('tax_preferences', { 
+    saveToCookie('AUDIT_TAX_PREFERENCES', { 
       selectedYear: year, 
       filingStatus: filingStatus 
     }, 365);
@@ -101,7 +101,7 @@ export function TaxProvider({ children }) {
 
   const changeFilingStatus = (status) => {
     setFilingStatus(status);
-    saveToCookie('tax_preferences', { 
+    saveToCookie('AUDIT_TAX_PREFERENCES', { 
       selectedYear: selectedYear, 
       filingStatus: status 
     }, 365);
