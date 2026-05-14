@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BarChart3, TrendingUp, ArrowRight } from 'lucide-react';
+import { BarChart3, TrendingUp, ArrowRight, DollarSign, Receipt } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
 
@@ -91,21 +91,6 @@ export default function Home() {
               {t('landing.description')}
             </p>
 
-            {/* Features Grid */}
-            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="card p-6">
-                <BarChart3 className="mx-auto mb-3 text-brand-primary" size={32} />
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('landing.budgetLabel')}</h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t('landing.budgetDesc')}</p>
-              </div>
-
-              <div className="card p-6">
-                <TrendingUp className="mx-auto mb-3 text-brand-secondary" size={32} />
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('landing.retirementLabel')}</h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t('landing.retirementDesc')}</p>
-              </div>
-            </div>
-
             {/* Language Selector - Mobile */}
             <div className="mt-8 md:hidden">
               <div className="flex gap-2 justify-center">
@@ -126,16 +111,44 @@ export default function Home() {
               </div>
             </div>
 
-            {/* CTA Button */}
-            <Link href="/dashboard">
-              <button className="mt-12 inline-flex items-center space-x-2 rounded-full bg-gradient-to-r from-brand-primary to-brand-secondary px-8 py-4 font-semibold text-white shadow-lg shadow-brand-primary/30 transition-all hover:shadow-lg hover:shadow-brand-primary/50 active:scale-95">
-                <span>{t('landing.cta')}</span>
-                <ArrowRight size={20} />
-              </button>
-            </Link>
+            {/* Financial Audit Section */}
+            <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Financial Audit</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">Track your household budget, monitor income and expenses, and plan for retirement all in one place.</p>
 
-            {/* Time Display */}
-            {time && <p className="mt-12 text-sm text-gray-500 dark:text-gray-400">{time}</p>}
+              {/* CTA Button */}
+              <Link href="/dashboard">
+                <button className="mt-8 mx-auto block inline-flex items-center space-x-2 rounded-full bg-gradient-to-r from-brand-primary to-brand-secondary px-8 py-4 font-semibold text-white shadow-lg shadow-brand-primary/30 transition-all hover:shadow-lg hover:shadow-brand-primary/50 active:scale-95">
+                  <span>{t('landing.cta')}</span>
+                  <ArrowRight size={20} />
+                </button>
+              </Link>
+            </div>
+
+            {/* Calculators Section */}
+            <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Other Tools</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">Specialized tools for your specific needs</p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                <Link href="/debt">
+                  <div className="card p-4 cursor-pointer hover:shadow-lg transition-shadow">
+                    <DollarSign className="mx-auto mb-2 text-brand-primary" size={24} />
+                    <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{t('navigation.debtCalculator')}</h3>
+                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">Calculate loan payments and interest</p>
+                  </div>
+                </Link>
+
+                <Link href="/tax">
+                  <div className="card p-4 cursor-pointer hover:shadow-lg transition-shadow">
+                    <Receipt className="mx-auto mb-2 text-brand-secondary" size={24} />
+                    <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{t('navigation.taxCalculator')}</h3>
+                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">Calculate net from gross income</p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+
+
 
             {/* Dark Mode Toggle with Label */}
             <div className="mt-16 flex items-center justify-center gap-4 pt-12 border-t border-gray-200 dark:border-gray-700">

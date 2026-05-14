@@ -15,12 +15,30 @@ import MobileNav from '../components/MobileNav';
 import SecretSettingsModal from '../components/SecretSettingsModal';
 import { useRouter } from 'next/router';
 import { useLanguage } from '../context/LanguageContext';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 function AppContent({ Component, pageProps }) {
   const router = useRouter();
   const { language } = useLanguage();
+  const [isDesktop, setIsDesktop] = useState(false);
   const isHomePage = router.pathname === '/' || router.pathname === '/index';
+
+  // Check if desktop and redirect from home to overview
+  useEffect(() => {
+    const checkDesktop = () => {
+      const desktop = typeof window !== 'undefined' && window.innerWidth >= 768;
+      setIsDesktop(desktop);
+      
+      // Redirect desktop users from home to overview
+      if (desktop && isHomePage) {
+        router.push('/overview');
+      }
+    };
+    
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, [isHomePage, router]);
 
   // Dynamically update favicon based on language selection
   useEffect(() => {
