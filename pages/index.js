@@ -113,8 +113,8 @@ export default function Home() {
 
             {/* Financial Audit Section */}
             <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Financial Audit</h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-8">Track your household budget, monitor income and expenses, and plan for retirement all in one place.</p>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{t('landing.financialAuditTitle')}</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">{t('landing.financialAuditDesc')}</p>
 
               {/* CTA Button */}
               <Link href="/dashboard">
@@ -125,16 +125,16 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Calculators Section */}
+            {/* Other Tools Section */}
             <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Other Tools</h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-8">Specialized tools for your specific needs</p>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">{t('landing.otherToolsTitle')}</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">{t('landing.otherToolsDesc')}</p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                 <Link href="/debt">
                   <div className="card p-4 cursor-pointer hover:shadow-lg transition-shadow">
                     <DollarSign className="mx-auto mb-2 text-brand-primary" size={24} />
                     <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{t('navigation.debtCalculator')}</h3>
-                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">Calculate loan payments and interest</p>
+                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{t('landing.debtCalcDesc')}</p>
                   </div>
                 </Link>
 
@@ -142,7 +142,7 @@ export default function Home() {
                   <div className="card p-4 cursor-pointer hover:shadow-lg transition-shadow">
                     <Receipt className="mx-auto mb-2 text-brand-secondary" size={24} />
                     <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">{t('navigation.taxCalculator')}</h3>
-                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">Calculate net from gross income</p>
+                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{t('landing.taxCalcDesc')}</p>
                   </div>
                 </Link>
               </div>

@@ -60,14 +60,25 @@ export default function Sidebar() {
     return iconMap[lang] || '/icon-e-192.png';
   };
 
-  const navItems = [
-    { path: '/overview', labelKey: 'navigation.overview', icon: Eye },
-    { path: '/dashboard', labelKey: 'navigation.householdBudget', icon: BarChart3 },
-    { path: '/retirement', labelKey: 'navigation.retirement', icon: TrendingUp },
-    { path: '/debt', labelKey: 'navigation.debtCalculator', icon: DollarSign },
-    { path: '/tax', labelKey: 'navigation.taxCalculator', icon: Receipt },
-    { path: '/settings', labelKey: 'navigation.settings', icon: Settings },
+  const navSections = [
+    {
+      titleKey: 'navigation.financialAudit',
+      items: [
+        { path: '/overview', labelKey: 'navigation.overview', icon: Eye },
+        { path: '/dashboard', labelKey: 'navigation.householdBudget', icon: BarChart3 },
+        { path: '/retirement', labelKey: 'navigation.retirement', icon: TrendingUp },
+      ],
+    },
+    {
+      titleKey: 'navigation.otherTools',
+      items: [
+        { path: '/debt', labelKey: 'navigation.debtCalculator', icon: DollarSign },
+        { path: '/tax', labelKey: 'navigation.taxCalculator', icon: Receipt },
+      ],
+    },
   ];
+
+  const settingsItem = { path: '/settings', labelKey: 'navigation.settings', icon: Settings };
 
   return (
     <>
@@ -116,29 +127,54 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Link key={item.path} href={item.path}>
-              <div
-                className={`flex items-center space-x-3 rounded-lg px-4 py-3 font-medium transition-all ${
-                  isActive(item.path)
-                    ? 'bg-gray-100 text-brand-primary'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <Icon size={20} />
-                <span>{t(item.labelKey)}</span>
-              </div>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 space-y-6">
+        {navSections.map((section) => (
+          <div key={section.title}>
+            <h3 className="px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              {t(section.titleKey)}
+            </h3>
+            <div className="space-y-2">
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link key={item.path} href={item.path}>
+                    <div
+                      className={`flex items-center space-x-3 rounded-lg px-4 py-3 font-medium transition-all ${
+                        isActive(item.path)
+                          ? 'bg-gray-100 text-brand-primary'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Icon size={20} />
+                      <span>{t(item.labelKey)}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
-      {/* Footer */}
-      <div className="border-t border-gray-200 pt-4 text-xs text-gray-500 dark:border-gray-800 dark:text-gray-400">
-        <p>© 2026 Aap Financial Tools</p>
+      {/* Settings at bottom */}
+      <div className="border-t border-gray-200 pt-4 dark:border-gray-800 space-y-4">
+        <Link href={settingsItem.path}>
+          <div
+            className={`flex items-center space-x-3 rounded-lg px-4 py-3 font-medium transition-all ${
+              isActive(settingsItem.path)
+                ? 'bg-gray-100 text-brand-primary'
+                : 'text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <Settings size={20} />
+            <span>{t(settingsItem.labelKey)}</span>
+          </div>
+        </Link>
+
+        {/* Footer */}
+        <div className="text-xs text-gray-500 dark:text-gray-400">
+          <p>© 2026 Aap Financial Tools</p>
+        </div>
       </div>
       </div>
     </>
