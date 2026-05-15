@@ -79,7 +79,7 @@ export default function RetirementProjection() {
           <h2 className="mb-4 text-lg font-bold text-gray-900">{t('retirement.calculationMode')}</h2>
           <div className="flex gap-4">
             <button
-              onClick={() => setCalculationType('forward')}
+              onClick={() => updateData('calculationType', 'forward')}
               className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
                 isForward
                   ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
@@ -89,7 +89,7 @@ export default function RetirementProjection() {
               {t('retirement.forward')}
             </button>
             <button
-              onClick={() => setCalculationType('backward')}
+              onClick={() => updateData('calculationType', 'backward')}
               className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
                 !isForward
                   ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
@@ -124,7 +124,7 @@ export default function RetirementProjection() {
                 className="amount-large w-full border-0 bg-transparent text-gray-900 focus:ring-0"
               />
             </div>
-          ))}\n
+          ))}
         </div>
 
         {/* Chart Section */}
