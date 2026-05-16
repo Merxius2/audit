@@ -65,9 +65,14 @@ export default function Benchmark() {
     return assetList.reduce((sum, asset) => sum + (parseFloat(asset.amount) || 0), 0);
   };
 
+  // Calculate total debt from assets
+  const calculateTotalDebtFromAssets = (assetList) => {
+    return assetList.reduce((sum, asset) => sum + (parseFloat(asset.debt) || 0), 0);
+  };
+
   // Add new asset
   const addAsset = () => {
-    setAssets([...assets, { id: Date.now(), name: '', amount: '' }]);
+    setAssets([...assets, { id: Date.now(), name: '', amount: '', debt: '' }]);
   };
 
   // Remove asset
@@ -86,7 +91,9 @@ export default function Benchmark() {
   // Save and close modal
   const saveAssets = () => {
     const total = calculateTotalAssets(assets);
+    const debtTotal = calculateTotalDebtFromAssets(assets);
     setTotalAssets(total.toString());
+    setTotalDebts(debtTotal.toString());
     setIsAssetsModalOpen(false);
   };
 
@@ -273,13 +280,10 @@ export default function Benchmark() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('benchmark.totalDebts')}
               </label>
-              <input
-                type="number"
-                value={totalDebts}
-                onChange={(e) => setTotalDebts(e.target.value)}
-                placeholder="0"
-                className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
-              />
+              <div className="amount-large text-gray-900 dark:text-white font-semibold">
+                {getSymbol()}{(parseFloat(totalDebts) || 0).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Calculated from asset debts</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -371,37 +375,71 @@ export default function Benchmark() {
                 <p className="text-gray-600 dark:text-gray-400 text-sm">No assets added yet</p>
               ) : (
                 assets.map((asset) => (
-                  <div key={asset.id} className="flex gap-2">
+                  <div key={asset.id} className="space-y-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <input
                       type="text"
                       placeholder="Asset name (e.g., House, Savings)"
                       value={asset.name}
                       onChange={(e) => updateAsset(asset.id, 'name', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
                     />
-                    <input
-                      type="number"
-                      placeholder="Amount"
-                      value={asset.amount}
-                      onChange={(e) => updateAsset(asset.id, 'amount', e.target.value)}
-                      className="w-24 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-xs text-gray-600 dark:text-gray-400 block mb-1">Worth</label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={asset.amount}
+                          onChange={(e) => updateAsset(asset.id, 'amount', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-600 dark:text-gray-400 block mb-1">Debt</label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={asset.debt}
+                          onChange={(e) => updateAsset(asset.id, 'debt', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">Net Value:</span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {getSymbol()}{((parseFloat(asset.amount) || 0) - (parseFloat(asset.debt) || 0)).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                      </span>
+                    </div>
                     <button
                       onClick={() => removeAsset(asset.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-sm"
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={16} />
+                      Remove
                     </button>
                   </div>
                 ))
               )}
 
-              {/* Total */}
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Total</span>
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">
+              {/* Totals */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Total Assets</span>
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">
                     {getSymbol()}{calculateTotalAssets(assets).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Total Debt</span>
+                  <span className="text-lg font-bold text-red-600 dark:text-red-400">
+                    {getSymbol()}{calculateTotalDebtFromAssets(assets).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between items-center">
+                  <span className="font-semibold text-gray-900 dark:text-white">Net Worth</span>
+                  <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                    {getSymbol()}{(calculateTotalAssets(assets) - calculateTotalDebtFromAssets(assets)).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                   </span>
                 </div>
               </div>
