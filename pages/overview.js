@@ -10,9 +10,9 @@ import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { generateForwardProjection, generateBackwardProjection, calculateMonthlyInvestmentBackward } from '../lib/retirementCalculator';
 import { mergeExpensesFromSeparateMode } from '../lib/expenseCalculator';
 import { preparePieChartData } from '../lib/chartDataFormatter';
+import { useRetirementMetrics } from '../hooks/useRetirementMetrics';
 import PageHeader from '../components/PageHeader';
 import DonutChart from '../components/DonutChart';
 
@@ -31,56 +31,8 @@ export default function Overview() {
   const { t } = useLanguage();
   const isMobile = useIsMobile();
 
-  // Memoize retirement projection calculation - expensive operation
-  const retirementMetrics = useMemo(() => {
-    const retirementData = loadFromCookie('AUDIT_RETIREMENT_DATA');
-    if (!retirementData) return { retirementProjection: 0, retirementBreakdown: { contributions: 0, gains: 0 }, monthlyInvestment: 0 };
-
-    const isBackward = retirementData.calculationType === 'backward';
-    const projectionArray = isBackward
-      ? generateBackwardProjection(
-          retirementData.currentAge || '30',
-          retirementData.retirementAge || '65',
-          retirementData.goalBalance || '500000',
-          retirementData.annualReturn || '7'
-        )
-      : generateForwardProjection(
-          retirementData.currentAge || '30',
-          retirementData.retirementAge || '65',
-          retirementData.monthlyInvestment || '1000',
-          retirementData.annualReturn || '7'
-        );
-    
-    // Extract final breakdown from projection array
-    const finalProjection = projectionArray[projectionArray.length - 1];
-    let retirementBreakdown = { contributions: 0, gains: 0 };
-    
-    if (finalProjection) {
-      retirementBreakdown = {
-        contributions: finalProjection.contributions,
-        gains: finalProjection.gains,
-      };
-    }
-    
-    // Calculate monthly investment using extracted utility function
-    let monthlyInvest = 0;
-    if (isBackward) {
-      monthlyInvest = calculateMonthlyInvestmentBackward(
-        retirementData.goalBalance || 500000,
-        retirementData.currentAge || 30,
-        retirementData.retirementAge || 65,
-        retirementData.annualReturn || 7
-      );
-    } else {
-      monthlyInvest = Math.floor(parseFloat(retirementData.monthlyInvestment) || 0);
-    }
-
-    return {
-      retirementProjection: finalProjection?.balance || 0,
-      retirementBreakdown,
-      monthlyInvestment: monthlyInvest,
-    };
-  }, []);
+  // Load retirement metrics using dedicated hook
+  const retirementMetrics = useRetirementMetrics();
 
   useEffect(() => {
     // Load dashboard data from cookies
