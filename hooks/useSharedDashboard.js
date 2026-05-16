@@ -42,7 +42,6 @@ export function useSharedDashboard() {
       const existingData = loadFromCookie('AUDIT_DASHBOARD_DATA') || {};
       saveToCookie('AUDIT_DASHBOARD_DATA', {
         ...existingData,
-        calculationType: existingData.calculationType || 'shared',
         incomes,
         savings,
         includeSavingsInCalculations,

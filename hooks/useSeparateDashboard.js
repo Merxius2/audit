@@ -62,7 +62,6 @@ export function useSeparateDashboard() {
       const existingData = loadFromCookie('AUDIT_DASHBOARD_DATA') || {};
       saveToCookie('AUDIT_DASHBOARD_DATA', {
         ...existingData,
-        calculationType: existingData.calculationType || 'separate',
         person1Incomes,
         person1Savings,
         person1Expenses,
