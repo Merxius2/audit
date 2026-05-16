@@ -117,15 +117,15 @@ export default function Debt() {
     if (active && payload && payload[0]) {
       const data = payload[0].payload;
       return (
-        <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-lg">
-          <p className="text-sm text-gray-200">
-            {t('debt.month')}: {data.month}
+        <div className="rounded-lg backdrop-blur-xl bg-gradient-to-br from-gray-900/80 to-gray-950/80 border border-white/20 p-4 shadow-2xl">
+          <p className="text-sm font-semibold text-gray-200 mb-2">
+            {t('debt.month')}: <span className="font-mono text-white">{data.month}</span>
           </p>
-          <p className="text-sm text-blue-400">
-            {t('debt.remainingBalance')}: {getSymbol()}{Math.floor(data.balance).toLocaleString('en-US')}
+          <p className="text-sm text-blue-300">
+            {t('debt.remainingBalance')}: <span className="font-mono font-semibold text-blue-200">{getSymbol()}{Math.floor(data.balance).toLocaleString('en-US')}</span>
           </p>
-          <p className="text-sm text-red-400">
-            {t('debt.interest')} ({t('debt.title')}): {getSymbol()}{Math.floor(data.cumulativeInterest).toLocaleString('en-US')}
+          <p className="text-sm text-orange-300">
+            {t('debt.interest')} ({t('debt.title')}): <span className="font-mono font-semibold text-orange-200">{getSymbol()}{Math.floor(data.cumulativeInterest).toLocaleString('en-US')}</span>
           </p>
         </div>
       );
@@ -234,7 +234,7 @@ export default function Debt() {
 
       {/* Breakdown Chart */}
       {schedule.length > 0 && (
-        <div className="card p-6 md:p-8 mb-8">
+        <div className="mb-8 rounded-2xl border border-white/20 bg-gradient-to-br from-white/10 to-white/5 dark:from-white/5 dark:to-white/0 backdrop-blur-xl shadow-xl p-6 md:p-8 hover:shadow-2xl transition-shadow duration-300">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('debt.paymentBreakdown')}</h2>
           <ResponsiveContainer width="100%" height={isMobile ? 200 : 280}>
             <BarChart
@@ -248,33 +248,35 @@ export default function Debt() {
               layout="vertical"
               margin={isMobile ? { top: 10, right: 10, left: 20, bottom: 10 } : { top: 15, right: 20, left: 20, bottom: 10 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis type="number" stroke="#6b7280" />
-              <YAxis dataKey="name" type="category" stroke="#6b7280" tick={false} width={0} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(229, 231, 235, 0.3)" />
+              <XAxis type="number" stroke="rgba(107, 114, 128, 0.5)" />
+              <YAxis dataKey="name" type="category" stroke="rgba(107, 114, 128, 0.5)" tick={false} width={0} />
               <Tooltip
                 formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
                 contentStyle={{
-                  backgroundColor: '#1f2937',
-                  border: 'none',
-                  borderRadius: '0.5rem',
+                  backgroundColor: 'rgba(31, 41, 55, 0.8)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '0.75rem',
                   color: '#f3f4f6',
+                  backdropFilter: 'blur(12px)',
                 }}
+                cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }}
               />
-              <Bar dataKey="principal" stackId="a" fill="#10b981" name={t('debt.principal')} />
-              <Bar dataKey="interest" stackId="a" fill="#ef4444" name={t('debt.interest')} />
+              <Bar dataKey="principal" stackId="a" fill="#10b981" name={t('debt.principal')} radius={[0, 8, 8, 0]} />
+              <Bar dataKey="interest" stackId="a" fill="#f97316" name={t('debt.interest')} radius={[0, 8, 8, 0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="mt-6 grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded bg-green-500" />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                {t('debt.principal')}: {getSymbol()}{Math.floor(totalPayment - totalInterest).toLocaleString('en-US')}
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-br from-emerald-50/50 to-emerald-50/0 dark:from-emerald-950/20 dark:to-transparent border border-emerald-200/30 dark:border-emerald-800/30">
+              <div className="w-4 h-4 rounded bg-gradient-to-br from-green-400 to-emerald-600 shadow-md" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('debt.principal')}: <span className="font-mono font-bold text-gray-900 dark:text-white">{getSymbol()}{Math.floor(totalPayment - totalInterest).toLocaleString('en-US')}</span>
               </span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded bg-red-500" />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                {t('debt.interest')}: {getSymbol()}{Math.floor(totalInterest).toLocaleString('en-US')}
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-br from-orange-50/50 to-orange-50/0 dark:from-orange-950/20 dark:to-transparent border border-orange-200/30 dark:border-orange-800/30">
+              <div className="w-4 h-4 rounded bg-gradient-to-br from-orange-400 to-red-600 shadow-md" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('debt.interest')}: <span className="font-mono font-bold text-gray-900 dark:text-white">{getSymbol()}{Math.floor(totalInterest).toLocaleString('en-US')}</span>
               </span>
             </div>
           </div>
@@ -283,26 +285,26 @@ export default function Debt() {
 
       {/* Chart */}
       {chartData.length > 0 && (
-        <div className="card p-6 md:p-8">
+        <div className="rounded-2xl border border-white/20 bg-gradient-to-br from-white/10 to-white/5 dark:from-white/5 dark:to-white/0 backdrop-blur-xl shadow-xl p-6 md:p-8 hover:shadow-2xl transition-shadow duration-300">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('debt.balanceOverTime')}</h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(229, 231, 235, 0.3)" />
               <XAxis 
                 dataKey="month" 
                 label={{ value: t('debt.month'), position: 'insideBottomRight', offset: -5 }}
-                stroke="#6b7280"
+                stroke="rgba(107, 114, 128, 0.5)"
               />
               <YAxis 
                 label={{ value: t('debt.remainingBalance'), angle: -90, position: 'insideLeft' }}
-                stroke="#6b7280"
+                stroke="rgba(107, 114, 128, 0.5)"
               />
               <Tooltip content={<CustomBalanceTooltip />} />
               <Line 
                 type="monotone" 
                 dataKey="balance" 
                 stroke="#3b82f6" 
-                strokeWidth={2}
+                strokeWidth={3}
                 dot={{ fill: '#3b82f6', r: 4 }}
                 activeDot={{ r: 6 }}
               />
