@@ -5,7 +5,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Wallet, TrendingUp, Eye } from 'lucide-react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { EXPENSE_CATEGORIES, CHART_COLORS } from '../lib/constants';
 import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
@@ -13,6 +12,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { generateForwardProjection, generateBackwardProjection } from '../lib/retirementCalculator';
 import PageHeader from '../components/PageHeader';
+import DonutChart from '../components/DonutChart';
 
 export default function Overview() {
   const [data, setData] = useState({
@@ -284,56 +284,18 @@ export default function Overview() {
           </div>
         </div>
 
-        {/* Expense Breakdown Chart */}
+        {/* Expense Breakdown Donut Chart */}
         {data.totalIncome > 0 && (
           <div className="card p-8">
             <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('overview.expenseBreakdown')}</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={!isMobile ? renderCustomLabel : false}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
-                  labelFormatter={(label) => {
-                    const item = pieData.find(p => p.name === label);
-                    const percentage = totalPieValue > 0 ? ((item.value / totalPieValue) * 100).toFixed(1) : 0;
-                    let displayLabel = label;
-                    if (label === 'Remaining') {
-                      displayLabel = t('dashboard.remaining');
-                    } else {
-                      displayLabel = t(`dashboard.expenseCategories.${label}`);
-                    }
-                    return `${displayLabel}: ${percentage}%`;
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            {isMobile && (
-              <div className="mt-6 space-y-2">
-                {pieData.map((entry, index) => {
-                  const percentage = totalPieValue > 0 ? ((entry.value / totalPieValue) * 100).toFixed(1) : 0;
-                  const displayName = entry.name === 'Remaining' ? t('dashboard.remaining') : t(`dashboard.expenseCategories.${entry.name}`);
-                  return (
-                    <div key={`legend-${index}`} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
-                      <div className="w-3 h-3 rounded-full" style={{backgroundColor: CHART_COLORS[index % CHART_COLORS.length]}} />
-                      <span>{displayName}: {getSymbol()}{Math.floor(entry.value).toLocaleString('en-US', { minimumFractionDigits: 0 })} ({percentage}%)</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <DonutChart 
+              data={pieData}
+              totalAmount={data.totalIncome}
+              getSymbol={getSymbol}
+              isMobile={isMobile}
+              title="TOTAL"
+              height={300}
+            />
           </div>
         )}
 

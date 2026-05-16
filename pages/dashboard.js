@@ -5,7 +5,6 @@
 
 import { useState, useEffect } from 'react';
 import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3, Tv, Receipt } from 'lucide-react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { EXPENSE_CATEGORIES, SHARED_EXPENSE_CATEGORIES, PERSONAL_EXPENSE_CATEGORIES, CHART_COLORS, CATEGORY_ICONS } from '../lib/constants';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
@@ -13,6 +12,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import PageHeader from '../components/PageHeader';
+import DonutChart from '../components/DonutChart';
 
 export default function Dashboard() {
   // Shared state for both modes
@@ -353,65 +353,18 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Income vs Expenses Pie Chart */}
+        {/* Expense Breakdown Donut Chart */}
         {totalIncome > 0 && (
           <div className="card p-8">
-            <h2 className="mb-6 text-xl font-bold text-gray-900">{t('dashboard.expenseBreakdown')}</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={!isMobile ? renderCustomLabel : false}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
-                  labelFormatter={(label) => {
-                    const item = pieData.find(p => p.name === label);
-                    const percentage = totalPieValue > 0 ? ((item.value / totalPieValue) * 100).toFixed(1) : 0;
-                    let displayLabel = label;
-                    if (label === 'Savings') {
-                      displayLabel = t('dashboard.savings');
-                    } else if (label === 'Remaining') {
-                      displayLabel = t('dashboard.remaining');
-                    } else {
-                      displayLabel = t(`dashboard.expenseCategories.${label}`);
-                    }
-                    return `${displayLabel}: ${percentage}%`;
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            {isMobile && (
-              <div className="mt-6 space-y-2">
-                {pieData.map((entry, index) => {
-                  const percentage = totalPieValue > 0 ? ((entry.value / totalPieValue) * 100).toFixed(1) : 0;
-                  let displayName = entry.name;
-                  if (entry.name === 'Savings') {
-                    displayName = t('dashboard.savings');
-                  } else if (entry.name === 'Remaining') {
-                    displayName = t('dashboard.remaining');
-                  } else {
-                    displayName = t(`dashboard.expenseCategories.${entry.name}`);
-                  }
-                  return (
-                    <div key={`legend-${index}`} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
-                      <div className="w-3 h-3 rounded-full" style={{backgroundColor: CHART_COLORS[index % CHART_COLORS.length]}} />
-                      <span>{displayName}: {getSymbol()}{Math.floor(entry.value).toLocaleString('en-US', { minimumFractionDigits: 0 })} ({percentage}%)</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.expenseBreakdown')}</h2>
+            <DonutChart 
+              data={pieData}
+              totalAmount={totalIncome}
+              getSymbol={getSymbol}
+              isMobile={isMobile}
+              title="TOTAL"
+              height={300}
+            />
           </div>
         )}
 
@@ -860,7 +813,7 @@ function SeparateModeContent({
   );
 }
 
-// Helper component for pie chart display
+// Helper component for donut chart display
 function PieChartCard({ title, data, getSymbol, isMobile }) {
   const totalValue = data.reduce((sum, item) => sum + item.value, 0);
 
@@ -868,39 +821,14 @@ function PieChartCard({ title, data, getSymbol, isMobile }) {
     <div className="card p-6">
       <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{title}</h4>
       {totalValue > 0 ? (
-        <>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie
-                data={data.filter(item => item.value > 0)}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={2}
-                dataKey="value"
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(value) => `${getSymbol()}${Math.floor(value).toLocaleString('en-US')}`}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="mt-4 space-y-2">
-            {data.map((entry, index) => {
-              const percentage = totalValue > 0 ? ((entry.value / totalValue) * 100).toFixed(1) : 0;
-              return (
-                <div key={`legend-${index}`} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
-                  <div className="w-3 h-3 rounded-full" style={{backgroundColor: CHART_COLORS[index % CHART_COLORS.length]}} />
-                  <span>{entry.name}: {getSymbol()}{Math.floor(entry.value).toLocaleString('en-US')} ({percentage}%)</span>
-                </div>
-              );
-            })}
-          </div>
-        </>
+        <DonutChart 
+          data={data.filter(item => item.value > 0)}
+          totalAmount={totalValue}
+          getSymbol={getSymbol}
+          isMobile={isMobile}
+          title={title === '(No Title)' ? 'TOTAL' : 'BREAKDOWN'}
+          height={200}
+        />
       ) : (
         <div className="h-48 flex items-center justify-center text-gray-500">
           <p className="text-center">No data to display</p>
