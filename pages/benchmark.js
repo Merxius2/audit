@@ -212,11 +212,11 @@ export default function Benchmark() {
   };
 
   if (isLoading) {
-    return <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0" />;
+    return <div className="min-h-screen bg-white lg:ml-64" />;
   }
 
   return (
-    <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0">
+    <div className="min-h-screen bg-white lg:ml-64">
       <PageHeader icon={TrendingUp} titleKey="benchmark.title" />
 
       <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
