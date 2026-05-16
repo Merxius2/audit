@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { PERSONAL_EXPENSE_CATEGORIES, SHARED_EXPENSE_CATEGORIES } from '../lib/constants';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 
-export function useSeparateDashboard() {
+export function useSeparateDashboard(isInitialized = true) {
   // Person 1 state
   const [person1Incomes, setPerson1Incomes] = useState([]);
   const [person1Savings, setPerson1Savings] = useState('');
@@ -53,8 +53,9 @@ export function useSeparateDashboard() {
   }, []);
 
   // Debounced save with calculationType preservation
+  // Only save after initialization is complete
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || !isInitialized) return;
 
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     
@@ -77,7 +78,7 @@ export function useSeparateDashboard() {
     return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     };
-  }, [person1Incomes, person1Savings, person1Expenses, person2Incomes, person2Savings, person2Expenses, sharedExpenses, person1Name, person2Name, isLoading]);
+  }, [person1Incomes, person1Savings, person1Expenses, person2Incomes, person2Savings, person2Expenses, sharedExpenses, person1Name, person2Name, isLoading, isInitialized]);
 
   // Calculations for Person 1
   const person1Income = person1Incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);

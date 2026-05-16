@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { EXPENSE_CATEGORIES } from '../lib/constants';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 
-export function useSharedDashboard() {
+export function useSharedDashboard(isInitialized = true) {
   // Shared mode state
   const [incomes, setIncomes] = useState([]);
   const [savings, setSavings] = useState('');
@@ -33,8 +33,9 @@ export function useSharedDashboard() {
   }, []);
 
   // Debounced save with calculationType preservation
+  // Only save after initialization is complete
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || !isInitialized) return;
 
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     
@@ -52,7 +53,7 @@ export function useSharedDashboard() {
     return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     };
-  }, [incomes, savings, includeSavingsInCalculations, expenses, isLoading]);
+  }, [incomes, savings, includeSavingsInCalculations, expenses, isLoading, isInitialized]);
 
   // Income management functions
   const addIncome = () => {

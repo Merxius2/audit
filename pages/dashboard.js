@@ -18,28 +18,32 @@ import SeparateModeSection from '../components/SeparateModeSection';
 
 export default function Dashboard() {
   const [calculationType, setCalculationType] = useState('shared');
+  const [isInitialized, setIsInitialized] = useState(false);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const isMobile = useIsMobile();
 
-  // Load calculation type preference
+  // Load calculation type preference first, before anything else saves
   useEffect(() => {
     const savedData = loadFromCookie('AUDIT_DASHBOARD_DATA');
     if (savedData?.calculationType) {
       setCalculationType(savedData.calculationType);
     }
+    setIsInitialized(true);
   }, []);
 
-  // Save calculation type whenever it changes
+  // Save calculation type ONLY after initialization is complete
   useEffect(() => {
+    if (!isInitialized) return;
+    
     const savedData = loadFromCookie('AUDIT_DASHBOARD_DATA') || {};
     saveToCookie('AUDIT_DASHBOARD_DATA', { ...savedData, calculationType }, 365);
-  }, [calculationType]);
+  }, [calculationType, isInitialized]);
 
   // Use hooks for shared and separate modes
-  const sharedMode = useSharedDashboard();
-  const separateMode = useSeparateDashboard();
-  const isLoading = sharedMode.isLoading && separateMode.isLoading;
+  const sharedMode = useSharedDashboard(isInitialized);
+  const separateMode = useSeparateDashboard(isInitialized);
+  const isLoading = !isInitialized || (sharedMode.isLoading && separateMode.isLoading);
 
   if (isLoading) {
     return <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0" />;
