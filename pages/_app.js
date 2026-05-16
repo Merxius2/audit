@@ -8,11 +8,8 @@ import '../styles/globals.css';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-import { LanguageProvider, useLanguage } from '../context/LanguageContext';
-import { CurrencyProvider } from '../context/CurrencyContext';
-import { DarkModeProvider } from '../context/DarkModeContext';
-import { SecretSettingsProvider } from '../context/SecretSettingsContext';
-import { SidebarProvider } from '../context/SidebarContext';
+import { UserPreferencesProvider, useLanguage } from '../context/UserPreferencesContext';
+import { FeatureProvider } from '../context/FeatureContext';
 import { TaxProvider } from '../context/TaxContext';
 
 import Sidebar from '../components/Sidebar';
@@ -77,20 +74,14 @@ function AppContent({ Component, pageProps }) {
 export default function MyApp({ Component, pageProps }) {
   return (
     <ErrorBoundary>
-      <DarkModeProvider>
-        <LanguageProvider>
-          <CurrencyProvider>
-            <TaxProvider>
-              <SidebarProvider>
-                <SecretSettingsProvider>
-                  <SecretSettingsModal />
-                  <AppContent Component={Component} pageProps={pageProps} />
-                </SecretSettingsProvider>
-              </SidebarProvider>
-            </TaxProvider>
-          </CurrencyProvider>
-        </LanguageProvider>
-      </DarkModeProvider>
+      <UserPreferencesProvider>
+        <FeatureProvider>
+          <TaxProvider>
+            <SecretSettingsModal />
+            <AppContent Component={Component} pageProps={pageProps} />
+          </TaxProvider>
+        </FeatureProvider>
+      </UserPreferencesProvider>
     </ErrorBoundary>
   );
 }

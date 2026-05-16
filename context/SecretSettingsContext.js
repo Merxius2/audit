@@ -1,25 +1,7 @@
-import { createContext, useContext, useState } from 'react';
+/**
+ * Backward Compatibility
+ * Secret Settings Context has been consolidated into FeatureContext
+ * This file now re-exports the useSecretSettings hook for backward compatibility
+ */
 
-const SecretSettingsContext = createContext();
-
-export function SecretSettingsProvider({ children }) {
-  const [isSecretSettingsOpen, setIsSecretSettingsOpen] = useState(false);
-
-  const openSecretSettings = () => {
-    setIsSecretSettingsOpen(true);
-  };
-
-  const closeSecretSettings = () => {
-    setIsSecretSettingsOpen(false);
-  };
-
-  return (
-    <SecretSettingsContext.Provider value={{ isSecretSettingsOpen, openSecretSettings, closeSecretSettings }}>
-      {children}
-    </SecretSettingsContext.Provider>
-  );
-}
-
-export function useSecretSettings() {
-  return useContext(SecretSettingsContext);
-}
+export { useSecretSettings } from './FeatureContext';
