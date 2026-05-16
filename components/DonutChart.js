@@ -33,7 +33,7 @@ export default function DonutChart({
 
   return (
     <div className="w-full">
-      <div className="relative mx-auto" style={{ width: '100%', maxWidth: '400px', aspectRatio: '1 / 1' }}>
+      <div className="relative mx-auto" style={{ width: '100%', maxWidth: `${height}px`, aspectRatio: '1 / 1' }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
