@@ -19,7 +19,7 @@ export default function Benchmark() {
   const [netIncome, setNetIncome] = useState('');
   const [totalAssets, setTotalAssets] = useState('');
   const [totalDebts, setTotalDebts] = useState('');
-  const [age, setAge] = useState('');
+  const [ageGroup, setAgeGroup] = useState('30-40');
   const [education, setEducation] = useState('bachelor');
   const [isLoading, setIsLoading] = useState(true);
   
@@ -35,7 +35,7 @@ export default function Benchmark() {
       if (savedData.netIncome) setNetIncome(savedData.netIncome);
       if (savedData.totalAssets) setTotalAssets(savedData.totalAssets);
       if (savedData.totalDebts) setTotalDebts(savedData.totalDebts);
-      if (savedData.age) setAge(savedData.age);
+      if (savedData.ageGroup) setAgeGroup(savedData.ageGroup);
       if (savedData.education) setEducation(savedData.education);
     }
     setIsLoading(false);
@@ -46,7 +46,7 @@ export default function Benchmark() {
     netIncome,
     totalAssets,
     totalDebts,
-    age,
+    ageGroup,
     education,
   });
 
@@ -54,23 +54,11 @@ export default function Benchmark() {
     if (!isLoading) {
       debouncedSave();
     }
-  }, [netIncome, totalAssets, totalDebts, age, education, isLoading, debouncedSave]);
-
-  // Get age group from age input
-  const getAgeGroup = (ageValue) => {
-    const ageNum = parseInt(ageValue) || 0;
-    if (ageNum < 20) return '20-30';
-    if (ageNum < 30) return '20-30';
-    if (ageNum < 40) return '30-40';
-    if (ageNum < 50) return '40-50';
-    if (ageNum < 60) return '50-60';
-    return '60+';
-  };
+  }, [netIncome, totalAssets, totalDebts, ageGroup, education, isLoading, debouncedSave]);
 
   // Get benchmark for selected age group and education
   const getBenchmarkForDemographic = () => {
-    if (!age || !education) return null;
-    const ageGroup = getAgeGroup(age);
+    if (!ageGroup || !education) return null;
     const benchmarks = BENCHMARK_MEDIANS.byAgeAndEducation[ageGroup];
     return benchmarks ? benchmarks[education] : null;
   };
@@ -188,17 +176,19 @@ export default function Benchmark() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('benchmark.age')}
+                {t('benchmark.ageGroup')}
               </label>
-              <input
-                type="number"
-                min="18"
-                max="100"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                placeholder="25"
+              <select
+                value={ageGroup}
+                onChange={(e) => setAgeGroup(e.target.value)}
                 className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
-              />
+              >
+                <option value="20-30">{t('benchmark.ageGroups.20-30')}</option>
+                <option value="30-40">{t('benchmark.ageGroups.30-40')}</option>
+                <option value="40-50">{t('benchmark.ageGroups.40-50')}</option>
+                <option value="50-60">{t('benchmark.ageGroups.50-60')}</option>
+                <option value="60+">{t('benchmark.ageGroups.60+')}</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
