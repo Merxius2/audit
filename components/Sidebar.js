@@ -9,7 +9,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { BarChart3, TrendingUp, Eye, Settings, CreditCard, Receipt } from 'lucide-react';
+import { BarChart3, TrendingUp, Eye, Settings, CreditCard, Receipt, Zap } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { useLanguage } from '../context/LanguageContext';
@@ -29,6 +29,8 @@ const NAV = [
     items: [
       { path: '/debt', labelKey: 'navigation.debtCalculator', icon: CreditCard },
       { path: '/tax',  labelKey: 'navigation.taxCalculator',  icon: Receipt },
+      { path: '/benchmark', labelKey: 'navigation.wealthBenchmark', icon: TrendingUp },
+      { path: '/fire-calculator', labelKey: 'navigation.fireCalculator', icon: Zap },
     ],
   },
 ];

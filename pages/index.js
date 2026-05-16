@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, CreditCard, Receipt } from 'lucide-react';
+import { ArrowRight, CreditCard, Receipt, TrendingUp, Zap } from 'lucide-react';
 
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
@@ -120,8 +120,10 @@ export default function Home() {
             {t('landing.otherToolsTitle') || 'Toolkit'}
           </p>
           <div className="grid grid-cols-2 gap-2.5">
-            <ToolTile href="/debt"       icon={CreditCard}  titleKey="navigation.debtCalculator"  idx="01" tint="amber" />
-            <ToolTile href="/tax"        icon={Receipt}     titleKey="navigation.taxCalculator"   idx="02" tint="coral" />
+            <ToolTile href="/debt"       icon={CreditCard}  titleKey="navigation.debtCalculator"    idx="01" tint="amber" />
+            <ToolTile href="/tax"        icon={Receipt}     titleKey="navigation.taxCalculator"     idx="02" tint="coral" />
+            <ToolTile href="/benchmark"  icon={TrendingUp}  titleKey="navigation.wealthBenchmark"  idx="03" tint="mint" />
+            <ToolTile href="/fire-calculator" icon={Zap}    titleKey="navigation.fireCalculator"   idx="04" tint="violet" />
           </div>
         </section>
       </div>
