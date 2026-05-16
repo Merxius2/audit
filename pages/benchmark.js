@@ -30,6 +30,15 @@ export default function Benchmark() {
   const { isDarkMode } = useDarkMode();
   const isMobile = useIsMobile();
 
+  // Default assets
+  const DEFAULT_ASSETS = [
+    { id: 1, name: 'House', amount: '', debt: '' },
+    { id: 2, name: 'Car', amount: '', debt: '' },
+    { id: 3, name: 'Phone', amount: '', debt: '' },
+    { id: 4, name: 'Household Furniture', amount: '', debt: '' },
+    { id: 5, name: 'Savings/Investments', amount: '', debt: '' },
+  ];
+
   // Load from cookies on mount
   useEffect(() => {
     const savedData = loadFromCookie('AUDIT_BENCHMARK_DATA');
@@ -39,7 +48,13 @@ export default function Benchmark() {
       if (savedData.totalDebts) setTotalDebts(savedData.totalDebts);
       if (savedData.ageGroup) setAgeGroup(savedData.ageGroup);
       if (savedData.education) setEducation(savedData.education);
-      if (savedData.assets) setAssets(savedData.assets);
+      if (savedData.assets && savedData.assets.length > 0) {
+        setAssets(savedData.assets);
+      } else {
+        setAssets(DEFAULT_ASSETS);
+      }
+    } else {
+      setAssets(DEFAULT_ASSETS);
     }
     setIsLoading(false);
   }, []);
