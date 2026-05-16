@@ -21,6 +21,7 @@ export default function FIRECalculator() {
   const [categoryOverrides, setCategoryOverrides] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [importError, setImportError] = useState('');
+  const [annualWithdrawal, setAnnualWithdrawal] = useState(0);
 
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
@@ -52,41 +53,43 @@ export default function FIRECalculator() {
     }
   }, [mode, desiredWithdrawal, currentInvestments, categoryOverrides, isLoading, debouncedSave]);
 
-  // Calculate dynamic withdrawal from dashboard data
-  const calculateDynamicWithdrawal = () => {
-    try {
-      const dashboardData = loadFromCookie('AUDIT_DASHBOARD_DATA');
-      if (!dashboardData) {
-        setImportError(t('fire.importFailed'));
-        return 0;
-      }
-
-      // Calculate total monthly expenses from dashboard
-      let totalMonthly = 0;
-      if (dashboardData.expenses) {
-        Object.values(dashboardData.expenses).forEach((amount) => {
-          totalMonthly += parseFloat(amount) || 0;
-        });
-      }
-
-      // Apply any category overrides
-      Object.entries(categoryOverrides).forEach(([category, override]) => {
-        if (override !== undefined && override !== '') {
-          totalMonthly = totalMonthly - (parseFloat(dashboardData.expenses?.[category]) || 0) + (parseFloat(override) || 0);
+  // Calculate annual withdrawal based on mode
+  useEffect(() => {
+    if (mode === 'manual') {
+      setAnnualWithdrawal(parseFloat(desiredWithdrawal) || 0);
+    } else {
+      // Dynamic mode: calculate from dashboard data
+      try {
+        const dashboardData = loadFromCookie('AUDIT_DASHBOARD_DATA');
+        if (!dashboardData) {
+          setImportError(t('fire.importFailed'));
+          setAnnualWithdrawal(0);
+          return;
         }
-      });
 
-      setImportError('');
-      return totalMonthly * 12; // Convert to annual
-    } catch (error) {
-      setImportError(t('fire.importFailed'));
-      return 0;
+        // Calculate total monthly expenses from dashboard
+        let totalMonthly = 0;
+        if (dashboardData.expenses) {
+          Object.values(dashboardData.expenses).forEach((amount) => {
+            totalMonthly += parseFloat(amount) || 0;
+          });
+        }
+
+        // Apply any category overrides
+        Object.entries(categoryOverrides).forEach(([category, override]) => {
+          if (override !== undefined && override !== '') {
+            totalMonthly = totalMonthly - (parseFloat(dashboardData.expenses?.[category]) || 0) + (parseFloat(override) || 0);
+          }
+        });
+
+        setImportError('');
+        setAnnualWithdrawal(totalMonthly * 12); // Convert to annual
+      } catch (error) {
+        setImportError(t('fire.importFailed'));
+        setAnnualWithdrawal(0);
+      }
     }
-  };
-
-  const annualWithdrawal = mode === 'dynamic' 
-    ? calculateDynamicWithdrawal()
-    : parseFloat(desiredWithdrawal) || 0;
+  }, [mode, desiredWithdrawal, categoryOverrides, t]);
 
   // FIRE calculations (4% rule: FIRE Number = Annual Withdrawal × 25)
   const fireNumber = annualWithdrawal * 25;
@@ -137,7 +140,7 @@ export default function FIRECalculator() {
               {t('fire.modes.manual')}
             </button>
             <button
-              onClick={() => { setMode('dynamic'); calculateDynamicWithdrawal(); }}
+              onClick={() => setMode('dynamic')}
               className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
                 mode === 'dynamic'
                   ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
