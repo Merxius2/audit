@@ -33,8 +33,12 @@ export default function DonutChart({
 
   return (
     <div className="w-full">
-      <div className="relative w-full flex justify-center">
-        <ResponsiveContainer width="100%" height={height}>
+      <div className="relative" style={{ paddingTop: '100%', position: 'relative' }}>
+        <ResponsiveContainer 
+          width="100%" 
+          height="100%"
+          style={{ position: 'absolute', top: 0, left: 0 }}
+        >
           <PieChart>
             <Pie
               data={filteredData}
