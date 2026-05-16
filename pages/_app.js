@@ -25,6 +25,7 @@ function AppContent({ Component, pageProps }) {
   const router = useRouter();
   const { language } = useLanguage();
   const isHomePage = router.pathname === '/' || router.pathname === '/index';
+  const hidesMobileNav = router.pathname === '/benchmark' || router.pathname === '/fire-calculator';
 
   // Desktop users skip the marketing landing — go straight to the app.
   useEffect(() => {
@@ -66,7 +67,7 @@ function AppContent({ Component, pageProps }) {
       {!isHomePage && (
         <>
           <Sidebar />
-          <MobileNav />
+          {!hidesMobileNav && <MobileNav />}
         </>
       )}
       <Component {...pageProps} />
