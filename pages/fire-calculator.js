@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Zap } from 'lucide-react';
-import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
+import { loadFromCookie } from '../lib/cookieStorage';
 import { EXPENSE_CATEGORIES } from '../lib/constants';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';

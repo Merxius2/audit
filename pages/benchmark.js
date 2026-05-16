@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { TrendingUp, Plus, Trash2, X } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { BENCHMARK_MEDIANS } from '../lib/constants';
-import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
+import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';

@@ -10,7 +10,9 @@ import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { generateForwardProjection, generateBackwardProjection } from '../lib/retirementCalculator';
+import { generateForwardProjection, generateBackwardProjection, calculateMonthlyInvestmentBackward } from '../lib/retirementCalculator';
+import { mergeExpensesFromSeparateMode } from '../lib/expenseCalculator';
+import { preparePieChartData } from '../lib/chartDataFormatter';
 import PageHeader from '../components/PageHeader';
 import DonutChart from '../components/DonutChart';
 
@@ -60,20 +62,15 @@ export default function Overview() {
       };
     }
     
-    // Calculate monthly investment
+    // Calculate monthly investment using extracted utility function
     let monthlyInvest = 0;
     if (isBackward) {
-      const current = parseInt(retirementData.currentAge) || 0;
-      const retirement = parseInt(retirementData.retirementAge) || 65;
-      const goal = parseFloat(retirementData.goalBalance) || 500000;
-      const rate = (parseFloat(retirementData.annualReturn) || 7) / 100 / 12;
-      const months = (retirement - current) * 12;
-      if (rate === 0) {
-        monthlyInvest = months > 0 ? Math.floor(goal / months) : 0;
-      } else {
-        const factor = (Math.pow(1 + rate, months) - 1) / rate;
-        monthlyInvest = factor > 0 ? Math.floor(goal / factor) : 0;
-      }
+      monthlyInvest = calculateMonthlyInvestmentBackward(
+        retirementData.goalBalance || 500000,
+        retirementData.currentAge || 30,
+        retirementData.retirementAge || 65,
+        retirementData.annualReturn || 7
+      );
     } else {
       monthlyInvest = Math.floor(parseFloat(retirementData.monthlyInvestment) || 0);
     }
@@ -107,18 +104,12 @@ export default function Overview() {
         const person2Savings = parseFloat(dashboardData.person2Savings) || 0;
         savingsAmount = person1Savings + person2Savings;
         
-        // Combine personal expenses from both persons
-        const person1Expenses = dashboardData.person1Expenses || {};
-        const person2Expenses = dashboardData.person2Expenses || {};
-        const sharedExpenses = dashboardData.sharedExpenses || {};
-        
-        // Merge all expenses
-        EXPENSE_CATEGORIES.forEach(cat => {
-          const p1 = parseFloat(person1Expenses[cat]) || 0;
-          const p2 = parseFloat(person2Expenses[cat]) || 0;
-          const shared = parseFloat(sharedExpenses[cat]) || 0;
-          expenses[cat] = p1 + p2 + shared;
-        });
+        // Merge all expenses from both persons and shared
+        expenses = mergeExpensesFromSeparateMode(
+          dashboardData.person1Expenses,
+          dashboardData.person2Expenses,
+          dashboardData.sharedExpenses
+        );
       } else {
         // Shared mode - use original structure
         const incomes = dashboardData.incomes || [];

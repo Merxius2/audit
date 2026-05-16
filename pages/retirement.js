@@ -11,7 +11,7 @@ import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { generateForwardProjection, generateBackwardProjection } from '../lib/retirementCalculator';
+import { generateForwardProjection, generateBackwardProjection, calculateMonthlyInvestmentBackward } from '../lib/retirementCalculator';
 import PageHeader from '../components/PageHeader';
 import {
   DEFAULT_CURRENT_AGE,
@@ -54,16 +54,13 @@ export default function RetirementProjection() {
   const currentAgeNum = parseInt(currentAge) || 0;
   const retirementAgeNum = parseInt(retirementAge) || 65;
   const yearsToRetirement = Math.max(0, retirementAgeNum - currentAgeNum);
-  const monthlyForDisplay = isForward ? parseFloat(monthlyInvestment) || 0 : Math.round((parseFloat(goalBalance) || 0) / Math.max(1, (yearsToRetirement * 12)) * 100) / 100;
-  // Better calculation for backward
-  const backwardMonthly = isForward ? 0 : (() => {
-    const months = yearsToRetirement * 12;
-    const rate = (parseFloat(annualReturn) || 7) / 100 / 12;
-    const goal = parseFloat(goalBalance) || 0;
-    if (rate === 0) return months > 0 ? Math.floor(goal / months) : 0;
-    const factor = (Math.pow(1 + rate, months) - 1) / rate;
-    return factor > 0 ? Math.floor(goal / factor) : 0;
-  })();
+  const monthlyForDisplay = isForward ? parseFloat(monthlyInvestment) || 0 : calculateMonthlyInvestmentBackward(
+    goalBalance,
+    currentAge,
+    retirementAge,
+    annualReturn
+  );
+  const backwardMonthly = monthlyForDisplay;
 
   if (isLoading) {
     return <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0" />;

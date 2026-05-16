@@ -4,9 +4,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Wallet, Home, Car, UtensilsCrossed, Zap, Heart, Smile, Banknote, PiggyBank, Plus, Trash2, CreditCard, Phone, Shield, MoreHorizontal, BarChart3, Tv, Receipt } from 'lucide-react';
+import { PiggyBank, Plus, Trash2 } from 'lucide-react';
 import { EXPENSE_CATEGORIES, SHARED_EXPENSE_CATEGORIES, PERSONAL_EXPENSE_CATEGORIES, CHART_COLORS, CATEGORY_ICONS } from '../lib/constants';
-import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
+import { loadFromCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useIsMobile } from '../hooks/useIsMobile';
