@@ -24,11 +24,6 @@ export default function PageHeader({ icon: IconComponent, titleKey, eyebrow }) {
 
   return (
     <div className="px-4 md:px-8 pt-5 md:pt-7 pb-2 max-w-7xl mx-auto">
-      {label && (
-        <p className="text-[11px] uppercase tracking-[0.14em] text-ink-faint mb-1.5">
-          {label}
-        </p>
-      )}
       <div className="flex items-center gap-3">
         {IconComponent && (
           <span className="inline-flex w-9 h-9 items-center justify-center rounded-full glass">
