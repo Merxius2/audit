@@ -27,14 +27,20 @@ export function useChartTheme() {
   };
 
   // Center circle styling (for donut charts)
-  const centerCircleStyle = (height = 300) => ({
-    boxShadow: isDarkMode 
-      ? '0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-      : '0 10px 30px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
-    background: isDarkMode
-      ? 'linear-gradient(to bottom, #1f2937, #111827)'
-      : 'linear-gradient(to bottom, #f3f4f6, #e5e7eb)'
-  });
+  const centerCircleStyle = (height = 300) => {
+    const circleSize = Math.min(height * 0.55, 200); // 55% of height, max 200px
+    return {
+      width: `${circleSize}px`,
+      height: `${circleSize}px`,
+      aspectRatio: '1 / 1',
+      boxShadow: isDarkMode 
+        ? '0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+        : '0 10px 30px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
+      background: isDarkMode
+        ? 'linear-gradient(to bottom, #1f2937, #111827)'
+        : 'linear-gradient(to bottom, #f3f4f6, #e5e7eb)'
+    };
+  };
 
   // Text colors
   const textColors = {
