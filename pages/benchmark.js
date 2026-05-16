@@ -5,11 +5,12 @@
 
 import { useState, useEffect } from 'react';
 import { TrendingUp } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, Label } from 'recharts';
 import { BENCHMARK_MEDIANS } from '../lib/constants';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useDarkMode } from '../context/DarkModeContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import PageHeader from '../components/PageHeader';
@@ -22,6 +23,7 @@ export default function Benchmark() {
   
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
+  const { isDarkMode } = useDarkMode();
   const isMobile = useIsMobile();
 
   // Load from cookies on mount
@@ -190,9 +192,36 @@ export default function Benchmark() {
                     contentStyle={{ backgroundColor: '#111827', border: 'none', borderRadius: '8px', color: '#fff' }}
                   />
                   <Legend />
-                  <Bar dataKey="your" name={t('benchmark.yourValue')} fill={COLORS[0]} />
-                  <Bar dataKey="nl" name={t('benchmark.nlMedian')} fill={COLORS[1]} />
-                  <Bar dataKey="intl" name={t('benchmark.internationalMedian')} fill={COLORS[2]} />
+                  <Bar dataKey="your" name={t('benchmark.yourValue')} fill={COLORS[0]}>
+                    <Label 
+                      dataKey="your" 
+                      position="top" 
+                      formatter={(value) => `${getSymbol()}${(value / 1000).toFixed(0)}k`}
+                      fill={isDarkMode ? "#fff" : "#000"}
+                      fontSize={12}
+                      fontWeight={600}
+                    />
+                  </Bar>
+                  <Bar dataKey="nl" name={t('benchmark.nlMedian')} fill={COLORS[1]}>
+                    <Label 
+                      dataKey="nl" 
+                      position="top" 
+                      formatter={(value) => `${getSymbol()}${(value / 1000).toFixed(0)}k`}
+                      fill={isDarkMode ? "#fff" : "#000"}
+                      fontSize={12}
+                      fontWeight={600}
+                    />
+                  </Bar>
+                  <Bar dataKey="intl" name={t('benchmark.internationalMedian')} fill={COLORS[2]}>
+                    <Label 
+                      dataKey="intl" 
+                      position="top" 
+                      formatter={(value) => `${getSymbol()}${(value / 1000).toFixed(0)}k`}
+                      fill={isDarkMode ? "#fff" : "#000"}
+                      fontSize={12}
+                      fontWeight={600}
+                    />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
