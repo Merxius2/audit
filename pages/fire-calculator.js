@@ -39,12 +39,18 @@ export default function FIRECalculator() {
   }, []);
 
   // Debounced cookie save
-  useDebouncedCookie('AUDIT_FIRE_DATA', {
+  const debouncedSave = useDebouncedCookie('AUDIT_FIRE_DATA', {
     mode,
     desiredWithdrawal,
     currentInvestments,
     categoryOverrides,
-  }, 365);
+  });
+
+  useEffect(() => {
+    if (!isLoading) {
+      debouncedSave();
+    }
+  }, [mode, desiredWithdrawal, currentInvestments, categoryOverrides, isLoading, debouncedSave]);
 
   // Calculate dynamic withdrawal from dashboard data
   const calculateDynamicWithdrawal = () => {

@@ -38,11 +38,17 @@ export default function Benchmark() {
   }, []);
 
   // Debounced cookie save
-  useDebouncedCookie('AUDIT_BENCHMARK_DATA', {
+  const debouncedSave = useDebouncedCookie('AUDIT_BENCHMARK_DATA', {
     netIncome,
     totalAssets,
     totalDebts,
-  }, 365);
+  });
+
+  useEffect(() => {
+    if (!isLoading) {
+      debouncedSave();
+    }
+  }, [netIncome, totalAssets, totalDebts, isLoading, debouncedSave]);
 
   const netWorth = (parseFloat(totalAssets) || 0) - (parseFloat(totalDebts) || 0);
   
