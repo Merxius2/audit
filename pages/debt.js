@@ -248,6 +248,16 @@ export default function Debt() {
               layout="vertical"
               margin={isMobile ? { top: 10, right: 10, left: 20, bottom: 10 } : { top: 15, right: 20, left: 20, bottom: 10 }}
             >
+              <defs>
+                <linearGradient id="principalGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#059669" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#10b981" stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="interestGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#ea580c" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#f97316" stopOpacity={1} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(229, 231, 235, 0.3)" />
               <XAxis type="number" stroke="rgba(107, 114, 128, 0.5)" />
               <YAxis dataKey="name" type="category" stroke="rgba(107, 114, 128, 0.5)" tick={false} width={0} />
@@ -262,8 +272,8 @@ export default function Debt() {
                 }}
                 cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }}
               />
-              <Bar dataKey="principal" stackId="a" fill="#10b981" name={t('debt.principal')} radius={[0, 8, 8, 0]} />
-              <Bar dataKey="interest" stackId="a" fill="#f97316" name={t('debt.interest')} radius={[0, 8, 8, 0]} />
+              <Bar dataKey="principal" stackId="a" fill="url(#principalGradient)" name={t('debt.principal')} radius={[0, 8, 8, 0]} />
+              <Bar dataKey="interest" stackId="a" fill="url(#interestGradient)" name={t('debt.interest')} radius={[0, 8, 8, 0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="mt-6 grid grid-cols-2 gap-4">
