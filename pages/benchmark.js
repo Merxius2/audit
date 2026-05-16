@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { TrendingUp } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, Label } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { BENCHMARK_MEDIANS } from '../lib/constants';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useCurrency } from '../context/CurrencyContext';
@@ -86,6 +86,28 @@ export default function Benchmark() {
   const COLORS = ['#3B5BFF', '#10B981', '#F59E0B'];
 
   const formatValue = (value) => `${getSymbol()}${(value / 1000).toFixed(0)}k`;
+
+  const renderCustomLabel = (props) => {
+    const { x, y, width, height, value } = props;
+    if (!value) return null;
+    
+    const labelText = formatValue(value);
+    const xPos = x + width / 2;
+    const yPos = y - 10; // 10px above the bar
+    
+    return (
+      <text
+        x={xPos}
+        y={yPos}
+        fill={isDarkMode ? '#fff' : '#000'}
+        textAnchor="middle"
+        fontSize={12}
+        fontWeight={600}
+      >
+        {labelText}
+      </text>
+    );
+  };
 
   const BadgeRanking = ({ label, percentile, vsMedian }) => {
     const isAbove = vsMedian === 'above';
@@ -182,8 +204,8 @@ export default function Benchmark() {
           <>
             <div className="card p-6 md:p-8 mb-8">
               <h3 className="mb-6 text-lg font-bold text-gray-900 dark:text-gray-100">{t('benchmark.comparison')}</h3>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={chartData}>
+              <ResponsiveContainer width="100%" height={450}>
+                <BarChart data={chartData} margin={{ top: 30, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(229, 231, 235, 0.3)" />
                   <XAxis dataKey="category" />
                   <YAxis tickFormatter={formatValue} />
@@ -192,36 +214,24 @@ export default function Benchmark() {
                     contentStyle={{ backgroundColor: '#111827', border: 'none', borderRadius: '8px', color: '#fff' }}
                   />
                   <Legend />
-                  <Bar dataKey="your" name={t('benchmark.yourValue')} fill={COLORS[0]}>
-                    <Label 
-                      dataKey="your" 
-                      position="top" 
-                      formatter={(value) => `${getSymbol()}${(value / 1000).toFixed(0)}k`}
-                      fill={isDarkMode ? "#fff" : "#000"}
-                      fontSize={12}
-                      fontWeight={600}
-                    />
-                  </Bar>
-                  <Bar dataKey="nl" name={t('benchmark.nlMedian')} fill={COLORS[1]}>
-                    <Label 
-                      dataKey="nl" 
-                      position="top" 
-                      formatter={(value) => `${getSymbol()}${(value / 1000).toFixed(0)}k`}
-                      fill={isDarkMode ? "#fff" : "#000"}
-                      fontSize={12}
-                      fontWeight={600}
-                    />
-                  </Bar>
-                  <Bar dataKey="intl" name={t('benchmark.internationalMedian')} fill={COLORS[2]}>
-                    <Label 
-                      dataKey="intl" 
-                      position="top" 
-                      formatter={(value) => `${getSymbol()}${(value / 1000).toFixed(0)}k`}
-                      fill={isDarkMode ? "#fff" : "#000"}
-                      fontSize={12}
-                      fontWeight={600}
-                    />
-                  </Bar>
+                  <Bar 
+                    dataKey="your" 
+                    name={t('benchmark.yourValue')} 
+                    fill={COLORS[0]}
+                    label={renderCustomLabel}
+                  />
+                  <Bar 
+                    dataKey="nl" 
+                    name={t('benchmark.nlMedian')} 
+                    fill={COLORS[1]}
+                    label={renderCustomLabel}
+                  />
+                  <Bar 
+                    dataKey="intl" 
+                    name={t('benchmark.internationalMedian')} 
+                    fill={COLORS[2]}
+                    label={renderCustomLabel}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
