@@ -1,33 +1,43 @@
-import { Menu } from 'lucide-react';
-import { useSidebar } from '../context/SidebarContext';
+/**
+ * PageHeader — large inline display title for each screen.
+ *
+ * Adds the small numbered eyebrow ("Audit · 01" / "Calculator · 04" / "Setup")
+ * above the heading, matching the mockup. The eyebrow is auto-derived from
+ * `titleKey` so the existing pages don't need to pass anything new.
+ */
+
 import { useLanguage } from '../context/LanguageContext';
 
-/**
- * PageHeader Component
- * Reusable header for all pages with icon, title, and menu button
- * @param {React.Component} icon - Icon component from lucide-react
- * @param {string} titleKey - Translation key for page title (e.g., 'tax.title')
- */
-export default function PageHeader({ icon: IconComponent, titleKey }) {
-  const { toggleSidebar } = useSidebar();
+// titleKey → small label that sits above the heading
+const EYEBROW = {
+  'overview.title':   'Audit · 01',
+  'dashboard.title':  'Audit · 02',
+  'retirement.title': 'Audit · 03',
+  'debt.title':       'Calculator · 04',
+  'tax.title':        'Calculator · 05',
+  'settings.title':   'Setup',
+};
+
+export default function PageHeader({ icon: IconComponent, titleKey, eyebrow }) {
   const { t } = useLanguage();
+  const label = eyebrow || EYEBROW[titleKey];
 
   return (
-    <div className="border-b border-gray-200 bg-white px-4 py-6 md:px-8 dark:border-gray-800 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center gap-3 mb-4">
-          <button
-            onClick={toggleSidebar}
-            className="max-md:hidden lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            aria-label="Toggle sidebar"
-          >
-            <Menu size={24} className="text-gray-600 dark:text-gray-400" />
-          </button>
-          <IconComponent size={36} className="text-brand-primary" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 md:text-4xl">
-            {t(titleKey)}
-          </h1>
-        </div>
+    <div className="px-4 md:px-8 pt-5 md:pt-7 pb-2 max-w-7xl mx-auto">
+      {label && (
+        <p className="text-[11px] uppercase tracking-[0.14em] text-ink-faint mb-1.5">
+          {label}
+        </p>
+      )}
+      <div className="flex items-center gap-3">
+        {IconComponent && (
+          <span className="inline-flex w-9 h-9 items-center justify-center rounded-full glass">
+            <IconComponent size={18} className="text-[#2A45CC]" />
+          </span>
+        )}
+        <h1 className="display-2 text-[32px] md:text-[40px] text-ink dark:text-[#FAFAFA]">
+          {t(titleKey)}
+        </h1>
       </div>
     </div>
   );
