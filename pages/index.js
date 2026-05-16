@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, BarChart3, TrendingUp, Eye, CreditCard, Receipt, ShieldCheck } from 'lucide-react';
+import { ArrowRight, CreditCard, Receipt } from 'lucide-react';
 
 import { useLanguage } from '../context/LanguageContext';
 import { useDarkMode } from '../context/DarkModeContext';
@@ -103,17 +103,14 @@ export default function Home() {
             {t('landing.description')}
           </p>
 
-          <Link href="/overview">
-            <button className="mt-7 inline-flex items-center gap-2 h-12 px-6 rounded-full text-white text-[14px] font-semibold shadow-pill-tint"
-                    style={{ background: 'linear-gradient(135deg,#3B5BFF 0%, #7B5BFF 100%)' }}>
-              {t('landing.cta')}
-              <ArrowRight size={16} />
-            </button>
-          </Link>
-
-          <div className="mt-5 inline-flex items-center gap-1.5 text-[11.5px] text-ink-faint">
-            <ShieldCheck size={12} />
-            {(() => { const v = t('landing.privacyHint'); return v && !v.includes('landing.') ? v : 'Data stays in your browser'; })()}
+          <div className="mt-7 flex justify-center">
+            <Link href="/overview">
+              <button className="inline-flex items-center gap-2 h-12 px-6 rounded-full text-white text-[14px] font-semibold shadow-pill-tint"
+                      style={{ background: 'linear-gradient(135deg,#3B5BFF 0%, #7B5BFF 100%)' }}>
+                {t('landing.cta')}
+                <ArrowRight size={16} />
+              </button>
+            </Link>
           </div>
         </section>
 
@@ -123,11 +120,8 @@ export default function Home() {
             {t('landing.otherToolsTitle') || 'Toolkit'}
           </p>
           <div className="grid grid-cols-2 gap-2.5">
-            <ToolTile href="/overview"   icon={Eye}         titleKey="navigation.overview"        idx="01" tint="tint" />
-            <ToolTile href="/dashboard"  icon={BarChart3}   titleKey="navigation.householdBudget" idx="02" tint="violet" />
-            <ToolTile href="/retirement" icon={TrendingUp}  titleKey="navigation.retirement"      idx="03" tint="mint" />
-            <ToolTile href="/debt"       icon={CreditCard}  titleKey="navigation.debtCalculator"  idx="04" tint="amber" />
-            <ToolTile href="/tax"        icon={Receipt}     titleKey="navigation.taxCalculator"   idx="05" tint="coral" />
+            <ToolTile href="/debt"       icon={CreditCard}  titleKey="navigation.debtCalculator"  idx="01" tint="amber" />
+            <ToolTile href="/tax"        icon={Receipt}     titleKey="navigation.taxCalculator"   idx="02" tint="coral" />
           </div>
         </section>
       </div>
