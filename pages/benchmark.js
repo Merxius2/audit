@@ -16,20 +16,6 @@ import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
 import PageHeader from '../components/PageHeader';
 
 export default function Benchmark() {
-  const [netIncome, setNetIncome] = useState('');
-  const [totalAssets, setTotalAssets] = useState('');
-  const [totalDebts, setTotalDebts] = useState('');
-  const [ageGroup, setAgeGroup] = useState('30-40');
-  const [education, setEducation] = useState('bachelor');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAssetsModalOpen, setIsAssetsModalOpen] = useState(false);
-  const [assets, setAssets] = useState([]);
-  
-  const { getSymbol } = useCurrency();
-  const { t } = useLanguage();
-  const { isDarkMode } = useDarkMode();
-  const isMobile = useIsMobile();
-
   // Default assets
   const DEFAULT_ASSETS = [
     { id: 1, name: 'House', amount: '', debt: '' },
@@ -38,6 +24,20 @@ export default function Benchmark() {
     { id: 4, name: 'Household Furniture', amount: '', debt: '' },
     { id: 5, name: 'Savings/Investments', amount: '', debt: '' },
   ];
+
+  const [netIncome, setNetIncome] = useState('');
+  const [totalAssets, setTotalAssets] = useState('');
+  const [totalDebts, setTotalDebts] = useState('');
+  const [ageGroup, setAgeGroup] = useState('30-40');
+  const [education, setEducation] = useState('bachelor');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAssetsModalOpen, setIsAssetsModalOpen] = useState(false);
+  const [assets, setAssets] = useState(DEFAULT_ASSETS);
+  
+  const { getSymbol } = useCurrency();
+  const { t } = useLanguage();
+  const { isDarkMode } = useDarkMode();
+  const isMobile = useIsMobile();
 
   // Load from cookies on mount
   useEffect(() => {
@@ -50,11 +50,7 @@ export default function Benchmark() {
       if (savedData.education) setEducation(savedData.education);
       if (savedData.assets && savedData.assets.length > 0) {
         setAssets(savedData.assets);
-      } else {
-        setAssets(DEFAULT_ASSETS);
       }
-    } else {
-      setAssets(DEFAULT_ASSETS);
     }
     setIsLoading(false);
   }, []);
