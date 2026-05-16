@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Plus, Trash2, X } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { BENCHMARK_MEDIANS } from '../lib/constants';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
@@ -22,6 +22,8 @@ export default function Benchmark() {
   const [ageGroup, setAgeGroup] = useState('30-40');
   const [education, setEducation] = useState('bachelor');
   const [isLoading, setIsLoading] = useState(true);
+  const [isAssetsModalOpen, setIsAssetsModalOpen] = useState(false);
+  const [assets, setAssets] = useState([]);
   
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
@@ -37,6 +39,7 @@ export default function Benchmark() {
       if (savedData.totalDebts) setTotalDebts(savedData.totalDebts);
       if (savedData.ageGroup) setAgeGroup(savedData.ageGroup);
       if (savedData.education) setEducation(savedData.education);
+      if (savedData.assets) setAssets(savedData.assets);
     }
     setIsLoading(false);
   }, []);
@@ -48,13 +51,44 @@ export default function Benchmark() {
     totalDebts,
     ageGroup,
     education,
+    assets,
   });
 
   useEffect(() => {
     if (!isLoading) {
       debouncedSave();
     }
-  }, [netIncome, totalAssets, totalDebts, ageGroup, education, isLoading, debouncedSave]);
+  }, [netIncome, totalAssets, totalDebts, ageGroup, education, assets, isLoading, debouncedSave]);
+
+  // Calculate total assets from the assets list
+  const calculateTotalAssets = (assetList) => {
+    return assetList.reduce((sum, asset) => sum + (parseFloat(asset.amount) || 0), 0);
+  };
+
+  // Add new asset
+  const addAsset = () => {
+    setAssets([...assets, { id: Date.now(), name: '', amount: '' }]);
+  };
+
+  // Remove asset
+  const removeAsset = (id) => {
+    const updatedAssets = assets.filter(asset => asset.id !== id);
+    setAssets(updatedAssets);
+  };
+
+  // Update asset
+  const updateAsset = (id, field, value) => {
+    setAssets(assets.map(asset =>
+      asset.id === id ? { ...asset, [field]: value } : asset
+    ));
+  };
+
+  // Save and close modal
+  const saveAssets = () => {
+    const total = calculateTotalAssets(assets);
+    setTotalAssets(total.toString());
+    setIsAssetsModalOpen(false);
+  };
 
   // Get benchmark for selected age group and education
   const getBenchmarkForDemographic = () => {
@@ -224,13 +258,13 @@ export default function Benchmark() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('benchmark.totalAssets')}
               </label>
-              <input
-                type="number"
-                value={totalAssets}
-                onChange={(e) => setTotalAssets(e.target.value)}
-                placeholder="0"
-                className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
-              />
+              <button
+                onClick={() => setIsAssetsModalOpen(true)}
+                className="amount-large w-full text-left border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0 hover:opacity-80 cursor-pointer transition-opacity"
+              >
+                {getSymbol()}{(parseFloat(totalAssets) || 0).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+              </button>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Click to edit</p>
             </div>
           </div>
 
@@ -317,6 +351,80 @@ export default function Benchmark() {
           </div>
         )}
       </div>
+
+      {/* Assets Modal */}
+      {isAssetsModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full max-h-96 overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Breakdown of Assets</h2>
+              <button
+                onClick={() => setIsAssetsModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {assets.length === 0 ? (
+                <p className="text-gray-600 dark:text-gray-400 text-sm">No assets added yet</p>
+              ) : (
+                assets.map((asset) => (
+                  <div key={asset.id} className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Asset name (e.g., House, Savings)"
+                      value={asset.name}
+                      onChange={(e) => updateAsset(asset.id, 'name', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Amount"
+                      value={asset.amount}
+                      onChange={(e) => updateAsset(asset.id, 'amount', e.target.value)}
+                      className="w-24 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    />
+                    <button
+                      onClick={() => removeAsset(asset.id)}
+                      className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))
+              )}
+
+              {/* Total */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Total</span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">
+                    {getSymbol()}{calculateTotalAssets(assets).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex gap-3">
+              <button
+                onClick={() => addAsset()}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <Plus size={18} />
+                Add Asset
+              </button>
+              <button
+                onClick={saveAssets}
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
