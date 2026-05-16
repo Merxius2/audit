@@ -250,16 +250,12 @@ export default function Debt() {
             >
               <defs>
                 <linearGradient id="principalGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#047857" stopOpacity={1} />
-                  <stop offset="25%" stopColor="#059669" stopOpacity={1} />
-                  <stop offset="75%" stopColor="#10b981" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#6ee7b7" stopOpacity={1} />
+                  <stop offset="0%" stopColor="#059669" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#10b981" stopOpacity={1} />
                 </linearGradient>
                 <linearGradient id="interestGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#c2410c" stopOpacity={1} />
-                  <stop offset="25%" stopColor="#ea580c" stopOpacity={1} />
-                  <stop offset="75%" stopColor="#f97316" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#fed7aa" stopOpacity={1} />
+                  <stop offset="0%" stopColor="#ea580c" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#f97316" stopOpacity={1} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(229, 231, 235, 0.3)" />
