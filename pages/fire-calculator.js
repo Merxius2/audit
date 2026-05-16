@@ -224,7 +224,7 @@ export default function FIRECalculator() {
 
             {/* Milestones */}
             <div className="mb-8">
-              <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('fire.milestones')}</h3>
+              <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('fire.milestonesTitle')}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <MilestoneCard
                   title={t('fire.milestones.leanFire')}
