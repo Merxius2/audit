@@ -67,18 +67,49 @@ export default function FIRECalculator() {
           return;
         }
 
-        // Calculate total monthly expenses from dashboard
+        // Calculate total monthly expenses based on calculation type
         let totalMonthly = 0;
-        if (dashboardData.expenses) {
-          Object.values(dashboardData.expenses).forEach((amount) => {
-            totalMonthly += parseFloat(amount) || 0;
-          });
+        
+        if (dashboardData.calculationType === 'separate') {
+          // Separate mode: combine expenses from both people + shared
+          if (dashboardData.person1Expenses) {
+            Object.values(dashboardData.person1Expenses).forEach((amount) => {
+              totalMonthly += parseFloat(amount) || 0;
+            });
+          }
+          if (dashboardData.person2Expenses) {
+            Object.values(dashboardData.person2Expenses).forEach((amount) => {
+              totalMonthly += parseFloat(amount) || 0;
+            });
+          }
+          if (dashboardData.sharedExpenses) {
+            Object.values(dashboardData.sharedExpenses).forEach((amount) => {
+              totalMonthly += parseFloat(amount) || 0;
+            });
+          }
+        } else {
+          // Shared mode: use expenses as-is
+          if (dashboardData.expenses) {
+            Object.values(dashboardData.expenses).forEach((amount) => {
+              totalMonthly += parseFloat(amount) || 0;
+            });
+          }
         }
 
         // Apply any category overrides
         Object.entries(categoryOverrides).forEach(([category, override]) => {
           if (override !== undefined && override !== '') {
-            totalMonthly = totalMonthly - (parseFloat(dashboardData.expenses?.[category]) || 0) + (parseFloat(override) || 0);
+            if (dashboardData.calculationType === 'separate') {
+              // For separate mode, we can't easily override specific categories without knowing which person they belong to
+              // So we just subtract the original and add the override
+              const originalAmount = (parseFloat(dashboardData.person1Expenses?.[category]) || 0) + 
+                                    (parseFloat(dashboardData.person2Expenses?.[category]) || 0) + 
+                                    (parseFloat(dashboardData.sharedExpenses?.[category]) || 0);
+              totalMonthly = totalMonthly - originalAmount + (parseFloat(override) || 0);
+            } else {
+              // For shared mode, use original logic
+              totalMonthly = totalMonthly - (parseFloat(dashboardData.expenses?.[category]) || 0) + (parseFloat(override) || 0);
+            }
           }
         });
 
