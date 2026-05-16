@@ -265,13 +265,17 @@ export default function Benchmark() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('benchmark.totalAssets')}
               </label>
-              <button
-                onClick={() => setIsAssetsModalOpen(true)}
-                className="amount-large w-full text-left border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0 hover:opacity-80 cursor-pointer transition-opacity"
-              >
-                {getSymbol()}{(parseFloat(totalAssets) || 0).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
-              </button>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Click to edit</p>
+              <div className="flex gap-3">
+                <div className="flex-1 amount-large text-gray-900 dark:text-white font-semibold">
+                  {getSymbol()}{(parseFloat(totalAssets) || 0).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                </div>
+                <button
+                  onClick={() => setIsAssetsModalOpen(true)}
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+                >
+                  Edit assets
+                </button>
+              </div>
             </div>
           </div>
 
