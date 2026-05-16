@@ -19,6 +19,8 @@ export default function Benchmark() {
   const [netIncome, setNetIncome] = useState('');
   const [totalAssets, setTotalAssets] = useState('');
   const [totalDebts, setTotalDebts] = useState('');
+  const [age, setAge] = useState('');
+  const [education, setEducation] = useState('bachelor');
   const [isLoading, setIsLoading] = useState(true);
   
   const { getSymbol } = useCurrency();
@@ -33,6 +35,8 @@ export default function Benchmark() {
       if (savedData.netIncome) setNetIncome(savedData.netIncome);
       if (savedData.totalAssets) setTotalAssets(savedData.totalAssets);
       if (savedData.totalDebts) setTotalDebts(savedData.totalDebts);
+      if (savedData.age) setAge(savedData.age);
+      if (savedData.education) setEducation(savedData.education);
     }
     setIsLoading(false);
   }, []);
@@ -42,13 +46,34 @@ export default function Benchmark() {
     netIncome,
     totalAssets,
     totalDebts,
+    age,
+    education,
   });
 
   useEffect(() => {
     if (!isLoading) {
       debouncedSave();
     }
-  }, [netIncome, totalAssets, totalDebts, isLoading, debouncedSave]);
+  }, [netIncome, totalAssets, totalDebts, age, education, isLoading, debouncedSave]);
+
+  // Get age group from age input
+  const getAgeGroup = (ageValue) => {
+    const ageNum = parseInt(ageValue) || 0;
+    if (ageNum < 20) return '20-30';
+    if (ageNum < 30) return '20-30';
+    if (ageNum < 40) return '30-40';
+    if (ageNum < 50) return '40-50';
+    if (ageNum < 60) return '50-60';
+    return '60+';
+  };
+
+  // Get benchmark for selected age group and education
+  const getBenchmarkForDemographic = () => {
+    if (!age || !education) return null;
+    const ageGroup = getAgeGroup(age);
+    const benchmarks = BENCHMARK_MEDIANS.byAgeAndEducation[ageGroup];
+    return benchmarks ? benchmarks[education] : null;
+  };
 
   const netWorth = (parseFloat(totalAssets) || 0) - (parseFloat(totalDebts) || 0);
   
@@ -56,40 +81,45 @@ export default function Benchmark() {
   const incomeValue = parseFloat(netIncome) || 0;
   const wealthValue = netWorth;
   
+  // Get appropriate benchmark
+  const selectedBenchmark = getBenchmarkForDemographic() || BENCHMARK_MEDIANS.nl;
+  
   // Income percentile
-  const incomePercentile = incomeValue > BENCHMARK_MEDIANS.international.income 
-    ? 80 
-    : incomeValue > BENCHMARK_MEDIANS.nl.income 
-    ? 50 
-    : 25;
+  const incomePercentile = incomeValue > selectedBenchmark.income * 1.5
+    ? 90 
+    : incomeValue > selectedBenchmark.income 
+    ? 60 
+    : incomeValue > selectedBenchmark.income * 0.5
+    ? 30
+    : 10;
   
   // Wealth percentile
-  const wealthPercentile = wealthValue > BENCHMARK_MEDIANS.international.netWorth
-    ? 80
-    : wealthValue > BENCHMARK_MEDIANS.nl.netWorth
-    ? 50
-    : 25;
+  const wealthPercentile = wealthValue > selectedBenchmark.netWorth * 1.5
+    ? 90
+    : wealthValue > selectedBenchmark.netWorth
+    ? 60
+    : wealthValue > selectedBenchmark.netWorth * 0.5
+    ? 30
+    : 10;
 
-  const incomeVsMedian = incomeValue > BENCHMARK_MEDIANS.nl.income ? 'above' : 'below';
-  const wealthVsMedian = wealthValue > BENCHMARK_MEDIANS.nl.netWorth ? 'above' : 'below';
+  const incomeVsMedian = incomeValue > selectedBenchmark.income ? 'above' : 'below';
+  const wealthVsMedian = wealthValue > selectedBenchmark.netWorth ? 'above' : 'below';
 
   // Chart data
   const chartData = [
     {
       category: t('benchmark.income'),
       your: incomeValue,
-      nl: BENCHMARK_MEDIANS.nl.income,
-      intl: BENCHMARK_MEDIANS.international.income,
+      median: selectedBenchmark.income,
     },
     {
       category: t('benchmark.wealth'),
       your: wealthValue,
-      nl: BENCHMARK_MEDIANS.nl.netWorth,
-      intl: BENCHMARK_MEDIANS.international.netWorth,
+      median: selectedBenchmark.netWorth,
     },
   ];
 
-  const COLORS = ['#3B5BFF', '#10B981', '#F59E0B'];
+  const COLORS = ['#3B5BFF', '#10B981'];
 
   const formatValue = (value) => `${getSymbol()}${(value / 1000).toFixed(0)}k`;
 
@@ -154,6 +184,39 @@ export default function Benchmark() {
         <div className="card p-6 md:p-8 mb-8">
           <h3 className="mb-6 text-lg font-bold text-gray-900 dark:text-gray-100">{t('benchmark.inputs')}</h3>
           
+          {/* Demographics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('benchmark.age')}
+              </label>
+              <input
+                type="number"
+                min="18"
+                max="100"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="25"
+                className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('benchmark.education')}
+              </label>
+              <select
+                value={education}
+                onChange={(e) => setEducation(e.target.value)}
+                className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
+              >
+                <option value="highSchool">{t('benchmark.educationLevels.highSchool')}</option>
+                <option value="bachelor">{t('benchmark.educationLevels.bachelor')}</option>
+                <option value="master">{t('benchmark.educationLevels.master')}</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Financial Data */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -227,15 +290,9 @@ export default function Benchmark() {
                     label={renderCustomLabel}
                   />
                   <Bar 
-                    dataKey="nl" 
-                    name={t('benchmark.nlMedian')} 
+                    dataKey="median" 
+                    name={t('benchmark.adjustedMedian')} 
                     fill={COLORS[1]}
-                    label={renderCustomLabel}
-                  />
-                  <Bar 
-                    dataKey="intl" 
-                    name={t('benchmark.internationalMedian')} 
-                    fill={COLORS[2]}
                     label={renderCustomLabel}
                   />
                 </BarChart>
