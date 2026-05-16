@@ -9,7 +9,7 @@ import { BarChart3 } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { loadFromCookie } from '../lib/cookieStorage';
+import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useSharedDashboard } from '../hooks/useSharedDashboard';
 import { useSeparateDashboard } from '../hooks/useSeparateDashboard';
 import PageHeader from '../components/PageHeader';
@@ -29,6 +29,12 @@ export default function Dashboard() {
       setCalculationType(savedData.calculationType);
     }
   }, []);
+
+  // Save calculation type whenever it changes
+  useEffect(() => {
+    const savedData = loadFromCookie('AUDIT_DASHBOARD_DATA') || {};
+    saveToCookie('AUDIT_DASHBOARD_DATA', { ...savedData, calculationType }, 365);
+  }, [calculationType]);
 
   // Use hooks for shared and separate modes
   const sharedMode = useSharedDashboard();

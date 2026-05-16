@@ -3,10 +3,9 @@
  * Manages state and logic for the separate (two-person) mode dashboard
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PERSONAL_EXPENSE_CATEGORIES, SHARED_EXPENSE_CATEGORIES } from '../lib/constants';
-import { loadFromCookie } from '../lib/cookieStorage';
-import { useDebouncedCookie } from './useDebouncedCookie';
+import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 
 export function useSeparateDashboard() {
   // Person 1 state
@@ -31,6 +30,7 @@ export function useSeparateDashboard() {
   );
 
   const [isLoading, setIsLoading] = useState(true);
+  const saveTimeoutRef = useRef(null);
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -52,30 +52,33 @@ export function useSeparateDashboard() {
     setIsLoading(false);
   }, []);
 
-  // Debounced cookie save for separate mode data
-  const debouncedSave = useDebouncedCookie('AUDIT_DASHBOARD_DATA', {
-    person1Incomes,
-    person1Savings,
-    person1Expenses,
-    person2Incomes,
-    person2Savings,
-    person2Expenses,
-    sharedExpenses,
-    person1Name,
-    person2Name,
-  });
-
+  // Debounced save with calculationType preservation
   useEffect(() => {
-    if (!isLoading) {
-      debouncedSave();
-    }
-  }, [
-    person1Incomes, person1Savings, person1Expenses,
-    person2Incomes, person2Savings, person2Expenses,
-    sharedExpenses,
-    person1Name, person2Name,
-    isLoading
-  ]);
+    if (isLoading) return;
+
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    
+    saveTimeoutRef.current = setTimeout(() => {
+      const existingData = loadFromCookie('AUDIT_DASHBOARD_DATA') || {};
+      saveToCookie('AUDIT_DASHBOARD_DATA', {
+        ...existingData,
+        calculationType: existingData.calculationType || 'separate',
+        person1Incomes,
+        person1Savings,
+        person1Expenses,
+        person2Incomes,
+        person2Savings,
+        person2Expenses,
+        sharedExpenses,
+        person1Name,
+        person2Name,
+      }, 365);
+    }, 500);
+
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    };
+  }, [person1Incomes, person1Savings, person1Expenses, person2Incomes, person2Savings, person2Expenses, sharedExpenses, person1Name, person2Name, isLoading]);
 
   // Calculations for Person 1
   const person1Income = person1Incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);

@@ -3,10 +3,9 @@
  * Manages state and logic for the shared (household) mode dashboard
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { EXPENSE_CATEGORIES } from '../lib/constants';
-import { loadFromCookie } from '../lib/cookieStorage';
-import { useDebouncedCookie } from './useDebouncedCookie';
+import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 
 export function useSharedDashboard() {
   // Shared mode state
@@ -17,6 +16,7 @@ export function useSharedDashboard() {
     EXPENSE_CATEGORIES.reduce((acc, cat) => ({ ...acc, [cat]: '' }), {})
   );
   const [isLoading, setIsLoading] = useState(true);
+  const saveTimeoutRef = useRef(null);
 
   // Load data from cookies on mount
   useEffect(() => {
@@ -32,18 +32,27 @@ export function useSharedDashboard() {
     setIsLoading(false);
   }, []);
 
-  // Debounced cookie save for shared mode data
-  const debouncedSave = useDebouncedCookie('AUDIT_DASHBOARD_DATA', {
-    incomes,
-    savings,
-    includeSavingsInCalculations,
-    expenses,
-  });
-
+  // Debounced save with calculationType preservation
   useEffect(() => {
-    if (!isLoading) {
-      debouncedSave();
-    }
+    if (isLoading) return;
+
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    
+    saveTimeoutRef.current = setTimeout(() => {
+      const existingData = loadFromCookie('AUDIT_DASHBOARD_DATA') || {};
+      saveToCookie('AUDIT_DASHBOARD_DATA', {
+        ...existingData,
+        calculationType: existingData.calculationType || 'shared',
+        incomes,
+        savings,
+        includeSavingsInCalculations,
+        expenses,
+      }, 365);
+    }, 500);
+
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    };
   }, [incomes, savings, includeSavingsInCalculations, expenses, isLoading]);
 
   // Income management functions
