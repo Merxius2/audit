@@ -133,12 +133,15 @@ export default function FIRECalculator() {
     ? Math.log(fireNumber / currentAmount) / Math.log(1.07)
     : 0;
 
-  const MilestoneCard = ({ title, amount, isActive }) => (
+  const MilestoneCard = ({ title, amount, description, isActive }) => (
     <div className={`card p-6 ${isActive ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''}`}>
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{title}</p>
-      <p className="text-2xl font-bold text-gray-900 dark:text-white">
+      <p className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
         {getSymbol()}{(amount || 0).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
       </p>
+      {description && (
+        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{description}</p>
+      )}
       {isActive && (
         <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">← {t('fire.milestones.target')}</p>
       )}
@@ -279,16 +282,19 @@ export default function FIRECalculator() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <MilestoneCard
                   title={t('fire.milestones.leanFire')}
+                  description={t('fire.milestones.leanFireDesc')}
                   amount={leanFire}
                   isActive={false}
                 />
                 <MilestoneCard
                   title={t('fire.milestones.standardFire')}
+                  description={t('fire.milestones.standardFireDesc')}
                   amount={fireNumber}
                   isActive={true}
                 />
                 <MilestoneCard
                   title={t('fire.milestones.fatFire')}
+                  description={t('fire.milestones.fatFireDesc')}
                   amount={fatFire}
                   isActive={false}
                 />
