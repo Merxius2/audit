@@ -19,6 +19,7 @@ import {
   DEFAULT_MONTHLY_INVESTMENT,
   DEFAULT_ANNUAL_INVESTMENT_RETURN,
   DEFAULT_RETIREMENT_GOAL,
+  DEFAULT_CURRENT_BALANCE,
 } from '../lib/appConstants';
 
 export default function RetirementProjection() {
@@ -35,19 +36,20 @@ export default function RetirementProjection() {
     monthlyInvestment: String(DEFAULT_MONTHLY_INVESTMENT),
     annualReturn: String(DEFAULT_ANNUAL_INVESTMENT_RETURN),
     goalBalance: String(DEFAULT_RETIREMENT_GOAL),
+    currentBalance: String(DEFAULT_CURRENT_BALANCE),
   });
 
   // Destructure for easier access
-  const { calculationType, currentAge, retirementAge, monthlyInvestment, annualReturn, goalBalance } = retirementData;
+  const { calculationType, currentAge, retirementAge, monthlyInvestment, annualReturn, goalBalance, currentBalance } = retirementData;
 
   const isForward = calculationType === 'forward';
   
   // Memoize projection calculation - expensive operation
   const projectionData = useMemo(() => {
     return isForward 
-      ? generateForwardProjection(currentAge, retirementAge, monthlyInvestment, annualReturn) 
-      : generateBackwardProjection(currentAge, retirementAge, goalBalance, annualReturn);
-  }, [isForward, currentAge, retirementAge, monthlyInvestment, annualReturn, goalBalance]);
+      ? generateForwardProjection(currentAge, retirementAge, monthlyInvestment, annualReturn, currentBalance) 
+      : generateBackwardProjection(currentAge, retirementAge, goalBalance, annualReturn, currentBalance);
+  }, [isForward, currentAge, retirementAge, monthlyInvestment, annualReturn, goalBalance, currentBalance]);
   
   const finalBalance = projectionData[projectionData.length - 1]?.balance || 0;
   
@@ -101,11 +103,13 @@ export default function RetirementProjection() {
           {(isForward ? [
               { label: t('retirement.currentAge'), value: currentAge, field: 'currentAge', placeholder: '30' },
               { label: t('retirement.retirementAge'), value: retirementAge, field: 'retirementAge', placeholder: '65' },
+              { label: t('retirement.currentBalance'), value: currentBalance, field: 'currentBalance', placeholder: '0' },
               { label: t('retirement.monthlyInvestment'), value: monthlyInvestment, field: 'monthlyInvestment', placeholder: '1000' },
               { label: t('retirement.annualReturn'), value: annualReturn, field: 'annualReturn', placeholder: '7' },
             ] : [
               { label: t('retirement.currentAge'), value: currentAge, field: 'currentAge', placeholder: '30' },
               { label: t('retirement.retirementAge'), value: retirementAge, field: 'retirementAge', placeholder: '65' },
+              { label: t('retirement.currentBalance'), value: currentBalance, field: 'currentBalance', placeholder: '0' },
               { label: t('retirement.goalBalance'), value: goalBalance, field: 'goalBalance', placeholder: '500000' },
               { label: t('retirement.annualReturn'), value: annualReturn, field: 'annualReturn', placeholder: '7' },
             ]).map((field, idx) => (
@@ -118,6 +122,7 @@ export default function RetirementProjection() {
                 value={field.value}
                 onChange={(e) => updateData(field.field, e.target.value)}
                 placeholder={field.placeholder}
+                min="0"
                 className="amount-large w-full border-0 bg-transparent text-gray-900 focus:ring-0"
               />
             </div>
@@ -193,6 +198,26 @@ export default function RetirementProjection() {
           <div className="card p-8">
             <h3 className="mb-6 text-lg font-bold text-gray-900">{t('retirement.balanceComposition')}</h3>
             <div className="space-y-4">
+              {/* Current Balance Bar */}
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-100">{t('retirement.currentBalance')}</span>
+                  <span className="text-sm font-bold text-gray-900">
+                    {getSymbol()}{Math.floor(parseFloat(currentBalance) || 0).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                  </span>
+                </div>
+                <div className="h-3 rounded-full bg-gray-200">
+                  <div
+                    className="h-3 rounded-full bg-blue-500 transition-all"
+                    style={{
+                      width: finalBalance > 0 
+                        ? `${Math.min(100, ((parseFloat(currentBalance) || 0) / finalBalance) * 100)}%`
+                        : '0%'
+                    }}
+                  />
+                </div>
+              </div>
+
               {/* Contributions Bar */}
               <div>
                 <div className="mb-2 flex items-center justify-between">
@@ -218,7 +243,7 @@ export default function RetirementProjection() {
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-700 dark:text-gray-100">{t('retirement.investmentGains')}</span>
                   <span className="text-sm font-bold text-green-600">
-                    {getSymbol()}{Math.floor(finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                    {getSymbol()}{Math.floor(finalBalance - ((parseFloat(currentBalance) || 0) + (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)))).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                   </span>
                 </div>
                 <div className="h-3 rounded-full bg-gray-200">
@@ -226,7 +251,7 @@ export default function RetirementProjection() {
                     className="h-3 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all"
                     style={{
                       width: finalBalance > 0 
-                        ? `${Math.min(100, ((finalBalance - (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly))) / finalBalance) * 100)}%`
+                        ? `${Math.min(100, ((finalBalance - ((parseFloat(currentBalance) || 0) + (yearsToRetirement * 12 * (isForward ? (parseFloat(monthlyInvestment) || 0) : backwardMonthly)))) / finalBalance) * 100)}%`
                         : '0%'
                     }}
                   />
@@ -247,6 +272,13 @@ export default function RetirementProjection() {
 
           {/* Summary Cards */}
           <div className="space-y-4">
+            <div className="card p-6">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('retirement.currentBalance')}</p>
+              <p className="amount-large mt-2 text-gray-900 font-mono">
+                {getSymbol()}{Math.floor(parseFloat(currentBalance) || 0).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+              </p>
+            </div>
+
             <div className="card p-6">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('retirement.yearsToRetirement')}</p>
               <p className="amount-large mt-2 text-gray-900">{yearsToRetirement}</p>

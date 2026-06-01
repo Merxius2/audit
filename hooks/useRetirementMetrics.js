@@ -37,13 +37,15 @@ export function useRetirementMetrics() {
           retirementData.currentAge || '30',
           retirementData.retirementAge || '65',
           retirementData.goalBalance || '500000',
-          retirementData.annualReturn || '7'
+          retirementData.annualReturn || '7',
+          retirementData.currentBalance || '0'
         )
       : generateForwardProjection(
           retirementData.currentAge || '30',
           retirementData.retirementAge || '65',
           retirementData.monthlyInvestment || '1000',
-          retirementData.annualReturn || '7'
+          retirementData.annualReturn || '7',
+          retirementData.currentBalance || '0'
         );
     
     // Extract final projection data
