@@ -60,7 +60,8 @@ export default function RetirementProjection() {
     goalBalance,
     currentAge,
     retirementAge,
-    annualReturn
+    annualReturn,
+    currentBalance
   );
   const backwardMonthly = monthlyForDisplay;
 

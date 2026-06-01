@@ -66,7 +66,8 @@ export function useRetirementMetrics() {
         retirementData.goalBalance || 500000,
         retirementData.currentAge || 30,
         retirementData.retirementAge || 65,
-        retirementData.annualReturn || 7
+        retirementData.annualReturn || 7,
+        retirementData.currentBalance || 0
       );
     } else {
       monthlyInvest = Math.floor(parseFloat(retirementData.monthlyInvestment) || 0);
