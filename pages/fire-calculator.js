@@ -187,17 +187,34 @@ export default function FIRECalculator() {
         <div className="card p-6 md:p-8 mb-8">
           {mode === 'manual' ? (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('fire.desiredAnnualWithdrawal')}
-              </label>
-              <input
-                type="number"
-                value={desiredWithdrawal}
-                onChange={(e) => setDesiredWithdrawal(e.target.value)}
-                placeholder="0"
-                className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{t('fire.formula')}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('fire.desiredAnnualWithdrawal')}
+                  </label>
+                  <input
+                    type="number"
+                    value={desiredWithdrawal}
+                    onChange={(e) => setDesiredWithdrawal(e.target.value)}
+                    placeholder="0"
+                    className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{t('fire.formula')}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('fire.progress.currentAmount')}
+                  </label>
+                  <input
+                    type="number"
+                    value={currentInvestments}
+                    onChange={(e) => setCurrentInvestments(e.target.value)}
+                    placeholder="0"
+                    className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{t('fire.progress.currentAmount')}</p>
+                </div>
+              </div>
             </div>
           ) : (
             <div>
@@ -282,26 +299,12 @@ export default function FIRECalculator() {
             <div className="card p-6 md:p-8 mb-8">
               <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('fire.progress.progressTitle')}</h3>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('fire.progress.currentAmount')}
-                  </label>
-                  <input
-                    type="number"
-                    value={currentInvestments}
-                    onChange={(e) => setCurrentInvestments(e.target.value)}
-                    placeholder="0"
-                    className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('fire.progress.targetAmount')}
-                  </p>
-                  <div className="amount-large text-gray-900 dark:text-white font-semibold">
-                    {getSymbol()}{(fireNumber || 0).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
-                  </div>
+              <div className="mb-6">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('fire.progress.targetAmount')}
+                </p>
+                <div className="amount-large text-gray-900 dark:text-white font-semibold">
+                  {getSymbol()}{(fireNumber || 0).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                 </div>
               </div>
 
