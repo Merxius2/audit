@@ -14,6 +14,7 @@ import { useRef, useState } from 'react';
 
 import { useLanguage } from '../context/UserPreferencesContext';
 import { useSecretSettings } from '../context/FeatureContext';
+import { LANGUAGE_FAVICON_MAP } from '../lib/appConstants';
 
 const NAV = [
   {
@@ -35,8 +36,6 @@ const NAV = [
   },
 ];
 
-const LANG_ICON = { en: '/icon-e-192.png', nl: '/icon-n-192.png', ru: '/icon-r-192.png', tr: '/icon-t-192.png' };
-
 export default function Sidebar() {
   const router = useRouter();
   const { t, language } = useLanguage();
@@ -45,7 +44,7 @@ export default function Sidebar() {
   const clickTimeout = useRef(null);
 
   const isActive = (path) => router.pathname === path;
-  const iconPath = LANG_ICON[language] || LANG_ICON.en;
+  const iconPath = LANGUAGE_FAVICON_MAP[language] || LANGUAGE_FAVICON_MAP.en;
 
   const handleLogoClick = () => {
     setClickCount((n) => n + 1);

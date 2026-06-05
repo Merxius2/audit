@@ -23,6 +23,60 @@ body {
 /* Dark mode preserved — uses ink/base inverted */
 html.dark body { @apply bg-[#0A0A0B] text-[#FAFAFA]; background-image: none; }
 
+/* English (simplified) — patriotic red backdrop */
+html.lang-mu body {
+  background-color: #991B1B;
+  background-image: radial-gradient(120% 80% at 50% 0%, rgba(239, 68, 68, 0.45) 0%, rgba(185, 28, 28, 0.25) 40%, rgba(153, 27, 27, 0) 70%);
+}
+html.dark.lang-mu body {
+  background-color: #7F1D1D;
+  background-image: radial-gradient(120% 80% at 50% 0%, rgba(220, 38, 38, 0.35) 0%, rgba(127, 29, 29, 0) 60%);
+}
+
+/* English (simplified) — blue navigation bars (desktop sidebar + mobile tab bar) */
+html.lang-mu aside.glass-thick,
+html.lang-mu nav.glass-thick {
+  background: rgba(30, 58, 138, 0.90) !important;
+  border-color: rgba(96, 165, 250, 0.35) !important;
+  color: #EFF6FF !important;
+  box-shadow:
+    inset 0 1px 0 rgba(147, 197, 253, 0.30),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20),
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 24px 60px -28px rgba(30, 58, 138, 0.55) !important;
+}
+html.lang-mu aside.glass-thick .text-ink-soft,
+html.lang-mu aside.glass-thick .text-ink-faint,
+html.lang-mu nav.glass-thick .text-ink-soft {
+  color: rgba(219, 234, 254, 0.88) !important;
+}
+html.lang-mu aside.glass-thick .font-semibold {
+  color: #FFFFFF;
+}
+html.lang-mu aside.glass-thick .border-black\/\[0\.06\] {
+  border-color: rgba(147, 197, 253, 0.22) !important;
+}
+html.lang-mu aside.glass-thick .bg-tint-soft {
+  background-color: rgba(255, 255, 255, 0.20) !important;
+  color: #FFFFFF !important;
+}
+html.lang-mu aside.glass-thick .hover\:bg-black\/\[0\.04\]:hover {
+  background-color: rgba(255, 255, 255, 0.10) !important;
+}
+html.lang-mu nav.glass-thick button.bg-white {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  color: #1E3A8A !important;
+}
+html.dark.lang-mu aside.glass-thick,
+html.dark.lang-mu nav.glass-thick {
+  background: rgba(30, 58, 138, 0.94) !important;
+  border-color: rgba(96, 165, 250, 0.30) !important;
+}
+html.dark.lang-mu aside.glass-thick .bg-tint-soft {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  color: #FFFFFF !important;
+}
+
 /* ============================================================
    Typography helpers
    ============================================================ */

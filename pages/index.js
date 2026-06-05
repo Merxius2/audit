@@ -20,7 +20,7 @@ const LANG_ICON = {
   nl: LANGUAGE_FAVICON_MAP.nl.replace('-192', '-512'),
   ru: LANGUAGE_FAVICON_MAP.ru.replace('-192', '-512'),
   tr: LANGUAGE_FAVICON_MAP.tr.replace('-192', '-512'),
-  mu: LANGUAGE_FAVICON_MAP.mu?.replace('-192', '-512') || '/icon-m-512.png',
+  mu: LANGUAGE_FAVICON_MAP.mu.replace('-192', '-512'),
 };
 
 export default function Home() {
@@ -56,7 +56,7 @@ export default function Home() {
                 className="flex items-center gap-1.5 h-9 px-3 rounded-full text-[13px] font-medium text-ink-soft hover:bg-black/5 transition"
               >
                 <span className="text-[16px] leading-none">{currentLang.flag}</span>
-                <span>{currentLang.code.toUpperCase()}</span>
+                <span>{currentLang.shortCode || currentLang.code.toUpperCase()}</span>
               </button>
               {langOpen && (
                 <div className="absolute right-0 mt-2 w-40 glass-thick rounded-md overflow-hidden p-1">

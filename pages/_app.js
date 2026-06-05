@@ -35,6 +35,12 @@ function AppContent({ Component, pageProps }) {
     return () => window.removeEventListener('resize', checkDesktop);
   }, [isHomePage, router]);
 
+  // English (simplified) gets a red page backdrop.
+  useEffect(() => {
+    document.documentElement.classList.toggle('lang-mu', language === 'mu');
+    return () => document.documentElement.classList.remove('lang-mu');
+  }, [language]);
+
   // Favicon swaps with the selected language (monkey icon e/n/r/t).
   useEffect(() => {
     const iconPath = LANGUAGE_FAVICON_MAP[language] || LANGUAGE_FAVICON_MAP.en;
