@@ -7,9 +7,24 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import translations from '../lib/i18n';
-import { CURRENCIES } from '../lib/appConstants';
+import { CURRENCIES, DEFAULT_LANGUAGE } from '../lib/appConstants';
 
 const UserPreferencesContext = createContext();
+
+function resolveTranslation(lang, key) {
+  const keys = key.split('.');
+  let value = translations[lang];
+
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k];
+    } else {
+      return null;
+    }
+  }
+
+  return typeof value === 'string' ? value : null;
+}
 
 export function UserPreferencesProvider({ children }) {
   // Dark Mode State
@@ -119,18 +134,9 @@ export function UserPreferencesProvider({ children }) {
   };
 
   const t = (key) => {
-    const keys = key.split('.');
-    let value = translations[language];
-
-    for (const k of keys) {
-      if (value && typeof value === 'object') {
-        value = value[k];
-      } else {
-        return key;
-      }
-    }
-
-    return value || key;
+    return resolveTranslation(language, key)
+      ?? resolveTranslation(DEFAULT_LANGUAGE, key)
+      ?? key;
   };
 
   // Currency Methods

@@ -59,7 +59,7 @@ export default function SharedModeSection({
             onChange={(e) => setIncludeSavingsInCalculations(e.target.checked)}
             className="rounded border-gray-300"
           />
-          {t('dashboard.includeSavingsInCalculations')}
+          {t('dashboard.includeSavingsInCalc')}
         </label>
       </div>
 
@@ -92,7 +92,7 @@ export default function SharedModeSection({
 
       {totalPieValue > 0 && (
         <div className="card p-8">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.breakdown')}</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.expenseBreakdown')}</h2>
           <DonutChart
             data={pieData}
             totalAmount={totalPieValue}
