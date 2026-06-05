@@ -23,7 +23,6 @@ const LANGUAGES = [
   { code: 'nl', flag: '🇳🇱', name: 'Dutch', icon: '/icon-n-192.png' },
   { code: 'ru', flag: '🇷🇺', name: 'Russian', icon: '/icon-r-192.png' },
   { code: 'tr', flag: '🇹🇷', name: 'Turkish', icon: '/icon-t-192.png' },
-  { code: 'mu', flag: '🇺🇸', name: 'English (simplified)', icon: '/icon-u-192.png' },
 ];
 
 const CURRENCY_OPTIONS = [
@@ -39,7 +38,6 @@ const ICON_MAP = {
   nl: 'n',
   ru: 'r',
   tr: 't',
-  mu: 'u',
 };
 
 export default function SettingsPage() {
@@ -155,18 +153,6 @@ export default function SettingsPage() {
     setShowConfirmation(false);
   };
 
-  const handleLanguageChange = (langCode) => {
-    changeLanguage(langCode);
-    
-    // Play USA anthem when murica language is selected
-    if (langCode === 'mu') {
-      const audio = new Audio('/usa-anthem.mp3');
-      audio.play().catch((error) => {
-        console.error('Error playing audio:', error);
-      });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-white pb-40 lg:ml-64 md:pb-0">
       <PageHeader icon={SettingsIcon} titleKey="settings.title" />
@@ -183,7 +169,7 @@ export default function SettingsPage() {
             {LANGUAGES.map((lang) => (
               <button
                 key={lang.code}
-                onClick={() => handleLanguageChange(lang.code)}
+                onClick={() => changeLanguage(lang.code)}
                 className={`flex flex-col items-center gap-3 rounded-lg p-6 transition-all ${
                   language === lang.code
                     ? 'bg-gradient-to-br from-brand-primary to-brand-secondary text-white shadow-lg'
