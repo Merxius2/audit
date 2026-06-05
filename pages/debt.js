@@ -6,12 +6,12 @@
 import { useMemo } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useCookieStorage } from '../hooks/useCookieStorage';
-import { useCurrency } from '../context/CurrencyContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useCurrency, useLanguage } from '../context/UserPreferencesContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import PageHeader from '../components/PageHeader';
 import { RotateCcw, CreditCard } from 'lucide-react';
 import { MONTHS_PER_YEAR } from '../lib/appConstants';
+import { calculateAmortization } from '../lib/loanCalculator';
 
 export default function Debt() {
   // Hooks
@@ -31,76 +31,11 @@ export default function Debt() {
 
   // Memoize debt metrics calculation - expensive amortization loop
   const { schedule, monthlyPayment, totalInterest, totalPayment } = useMemo(() => {
-    const principal = parseFloat(loanAmount) || 0;
-    const annualRate = parseFloat(interestRate) || 0;
-    const months = parseInt(durationMonths) || 0;
-
-    if (principal <= 0 || annualRate < 0 || months <= 0) {
-      return { schedule: [], monthlyPayment: 0, totalInterest: 0, totalPayment: 0 };
-    }
-
-    const monthlyRate = annualRate / 100 / MONTHS_PER_YEAR;
-    
-    // Handle 0% interest
-    if (monthlyRate === 0) {
-      const monthlyPayment = principal / months;
-      const schedule = [];
-      let balance = principal;
-      let cumulativeInterest = 0;
-      
-      for (let i = 1; i <= months; i++) {
-        const interest = 0;
-        const principalPayment = monthlyPayment;
-        balance -= principalPayment;
-        cumulativeInterest += interest;
-        
-        schedule.push({
-          month: i,
-          payment: monthlyPayment,
-          principal: principalPayment,
-          interest: interest,
-          balance: Math.max(balance, 0),
-          cumulativeInterest: cumulativeInterest,
-        });
-      }
-      
-      return {
-        schedule,
-        monthlyPayment,
-        totalInterest: 0,
-        totalPayment: principal,
-      };
-    }
-
-    // Standard amortization formula: M = P * (r * (1 + r)^n) / ((1 + r)^n - 1)
-    const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
-
-    const schedule = [];
-    let balance = principal;
-    let totalInterest = 0;
-
-    for (let i = 1; i <= months; i++) {
-      const interest = balance * monthlyRate;
-      const principalPayment = monthlyPayment - interest;
-      balance -= principalPayment;
-      totalInterest += interest;
-
-      schedule.push({
-        month: i,
-        payment: monthlyPayment,
-        principal: principalPayment,
-        interest: interest,
-        balance: Math.max(balance, 0),
-        cumulativeInterest: totalInterest,
-      });
-    }
-
-    return {
-      schedule,
-      monthlyPayment,
-      totalInterest,
-      totalPayment: principal + totalInterest,
-    };
+    return calculateAmortization(
+      parseFloat(loanAmount) || 0,
+      parseFloat(interestRate) || 0,
+      parseInt(durationMonths) || 0
+    );
   }, [loanAmount, interestRate, durationMonths]);
 
   // Format for chart (show every 12 months or all if less than 24 months)

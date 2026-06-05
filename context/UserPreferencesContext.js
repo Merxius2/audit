@@ -6,17 +6,10 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
-import translations from '../lib/translations';
+import translations from '../lib/i18n';
+import { CURRENCIES } from '../lib/appConstants';
 
 const UserPreferencesContext = createContext();
-
-const CURRENCIES = {
-  EUR: { symbol: '€', name: 'Euro', code: 'EUR' },
-  USD: { symbol: '$', name: 'Dollar', code: 'USD' },
-  GBP: { symbol: '£', name: 'Pound', code: 'GBP' },
-  RUB: { symbol: '₽', name: 'Ruble', code: 'RUB' },
-  TRY: { symbol: '₺', name: 'Lira', code: 'TRY' },
-};
 
 export function UserPreferencesProvider({ children }) {
   // Dark Mode State

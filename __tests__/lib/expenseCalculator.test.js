@@ -9,6 +9,8 @@ describe('Expense Calculator', () => {
     mergeExpensesFromSeparateMode,
     calculateTotalExpenses,
     calculateSharedExpenseContributions,
+    parseDashboardData,
+    applyExpenseCategoryOverrides,
   } = require('../lib/expenseCalculator');
 
   describe('aggregateExpenses', () => {
@@ -113,6 +115,52 @@ describe('Expense Calculator', () => {
       const result = mergeExpensesFromSeparateMode();
       expect(result).toBeDefined();
       expect(Object.values(result).every(v => v === 0)).toBe(true);
+    });
+  });
+
+  describe('parseDashboardData', () => {
+    it('should parse shared mode dashboard data', () => {
+      const result = parseDashboardData({
+        calculationType: 'shared',
+        incomes: [{ amount: '3000' }, { amount: '2000' }],
+        savings: '1000',
+        expenses: { housing: 1500, food: 500 },
+      });
+
+      expect(result.totalIncome).toBe(5000);
+      expect(result.savingsAmount).toBe(1000);
+      expect(result.totalExpenses).toBe(2000);
+      expect(result.monthlyExpenses).toBe(2000);
+      expect(result.includeSavingsInCalculations).toBe(true);
+    });
+
+    it('should parse separate mode dashboard data', () => {
+      const result = parseDashboardData({
+        calculationType: 'separate',
+        person1Incomes: [{ amount: '3000' }],
+        person2Incomes: [{ amount: '2000' }],
+        person1Savings: '500',
+        person2Savings: '300',
+        person1Expenses: { housing: 800 },
+        person2Expenses: { food: 400 },
+        sharedExpenses: { housing: 700 },
+      });
+
+      expect(result.totalIncome).toBe(5000);
+      expect(result.savingsAmount).toBe(800);
+      expect(result.totalExpenses).toBe(1900);
+    });
+
+    it('should return null for missing data', () => {
+      expect(parseDashboardData(null)).toBeNull();
+    });
+  });
+
+  describe('applyExpenseCategoryOverrides', () => {
+    it('should apply overrides in shared mode', () => {
+      const dashboardData = { calculationType: 'shared', expenses: { housing: 1000, food: 500 } };
+      const result = applyExpenseCategoryOverrides(1500, { housing: '800' }, dashboardData);
+      expect(result).toBe(1300);
     });
   });
 });

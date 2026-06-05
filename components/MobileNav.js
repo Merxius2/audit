@@ -11,7 +11,7 @@ import { useRouter } from 'next/router';
 import {
   BarChart3, TrendingUp, Eye, Settings, Home,
 } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../context/UserPreferencesContext';
 
 export default function MobileNav() {
   const router = useRouter();

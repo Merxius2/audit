@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { EXPENSE_CATEGORIES } from '../lib/constants';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 
-export function useSharedDashboard(isInitialized = true) {
+export function useSharedDashboard(isInitialized = true, enabled = true) {
   // Shared mode state
   const [incomes, setIncomes] = useState([]);
   const [savings, setSavings] = useState('');
@@ -18,8 +18,13 @@ export function useSharedDashboard(isInitialized = true) {
   const [isLoading, setIsLoading] = useState(true);
   const saveTimeoutRef = useRef(null);
 
-  // Load data from cookies on mount
+  // Load data from cookies when enabled
   useEffect(() => {
+    if (!enabled) {
+      setIsLoading(false);
+      return;
+    }
+
     const savedData = loadFromCookie('AUDIT_DASHBOARD_DATA');
     if (savedData) {
       if (savedData.incomes) setIncomes(savedData.incomes);
@@ -30,12 +35,11 @@ export function useSharedDashboard(isInitialized = true) {
       if (savedData.expenses) setExpenses(savedData.expenses);
     }
     setIsLoading(false);
-  }, []);
+  }, [enabled]);
 
   // Debounced save with calculationType preservation
-  // Only save after initialization is complete
   useEffect(() => {
-    if (isLoading || !isInitialized) return;
+    if (isLoading || !isInitialized || !enabled) return;
 
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     
@@ -53,7 +57,7 @@ export function useSharedDashboard(isInitialized = true) {
     return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     };
-  }, [incomes, savings, includeSavingsInCalculations, expenses, isLoading, isInitialized]);
+  }, [incomes, savings, includeSavingsInCalculations, expenses, isLoading, isInitialized, enabled]);
 
   // Income management functions
   const addIncome = () => {

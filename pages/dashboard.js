@@ -6,13 +6,12 @@
 
 import { useState, useEffect } from 'react';
 import { BarChart3 } from 'lucide-react';
-import { useCurrency } from '../context/CurrencyContext';
-import { useLanguage } from '../context/LanguageContext';
-import { useIsMobile } from '../hooks/useIsMobile';
+import { useCurrency, useLanguage } from '../context/UserPreferencesContext';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useSharedDashboard } from '../hooks/useSharedDashboard';
 import { useSeparateDashboard } from '../hooks/useSeparateDashboard';
 import PageHeader from '../components/PageHeader';
+import ModeToggle from '../components/ModeToggle';
 import SharedModeSection from '../components/SharedModeSection';
 import SeparateModeSection from '../components/SeparateModeSection';
 
@@ -21,7 +20,6 @@ export default function Dashboard() {
   const [isInitialized, setIsInitialized] = useState(false);
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
-  const isMobile = useIsMobile();
 
   // Load calculation type preference first, before anything else saves
   useEffect(() => {
@@ -40,10 +38,11 @@ export default function Dashboard() {
     saveToCookie('AUDIT_DASHBOARD_DATA', { ...savedData, calculationType }, 365);
   }, [calculationType, isInitialized]);
 
-  // Use hooks for shared and separate modes
-  const sharedMode = useSharedDashboard(isInitialized);
-  const separateMode = useSeparateDashboard(isInitialized);
-  const isLoading = !isInitialized || (sharedMode.isLoading && separateMode.isLoading);
+  // Only activate the hook for the current calculation mode
+  const isShared = calculationType === 'shared';
+  const sharedMode = useSharedDashboard(isInitialized, isShared);
+  const separateMode = useSeparateDashboard(isInitialized, !isShared);
+  const isLoading = !isInitialized || (isShared ? sharedMode.isLoading : separateMode.isLoading);
 
   if (isLoading) {
     return <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0" />;
@@ -56,29 +55,15 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
         {/* Calculation Type Toggle */}
         <div className="card p-6 mb-6">
-          <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">{t('dashboard.calculationType')}</h3>
-          <div className="flex gap-4">
-            <button
-              onClick={() => setCalculationType('shared')}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                calculationType === 'shared'
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('dashboard.mode.shared')}
-            </button>
-            <button
-              onClick={() => setCalculationType('separate')}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                calculationType === 'separate'
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('dashboard.mode.separate')}
-            </button>
-          </div>
+          <ModeToggle
+            label={t('dashboard.calculationType')}
+            options={[
+              { id: 'shared', label: t('dashboard.mode.shared') },
+              { id: 'separate', label: t('dashboard.mode.separate') },
+            ]}
+            value={calculationType}
+            onChange={setCalculationType}
+          />
         </div>
       </div>
 
@@ -127,7 +112,6 @@ export default function Dashboard() {
           setSharedExpenses={separateMode.setSharedExpenses}
           getSymbol={getSymbol}
           t={t}
-          isMobile={isMobile}
           person1Contribution={separateMode.person1Contribution}
           person2Contribution={separateMode.person2Contribution}
           person1Ratio={separateMode.person1Ratio}

@@ -3,7 +3,7 @@
  */
 
 import Link from 'next/link';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../context/UserPreferencesContext';
 
 export default function ToolTile({ href, icon: Icon, titleKey, idx, tint }) {
   const { t } = useLanguage();

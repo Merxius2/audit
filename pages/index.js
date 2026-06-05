@@ -11,22 +11,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, CreditCard, Receipt, TrendingUp, Zap } from 'lucide-react';
 
-import { useLanguage } from '../context/LanguageContext';
-import { useDarkMode } from '../context/DarkModeContext';
+import { useLanguage, useDarkMode } from '../context/UserPreferencesContext';
+import { LANGUAGES, LANGUAGE_FAVICON_MAP } from '../lib/appConstants';
 import ToolTile from '../components/ToolTile';
 
-const LANGUAGES = [
-  { code: 'en', flag: '🇬🇧', name: 'English' },
-  { code: 'nl', flag: '🇳🇱', name: 'Nederlands' },
-  { code: 'ru', flag: '🇷🇺', name: 'Русский' },
-  { code: 'tr', flag: '🇹🇷', name: 'Türkçe' },
-];
-
 const LANG_ICON = {
-  en: '/icon-e-512.png',
-  nl: '/icon-n-512.png',
-  ru: '/icon-r-512.png',
-  tr: '/icon-t-512.png',
+  en: LANGUAGE_FAVICON_MAP.en.replace('-192', '-512'),
+  nl: LANGUAGE_FAVICON_MAP.nl.replace('-192', '-512'),
+  ru: LANGUAGE_FAVICON_MAP.ru.replace('-192', '-512'),
+  tr: LANGUAGE_FAVICON_MAP.tr.replace('-192', '-512'),
+  mu: LANGUAGE_FAVICON_MAP.mu?.replace('-192', '-512') || '/icon-m-512.png',
 };
 
 export default function Home() {

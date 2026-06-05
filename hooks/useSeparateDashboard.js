@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { PERSONAL_EXPENSE_CATEGORIES, SHARED_EXPENSE_CATEGORIES } from '../lib/constants';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 
-export function useSeparateDashboard(isInitialized = true) {
+export function useSeparateDashboard(isInitialized = true, enabled = true) {
   // Person 1 state
   const [person1Incomes, setPerson1Incomes] = useState([]);
   const [person1Savings, setPerson1Savings] = useState('');
@@ -32,8 +32,13 @@ export function useSeparateDashboard(isInitialized = true) {
   const [isLoading, setIsLoading] = useState(true);
   const saveTimeoutRef = useRef(null);
 
-  // Load data from cookies on mount
+  // Load data from cookies when enabled
   useEffect(() => {
+    if (!enabled) {
+      setIsLoading(false);
+      return;
+    }
+
     const savedData = loadFromCookie('AUDIT_DASHBOARD_DATA');
     if (savedData) {
       if (savedData.person1Incomes) setPerson1Incomes(savedData.person1Incomes);
@@ -50,12 +55,11 @@ export function useSeparateDashboard(isInitialized = true) {
       if (savedData.person2Name) setPerson2Name(savedData.person2Name);
     }
     setIsLoading(false);
-  }, []);
+  }, [enabled]);
 
   // Debounced save with calculationType preservation
-  // Only save after initialization is complete
   useEffect(() => {
-    if (isLoading || !isInitialized) return;
+    if (isLoading || !isInitialized || !enabled) return;
 
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     
@@ -78,7 +82,7 @@ export function useSeparateDashboard(isInitialized = true) {
     return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     };
-  }, [person1Incomes, person1Savings, person1Expenses, person2Incomes, person2Savings, person2Expenses, sharedExpenses, person1Name, person2Name, isLoading, isInitialized]);
+  }, [person1Incomes, person1Savings, person1Expenses, person2Incomes, person2Savings, person2Expenses, sharedExpenses, person1Name, person2Name, isLoading, isInitialized, enabled]);
 
   // Calculations for Person 1
   const person1Income = person1Incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);

@@ -3,9 +3,11 @@
  * Main content for separate (two-person) mode dashboard
  */
 
-import { SHARED_EXPENSE_CATEGORIES, CATEGORY_ICONS } from '../lib/constants';
+import { SHARED_EXPENSE_CATEGORIES } from '../lib/constants';
+import { useIsMobile } from '../hooks/useIsMobile';
 import PersonSection from './PersonSection';
 import PieChartCard from './PieChartCard';
+import ExpenseCategoryGrid from './ExpenseCategoryGrid';
 
 export default function SeparateModeSection({
   person1Name,
@@ -28,8 +30,6 @@ export default function SeparateModeSection({
   setSharedExpenses,
   getSymbol,
   t,
-  isMobile,
-  // Pre-calculated values from useSeparateDashboard
   person1Contribution,
   person2Contribution,
   person1Ratio,
@@ -40,6 +40,8 @@ export default function SeparateModeSection({
   person2SavingsNum,
   sharedExpensesTotal,
 }) {
+  const isMobile = useIsMobile();
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
@@ -61,8 +63,6 @@ export default function SeparateModeSection({
             setExpenses={setPerson1Expenses}
             getSymbol={getSymbol}
             t={t}
-            isMobile={isMobile}
-            isPersonOne={true}
             contribution={person1Contribution}
             showContribution={true}
           />
@@ -86,8 +86,6 @@ export default function SeparateModeSection({
             setExpenses={setPerson2Expenses}
             getSymbol={getSymbol}
             t={t}
-            isMobile={isMobile}
-            isPersonOne={false}
             contribution={person2Contribution}
             showContribution={true}
           />
@@ -101,26 +99,12 @@ export default function SeparateModeSection({
         {/* Shared Expenses */}
         <div className="card-expenses p-8 mb-6">
           <h3 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.sharedExpensesBreakdown')}</h3>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {SHARED_EXPENSE_CATEGORIES.map((category) => {
-              const IconComponent = CATEGORY_ICONS[category];
-              return (
-                <div key={category} className="space-y-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-100">
-                    <IconComponent size={16} className="text-brand-primary" />
-                    {t(`dashboard.expenseCategories.${category}`)}
-                  </label>
-                  <input
-                    type="number"
-                    value={sharedExpenses[category] || ''}
-                    onChange={(e) => setSharedExpenses({ ...sharedExpenses, [category]: e.target.value })}
-                    placeholder="0"
-                    className="amount w-full"
-                  />
-                </div>
-              );
-            })}
-          </div>
+          <ExpenseCategoryGrid
+            categories={SHARED_EXPENSE_CATEGORIES}
+            expenses={sharedExpenses}
+            onChange={(category, value) => setSharedExpenses({ ...sharedExpenses, [category]: value })}
+            t={t}
+          />
         </div>
 
         {/* Contributions Overview */}

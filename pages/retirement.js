@@ -7,12 +7,10 @@ import { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from 'lucide-react';
 import { useCookieStorage } from '../hooks/useCookieStorage';
-import { useCurrency } from '../context/CurrencyContext';
-import { useLanguage } from '../context/LanguageContext';
-import { useDarkMode } from '../context/DarkModeContext';
-import { useIsMobile } from '../hooks/useIsMobile';
+import { useCurrency, useLanguage, useDarkMode } from '../context/UserPreferencesContext';
 import { generateForwardProjection, generateBackwardProjection, calculateMonthlyInvestmentBackward } from '../lib/retirementCalculator';
 import PageHeader from '../components/PageHeader';
+import ModeToggle from '../components/ModeToggle';
 import {
   DEFAULT_CURRENT_AGE,
   DEFAULT_RETIREMENT_AGE,
@@ -26,7 +24,6 @@ export default function RetirementProjection() {
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
   const { isDarkMode } = useDarkMode();
-  const isMobile = useIsMobile();
 
   // Cookie storage with automatic loading and debounced saving
   const { data: retirementData, isLoading, updateData } = useCookieStorage('AUDIT_RETIREMENT_DATA', {
@@ -76,29 +73,15 @@ export default function RetirementProjection() {
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         {/* Calculation Type Selector */}
         <div className="card p-6">
-          <h2 className="mb-4 text-lg font-bold text-gray-900">{t('retirement.calculationMode')}</h2>
-          <div className="flex gap-4">
-            <button
-              onClick={() => updateData('calculationType', 'forward')}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                isForward
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {t('retirement.forward')}
-            </button>
-            <button
-              onClick={() => updateData('calculationType', 'backward')}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                !isForward
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {t('retirement.backward')}
-            </button>
-          </div>
+          <ModeToggle
+            label={t('retirement.calculationMode')}
+            options={[
+              { id: 'forward', label: t('retirement.forward') },
+              { id: 'backward', label: t('retirement.backward') },
+            ]}
+            value={calculationType}
+            onChange={(id) => updateData('calculationType', id)}
+          />
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {(isForward ? [

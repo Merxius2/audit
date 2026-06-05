@@ -12,8 +12,8 @@ import { useRouter } from 'next/router';
 import { BarChart3, TrendingUp, Eye, Settings, CreditCard, Receipt, Zap } from 'lucide-react';
 import { useRef, useState } from 'react';
 
-import { useLanguage } from '../context/LanguageContext';
-import { useSecretSettings } from '../context/SecretSettingsContext';
+import { useLanguage } from '../context/UserPreferencesContext';
+import { useSecretSettings } from '../context/FeatureContext';
 
 const NAV = [
   {
