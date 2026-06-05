@@ -4,7 +4,7 @@
  * Centralizes theme logic to avoid duplication in multiple chart files
  */
 
-import { useDarkMode } from '../context/DarkModeContext';
+import { useDarkMode } from '../context/UserPreferencesContext';
 import { CHART_COLORS } from '../lib/constants';
 
 /**

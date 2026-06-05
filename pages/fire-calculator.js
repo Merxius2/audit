@@ -4,125 +4,57 @@
  * Using the 4% safe withdrawal rate rule
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Zap } from 'lucide-react';
 import { loadFromCookie } from '../lib/cookieStorage';
-import { EXPENSE_CATEGORIES } from '../lib/constants';
-import { useCurrency } from '../context/CurrencyContext';
-import { useLanguage } from '../context/LanguageContext';
-import { useIsMobile } from '../hooks/useIsMobile';
-import { useDebouncedCookie } from '../hooks/useDebouncedCookie';
+import { applyExpenseCategoryOverrides, parseDashboardData } from '../lib/expenseCalculator';
+import { useCurrency, useLanguage } from '../context/UserPreferencesContext';
+import { useCookieStorage } from '../hooks/useCookieStorage';
 import PageHeader from '../components/PageHeader';
+import ModeToggle from '../components/ModeToggle';
 
 export default function FIRECalculator() {
-  const [mode, setMode] = useState('manual'); // 'manual' or 'dynamic'
-  const [desiredWithdrawal, setDesiredWithdrawal] = useState('');
-  const [currentInvestments, setCurrentInvestments] = useState('');
-  const [categoryOverrides, setCategoryOverrides] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
   const [importError, setImportError] = useState('');
   const [annualWithdrawal, setAnnualWithdrawal] = useState(0);
 
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
-  const isMobile = useIsMobile();
 
-  // Load from cookies on mount
-  useEffect(() => {
-    const savedData = loadFromCookie('AUDIT_FIRE_DATA');
-    if (savedData) {
-      if (savedData.mode) setMode(savedData.mode);
-      if (savedData.desiredWithdrawal) setDesiredWithdrawal(savedData.desiredWithdrawal);
-      if (savedData.currentInvestments) setCurrentInvestments(savedData.currentInvestments);
-      if (savedData.categoryOverrides) setCategoryOverrides(savedData.categoryOverrides);
-    }
-    setIsLoading(false);
-  }, []);
-
-  // Debounced cookie save
-  const debouncedSave = useDebouncedCookie('AUDIT_FIRE_DATA', {
-    mode,
-    desiredWithdrawal,
-    currentInvestments,
-    categoryOverrides,
+  const { data, isLoading, updateData } = useCookieStorage('AUDIT_FIRE_DATA', {
+    mode: 'manual',
+    desiredWithdrawal: '',
+    currentInvestments: '',
+    categoryOverrides: {},
   });
 
-  useEffect(() => {
-    if (!isLoading) {
-      debouncedSave();
-    }
-  }, [mode, desiredWithdrawal, currentInvestments, categoryOverrides, isLoading, debouncedSave]);
+  const { mode, desiredWithdrawal, currentInvestments, categoryOverrides } = data;
 
-  // Calculate annual withdrawal based on mode
   useEffect(() => {
     if (mode === 'manual') {
       setAnnualWithdrawal(parseFloat(desiredWithdrawal) || 0);
-    } else {
-      // Dynamic mode: calculate from dashboard data
-      try {
-        const dashboardData = loadFromCookie('AUDIT_DASHBOARD_DATA');
-        if (!dashboardData) {
-          setImportError(t('fire.importFailed'));
-          setAnnualWithdrawal(0);
-          return;
-        }
-
-        // Calculate total monthly expenses based on calculation type
-        let totalMonthly = 0;
-        
-        if (dashboardData.calculationType === 'separate') {
-          // Separate mode: combine expenses from both people + shared
-          if (dashboardData.person1Expenses) {
-            Object.values(dashboardData.person1Expenses).forEach((amount) => {
-              totalMonthly += parseFloat(amount) || 0;
-            });
-          }
-          if (dashboardData.person2Expenses) {
-            Object.values(dashboardData.person2Expenses).forEach((amount) => {
-              totalMonthly += parseFloat(amount) || 0;
-            });
-          }
-          if (dashboardData.sharedExpenses) {
-            Object.values(dashboardData.sharedExpenses).forEach((amount) => {
-              totalMonthly += parseFloat(amount) || 0;
-            });
-          }
-        } else {
-          // Shared mode: use expenses as-is
-          if (dashboardData.expenses) {
-            Object.values(dashboardData.expenses).forEach((amount) => {
-              totalMonthly += parseFloat(amount) || 0;
-            });
-          }
-        }
-
-        // Apply any category overrides
-        Object.entries(categoryOverrides).forEach(([category, override]) => {
-          if (override !== undefined && override !== '') {
-            if (dashboardData.calculationType === 'separate') {
-              // For separate mode, we can't easily override specific categories without knowing which person they belong to
-              // So we just subtract the original and add the override
-              const originalAmount = (parseFloat(dashboardData.person1Expenses?.[category]) || 0) + 
-                                    (parseFloat(dashboardData.person2Expenses?.[category]) || 0) + 
-                                    (parseFloat(dashboardData.sharedExpenses?.[category]) || 0);
-              totalMonthly = totalMonthly - originalAmount + (parseFloat(override) || 0);
-            } else {
-              // For shared mode, use original logic
-              totalMonthly = totalMonthly - (parseFloat(dashboardData.expenses?.[category]) || 0) + (parseFloat(override) || 0);
-            }
-          }
-        });
-
-        setImportError('');
-        setAnnualWithdrawal(totalMonthly * 12); // Convert to annual
-      } catch (error) {
-        setImportError(t('fire.importFailed'));
-        setAnnualWithdrawal(0);
-      }
+      setImportError('');
+      return;
     }
+
+    const dashboardData = loadFromCookie('AUDIT_DASHBOARD_DATA');
+    const parsed = parseDashboardData(dashboardData);
+
+    if (!parsed) {
+      setImportError(t('fire.importFailed'));
+      setAnnualWithdrawal(0);
+      return;
+    }
+
+    const monthlyTotal = applyExpenseCategoryOverrides(
+      parsed.monthlyExpenses,
+      categoryOverrides,
+      dashboardData
+    );
+
+    setImportError('');
+    setAnnualWithdrawal(monthlyTotal * 12);
   }, [mode, desiredWithdrawal, categoryOverrides, t]);
 
-  // FIRE calculations (4% rule: FIRE Number = Annual Withdrawal × 25)
   const fireNumber = annualWithdrawal * 25;
   const leanFire = fireNumber * 0.75;
   const fatFire = fireNumber * 1.25;
@@ -159,31 +91,15 @@ export default function FIRECalculator() {
       <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
         {/* Mode Toggle */}
         <div className="card p-6 md:p-8 mb-8">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-            {t('fire.modes.manual')} / {t('fire.modes.dynamic')}
-          </label>
-          <div className="flex gap-4">
-            <button
-              onClick={() => { setMode('manual'); setImportError(''); }}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                mode === 'manual'
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('fire.modes.manual')}
-            </button>
-            <button
-              onClick={() => setMode('dynamic')}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                mode === 'dynamic'
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('fire.modes.dynamic')}
-            </button>
-          </div>
+          <ModeToggle
+            label={`${t('fire.modes.manual')} / ${t('fire.modes.dynamic')}`}
+            options={[
+              { id: 'manual', label: t('fire.modes.manual') },
+              { id: 'dynamic', label: t('fire.modes.dynamic') },
+            ]}
+            value={mode}
+            onChange={(id) => { updateData('mode', id); if (id === 'manual') setImportError(''); }}
+          />
         </div>
 
         {/* Manual / Dynamic Input */}
@@ -198,7 +114,7 @@ export default function FIRECalculator() {
                   <input
                     type="number"
                     value={desiredWithdrawal}
-                    onChange={(e) => setDesiredWithdrawal(e.target.value)}
+                    onChange={(e) => updateData('desiredWithdrawal', e.target.value)}
                     placeholder="0"
                     className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
                   />
@@ -211,7 +127,7 @@ export default function FIRECalculator() {
                   <input
                     type="number"
                     value={currentInvestments}
-                    onChange={(e) => setCurrentInvestments(e.target.value)}
+                    onChange={(e) => updateData('currentInvestments', e.target.value)}
                     placeholder="0"
                     className="amount-large w-full border-0 bg-transparent text-gray-900 dark:text-white focus:ring-0"
                   />

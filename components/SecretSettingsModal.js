@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
-import { useSecretSettings } from '../context/SecretSettingsContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useSecretSettings } from '../context/FeatureContext';
+import { useLanguage } from '../context/UserPreferencesContext';
 
 export default function SecretSettingsModal() {
   const { isSecretSettingsOpen, closeSecretSettings } = useSecretSettings();

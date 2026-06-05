@@ -7,20 +7,19 @@
 import { useMemo } from 'react';
 import { useTax } from '../context/TaxContext';
 import { calculateTaxBreakdown, calculateGrossFromNet } from '../lib/taxCalculator';
-import { useIsMobile } from '../hooks/useIsMobile';
 import { useCookieStorage } from '../hooks/useCookieStorage';
-import { useLanguage } from '../context/LanguageContext';
-import { useCurrency } from '../context/CurrencyContext';
+import { useLanguage, useCurrency } from '../context/UserPreferencesContext';
 import PageHeader from '../components/PageHeader';
 import { RotateCcw, Receipt } from 'lucide-react';
 import { EXPAT_INCOME_CAP_2026, EXPAT_EXEMPTION_RATE } from '../lib/appConstants';
+import ModeToggle from '../components/ModeToggle';
+import { TaxYearSelector } from '../components/TaxYearSettings';
 
 export default function TaxCalculator() {
   // Hooks
   const { getSymbol } = useCurrency();
   const { t } = useLanguage();
-  const isMobile = useIsMobile();
-  const { selectedYear, changeYear, taxBrackets, getGeneralTaxCredit, getEarnedIncomeCredit, isEstimatedYear } = useTax();
+  const { selectedYear, taxBrackets, getGeneralTaxCredit, getEarnedIncomeCredit, isEstimatedYear } = useTax();
 
   // Cookie storage with automatic loading and debounced saving
   const { data: taxData, isLoading, updateData } = useCookieStorage('AUDIT_TAX_DATA', {
@@ -123,52 +122,19 @@ export default function TaxCalculator() {
       {/* Input Section */}
       <div className="card p-6 md:p-8 mb-8">
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-            {t('tax.calculationMode')}
-          </label>
-          <div className="flex gap-4">
-            <button
-              onClick={() => updateData('calculationMode', 'gross-to-net')}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                calculationMode === 'gross-to-net'
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('tax.grossToNet')}
-            </button>
-            <button
-              onClick={() => updateData('calculationMode', 'net-to-gross')}
-              className={`flex-1 rounded-lg px-6 py-3 font-semibold transition-all ${
-                calculationMode === 'net-to-gross'
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-soft'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {t('tax.netToGross')}
-            </button>
-          </div>
+          <ModeToggle
+            label={t('tax.calculationMode')}
+            options={[
+              { id: 'gross-to-net', label: t('tax.grossToNet') },
+              { id: 'net-to-gross', label: t('tax.netToGross') },
+            ]}
+            value={calculationMode}
+            onChange={(id) => updateData('calculationMode', id)}
+          />
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-6">
-          {/* Year Selector */}
-          <div>
-            <label htmlFor="year" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {t('tax.year')}
-            </label>
-            <select
-              id="year"
-              value={selectedYear}
-              onChange={(e) => changeYear(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-            >
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026 ({t('tax.estimated')})</option>
-            </select>
-          </div>
-
-          {/* Income Input */}
+          <TaxYearSelector variant="select" />
           <div>
             <label htmlFor="income" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {calculationMode === 'gross-to-net' ? t('tax.grossIncome') : t('tax.netIncome')} (Monthly)

@@ -6,7 +6,7 @@
  * `titleKey` so the existing pages don't need to pass anything new.
  */
 
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../context/UserPreferencesContext';
 
 // titleKey → small label that sits above the heading
 const EYEBROW = {

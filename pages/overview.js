@@ -3,15 +3,13 @@
  * Displays key metrics from all pages in a unified view
  */
 
-import { useState, useEffect, useMemo } from 'react';
-import { Wallet, TrendingUp, Eye } from 'lucide-react';
-import { EXPENSE_CATEGORIES, CHART_COLORS } from '../lib/constants';
+import { useState, useEffect } from 'react';
+import { Eye } from 'lucide-react';
+import { EXPENSE_CATEGORIES } from '../lib/constants';
 import { loadFromCookie } from '../lib/cookieStorage';
-import { useCurrency } from '../context/CurrencyContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useCurrency, useLanguage } from '../context/UserPreferencesContext';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { mergeExpensesFromSeparateMode } from '../lib/expenseCalculator';
-import { preparePieChartData } from '../lib/chartDataFormatter';
+import { parseDashboardData } from '../lib/expenseCalculator';
 import { useRetirementMetrics } from '../hooks/useRetirementMetrics';
 import PageHeader from '../components/PageHeader';
 import DonutChart from '../components/DonutChart';
@@ -35,54 +33,19 @@ export default function Overview() {
   const retirementMetrics = useRetirementMetrics();
 
   useEffect(() => {
-    // Load dashboard data from cookies
-    const dashboardData = loadFromCookie('AUDIT_DASHBOARD_DATA');
+    const parsed = parseDashboardData(loadFromCookie('AUDIT_DASHBOARD_DATA'));
+    if (!parsed) return;
 
-    if (dashboardData) {
-      let totalIncome = 0;
-      let savingsAmount = 0;
-      let expenses = {};
-
-      // Check if using separate mode
-      if (dashboardData.calculationType === 'separate') {
-        // Combine data from both persons
-        const person1Incomes = dashboardData.person1Incomes || [];
-        const person2Incomes = dashboardData.person2Incomes || [];
-        const allIncomes = [...person1Incomes, ...person2Incomes];
-        
-        totalIncome = allIncomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
-        
-        const person1Savings = parseFloat(dashboardData.person1Savings) || 0;
-        const person2Savings = parseFloat(dashboardData.person2Savings) || 0;
-        savingsAmount = person1Savings + person2Savings;
-        
-        // Merge all expenses from both persons and shared
-        expenses = mergeExpensesFromSeparateMode(
-          dashboardData.person1Expenses,
-          dashboardData.person2Expenses,
-          dashboardData.sharedExpenses
-        );
-      } else {
-        // Shared mode - use original structure
-        const incomes = dashboardData.incomes || [];
-        totalIncome = incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
-        savingsAmount = parseFloat(dashboardData.savings) || 0;
-        expenses = dashboardData.expenses || {};
-      }
-
-      const totalExpenses = Object.values(expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
-
-      setData({
-        totalIncome,
-        totalExpenses,
-        savingsAmount,
-        includeSavingsInCalculations: dashboardData.includeSavingsInCalculations !== false,
-        expenses,
-        retirementProjection: retirementMetrics.retirementProjection,
-        retirementBreakdown: retirementMetrics.retirementBreakdown,
-        monthlyInvestment: retirementMetrics.monthlyInvestment,
-      });
-    }
+    setData({
+      totalIncome: parsed.totalIncome,
+      totalExpenses: parsed.totalExpenses,
+      savingsAmount: parsed.savingsAmount,
+      includeSavingsInCalculations: parsed.includeSavingsInCalculations,
+      expenses: parsed.expenses,
+      retirementProjection: retirementMetrics.retirementProjection,
+      retirementBreakdown: retirementMetrics.retirementBreakdown,
+      monthlyInvestment: retirementMetrics.monthlyInvestment,
+    });
   }, [retirementMetrics]);
 
   const savingsRate = data.totalIncome > 0 
@@ -102,14 +65,6 @@ export default function Overview() {
     })).filter(item => item.value > 0),
     { name: 'Remaining', value: Math.max(leftover, 0) }
   ];
-
-  const totalPieValue = pieData.reduce((sum, item) => sum + item.value, 0);
-
-  const renderCustomLabel = ({ name, value }) => {
-    const percentage = totalPieValue > 0 ? ((value / totalPieValue) * 100).toFixed(1) : 0;
-    const displayName = name === 'Remaining' ? t('dashboard.remaining') : t(`dashboard.expenseCategories.${name}`);
-    return `${displayName}: ${getSymbol()}${Math.floor(value).toLocaleString('en-US', { minimumFractionDigits: 0 })} (${percentage}%)`;
-  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 pb-32 lg:ml-64 md:pb-0">

@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { UserPreferencesProvider, useLanguage } from '../context/UserPreferencesContext';
 import { FeatureProvider } from '../context/FeatureContext';
 import { TaxProvider } from '../context/TaxContext';
+import { LANGUAGE_FAVICON_MAP } from '../lib/appConstants';
 
 import Sidebar from '../components/Sidebar';
 import MobileNav from '../components/MobileNav';
@@ -36,13 +37,7 @@ function AppContent({ Component, pageProps }) {
 
   // Favicon swaps with the selected language (monkey icon e/n/r/t).
   useEffect(() => {
-    const iconMap = {
-      en: '/icon-e-192.png',
-      nl: '/icon-n-192.png',
-      ru: '/icon-r-192.png',
-      tr: '/icon-t-192.png',
-    };
-    const iconPath = iconMap[language] || '/icon-e-192.png';
+    const iconPath = LANGUAGE_FAVICON_MAP[language] || LANGUAGE_FAVICON_MAP.en;
 
     let faviconLink = document.querySelector("link[rel='icon'][type='image/png']");
     if (!faviconLink) {

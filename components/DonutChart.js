@@ -28,9 +28,6 @@ export default function DonutChart({
   // Center circle styling based on theme
   const centerStyle = centerCircleStyle(height);
 
-  // Custom label renderer for center content
-  const renderCustomLabel = () => null; // We'll use custom content instead
-
   return (
     <div className="w-full">
       <div className="relative mx-auto" style={{ width: '100%', maxWidth: `${height}px`, aspectRatio: '1 / 1' }}>
