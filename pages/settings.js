@@ -104,9 +104,11 @@ export default function SettingsPage() {
       setImportMessage(t('settings.importSuccess'));
       setImportString('');
       setShowImportConfirm(false);
+      
+      // Hard reload after delay to ensure cookies are saved
       setTimeout(() => {
-        router.reload();
-      }, 1500);
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       setImportMessage(`Import error: ${error.message}`);
       setShowImportConfirm(false);
