@@ -4,7 +4,7 @@
  * Reduces provider nesting and centralizes user preference management
  */
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import translations from '../lib/i18n';
 import { CURRENCIES, DEFAULT_LANGUAGE } from '../lib/appConstants';
@@ -42,6 +42,8 @@ export function UserPreferencesProvider({ children }) {
 
   // Loading State
   const [isLoading, setIsLoading] = useState(true);
+
+  const anthemAudioRef = useRef(null);
 
   // Load all preferences from cookies on mount
   useEffect(() => {
@@ -128,12 +130,22 @@ export function UserPreferencesProvider({ children }) {
   };
 
   // Language Methods
+  const stopAnthem = () => {
+    const audio = anthemAudioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    anthemAudioRef.current = null;
+  };
+
   const changeLanguage = (lang) => {
+    stopAnthem();
     setLanguage(lang);
     saveToCookie('AUDIT_LANGUAGE_PREFERENCE', { language: lang }, 365);
 
     if (lang === 'mu') {
       const audio = new Audio('/usa-anthem.mp3');
+      anthemAudioRef.current = audio;
       audio.play().catch((error) => {
         console.error('Error playing audio:', error);
       });
