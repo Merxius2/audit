@@ -342,10 +342,10 @@ export default function SettingsPage() {
         <div className="card p-8">
           <div className="flex items-center gap-3 mb-6">
             <Download size={28} className="text-brand-primary" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Export Data</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.exportTitle')}</h2>
           </div>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Export your budget and retirement data as a compressed string. Keep it safe to restore your data later.
+            {t('settings.exportDesc')}
           </p>
           
           <button
@@ -353,7 +353,7 @@ export default function SettingsPage() {
             className="mb-6 inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-brand-primary to-brand-secondary px-6 py-3 font-semibold text-white transition-all hover:shadow-lg active:scale-95"
           >
             <Download size={20} />
-            <span>Generate Export</span>
+            <span>{t('settings.exportButton')}</span>
           </button>
 
           {exportString && (
@@ -373,12 +373,12 @@ export default function SettingsPage() {
                 {copiedIndex === 'export' ? (
                   <>
                     <Check size={18} />
-                    <span>Copied!</span>
+                    <span>{t('settings.copied')}</span>
                   </>
                 ) : (
                   <>
                     <Copy size={18} />
-                    <span>Copy to Clipboard</span>
+                    <span>{t('settings.copyButton')}</span>
                   </>
                 )}
               </button>
@@ -390,17 +390,17 @@ export default function SettingsPage() {
         <div className="card p-8">
           <div className="flex items-center gap-3 mb-6">
             <Upload size={28} className="text-brand-primary" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Import Data</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.importTitle')}</h2>
           </div>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Paste your exported data string to restore your budget and retirement data.
+            {t('settings.importDesc')}
           </p>
 
           <div className="space-y-3">
             <textarea
               value={importString}
               onChange={(e) => setImportString(e.target.value)}
-              placeholder="Paste your export string here..."
+              placeholder={t('settings.importPlaceholder')}
               className="w-full p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm resize-none focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               rows={4}
             />
@@ -411,7 +411,7 @@ export default function SettingsPage() {
               className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-brand-primary to-brand-secondary px-6 py-3 font-semibold text-white transition-all hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Upload size={20} />
-              <span>Import Data</span>
+              <span>{t('settings.importButton')}</span>
             </button>
 
             {importMessage && (
@@ -489,22 +489,22 @@ export default function SettingsPage() {
       {showImportConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99]">
           <div className="card p-8 max-w-md mx-auto">
-            <h3 className="text-xl font-bold text-gray-900 mb-4 dark:text-gray-100">Confirm Import</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4 dark:text-gray-100">{t('settings.importConfirmTitle')}</h3>
             <p className="text-gray-600 mb-6 dark:text-gray-300">
-              Are you sure? This will overwrite your current budget and retirement data.
+              {t('settings.importConfirmDesc')}
             </p>
             <div className="flex gap-4">
               <button
                 onClick={cancelImport}
                 className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-semibold text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
               >
-                Cancel
+                {t('settings.cancel')}
               </button>
               <button
                 onClick={confirmImport}
                 className="flex-1 rounded-lg bg-gradient-to-r from-brand-primary to-brand-secondary px-4 py-2 font-semibold text-white transition-all hover:shadow-lg"
               >
-                Import
+                {t('settings.importConfirm')}
               </button>
             </div>
           </div>
