@@ -1,19 +1,8 @@
 import { X } from 'lucide-react';
 import { useSecretSettings } from '../context/FeatureContext';
-import { useLanguage } from '../context/UserPreferencesContext';
 
 export default function SecretSettingsModal() {
   const { isSecretSettingsOpen, closeSecretSettings } = useSecretSettings();
-  const { language, changeLanguage } = useLanguage();
-
-  const handleMuricaSelect = () => {
-    changeLanguage('mu');
-    // Play USA anthem when murica language is selected
-    const audio = new Audio('/usa-anthem.mp3');
-    audio.play().catch((error) => {
-      console.error('Error playing audio:', error);
-    });
-  };
 
   if (!isSecretSettingsOpen) return null;
 
@@ -35,16 +24,6 @@ export default function SecretSettingsModal() {
             <p className="text-purple-100 text-sm font-semibold mb-2">✨ You found the secret settings!</p>
             <p className="text-purple-200 text-xs">This is a hidden area for fun and experimental features.</p>
           </div>
-
-          <button
-            onClick={handleMuricaSelect}
-            className={`w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3 px-4 rounded-lg transition-all ${
-              language === 'mu' ? 'ring-2 ring-yellow-400' : ''
-            }`}
-          >
-            🇺🇸 English (simplified)
-            {language === 'mu' && ' ✓'}
-          </button>
 
           <div className="bg-indigo-800/50 border border-indigo-400 rounded-lg p-4">
             <p className="text-indigo-100 text-sm font-semibold mb-2">🚀 Coming Soon</p>

@@ -12,7 +12,7 @@ export default function LanguageSettings() {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.language')}</h2>
       </div>
       <p className="text-gray-600 dark:text-gray-300 mb-6">{t('settings.languageDesc')}</p>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         {LANGUAGES.map((lang) => (
           <button
             key={lang.code}

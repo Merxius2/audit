@@ -131,10 +131,18 @@ export function UserPreferencesProvider({ children }) {
   const changeLanguage = (lang) => {
     setLanguage(lang);
     saveToCookie('AUDIT_LANGUAGE_PREFERENCE', { language: lang }, 365);
+
+    if (lang === 'mu') {
+      const audio = new Audio('/usa-anthem.mp3');
+      audio.play().catch((error) => {
+        console.error('Error playing audio:', error);
+      });
+    }
   };
 
   const t = (key) => {
-    return resolveTranslation(language, key)
+    const lang = language === 'mu' ? DEFAULT_LANGUAGE : language;
+    return resolveTranslation(lang, key)
       ?? resolveTranslation(DEFAULT_LANGUAGE, key)
       ?? key;
   };
