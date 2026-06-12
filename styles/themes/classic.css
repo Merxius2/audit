@@ -19,6 +19,7 @@ html.theme-classic {
   --ps-radius-pill: 9999px;
   --ps-inset: inset 0 2px 5px rgba(0, 0, 0, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.35);
   --ps-raised: 0 2px 0 rgba(0, 0, 0, 0.14), 0 1px 2px rgba(0, 0, 0, 0.08);
+  --ps-font: 'Oxanium', system-ui, sans-serif;
 }
 
 /* ---- Canvas ---- */
@@ -26,13 +27,39 @@ html.theme-classic body {
   background-color: var(--ps-gray) !important;
   background-image: none !important;
   color: var(--ps-ink);
+  font-family: var(--ps-font) !important;
+  letter-spacing: 0.02em;
 }
 
 html.theme-classic h1,
 html.theme-classic h2,
 html.theme-classic h3 {
-  font-variation-settings: "opsz" 48, "wght" 700;
-  letter-spacing: -0.02em;
+  font-family: var(--ps-font) !important;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+html.theme-classic .display,
+html.theme-classic .display-2,
+html.theme-classic .amount-large,
+html.theme-classic .amount-hero {
+  font-family: var(--ps-font) !important;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+html.theme-classic aside.glass-thick,
+html.theme-classic nav.glass-thick {
+  font-family: var(--ps-font) !important;
+  letter-spacing: 0.04em;
+}
+
+html.theme-classic .amount,
+html.theme-classic .mono,
+html.theme-classic .num-lg {
+  font-family: var(--ps-font) !important;
+  font-variant-numeric: tabular-nums;
 }
 
 html.theme-classic .text-ink { color: var(--ps-ink) !important; }
