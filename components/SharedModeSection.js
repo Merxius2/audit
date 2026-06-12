@@ -5,9 +5,11 @@
 
 import { PiggyBank } from 'lucide-react';
 import { EXPENSE_CATEGORIES } from '../lib/constants';
+import { sanitizeNonNegativeInput } from '../lib/amountInput';
 import DonutChart from './DonutChart';
 import IncomeSourceList from './IncomeSourceList';
 import ExpenseCategoryGrid from './ExpenseCategoryGrid';
+import SavingsPotsList from './SavingsPotsList';
 
 export default function SharedModeSection({
   incomes,
@@ -26,6 +28,11 @@ export default function SharedModeSection({
   leftover,
   totalExpenses,
   totalIncome,
+  potsMonthlyTotal = 0,
+  savingsPots,
+  addSavingsPot,
+  updateSavingsPot,
+  removeSavingsPot,
 }) {
   const totalPieValue = pieData.reduce((sum, item) => sum + item.value, 0);
 
@@ -47,8 +54,9 @@ export default function SharedModeSection({
         </label>
         <input
           type="number"
+          min="0"
           value={savings}
-          onChange={(e) => setSavings(e.target.value)}
+          onChange={(e) => setSavings(sanitizeNonNegativeInput(e.target.value))}
           placeholder={t('dashboard.placeholder.amount')}
           className="mt-3 amount-large w-full border-0 bg-transparent text-gray-900 focus:ring-0"
         />
@@ -61,6 +69,20 @@ export default function SharedModeSection({
           />
           {t('dashboard.includeSavingsInCalc')}
         </label>
+        {includeSavingsInCalculations && potsMonthlyTotal > 0 && (
+          <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+            {t('dashboard.savingsPots.inCalcTotal')}: +{getSymbol()}{Math.floor(potsMonthlyTotal).toLocaleString('en-US')}
+          </p>
+        )}
+        <SavingsPotsList
+          pots={savingsPots}
+          onAdd={addSavingsPot}
+          onUpdate={updateSavingsPot}
+          onRemove={removeSavingsPot}
+          getSymbol={getSymbol}
+          t={t}
+          embedded
+        />
       </div>
 
       <div className="card-expenses p-8">

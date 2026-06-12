@@ -6,8 +6,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { EXPENSE_CATEGORIES } from '../lib/constants';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
+import { sanitizeNonNegativeInput, parseNonNegativeAmount } from '../lib/amountInput';
+import { calculateSavingsPotsMonthlyTotal } from '../lib/savingsPots';
 
-export function useSharedDashboard(isInitialized = true, enabled = true) {
+export function useSharedDashboard(isInitialized = true, enabled = true, savingsPots = []) {
   // Shared mode state
   const [incomes, setIncomes] = useState([]);
   const [savings, setSavings] = useState('');
@@ -28,7 +30,7 @@ export function useSharedDashboard(isInitialized = true, enabled = true) {
     const savedData = loadFromCookie('AUDIT_DASHBOARD_DATA');
     if (savedData) {
       if (savedData.incomes) setIncomes(savedData.incomes);
-      if (savedData.savings) setSavings(savedData.savings);
+      if (savedData.savings) setSavings(sanitizeNonNegativeInput(savedData.savings));
       if (savedData.includeSavingsInCalculations !== undefined) {
         setIncludeSavingsInCalculations(savedData.includeSavingsInCalculations);
       }
@@ -77,9 +79,11 @@ export function useSharedDashboard(isInitialized = true, enabled = true) {
 
   // Calculations
   const totalIncome = incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
-  const savingsNum = parseFloat(savings) || 0;
+  const savingsNum = parseNonNegativeAmount(savings);
+  const potsMonthlyTotal = calculateSavingsPotsMonthlyTotal(savingsPots);
+  const totalSavingsInCalc = savingsNum + potsMonthlyTotal;
   const totalExpenses = Object.values(expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
-  const leftover = totalIncome - (includeSavingsInCalculations ? savingsNum : 0) - totalExpenses;
+  const leftover = totalIncome - (includeSavingsInCalculations ? totalSavingsInCalc : 0) - totalExpenses;
 
   // Pie chart data
   const pieData = [
@@ -87,7 +91,7 @@ export function useSharedDashboard(isInitialized = true, enabled = true) {
       name: cat,
       value: parseFloat(expenses[cat]) || 0
     })).filter(item => item.value > 0),
-    ...(includeSavingsInCalculations && savingsNum > 0 ? [{ name: 'Savings', value: savingsNum }] : []),
+    ...(includeSavingsInCalculations && totalSavingsInCalc > 0 ? [{ name: 'Savings', value: totalSavingsInCalc }] : []),
     { name: 'Remaining', value: Math.max(leftover, 0) }
   ];
 
@@ -113,6 +117,8 @@ export function useSharedDashboard(isInitialized = true, enabled = true) {
     // Calculations
     totalIncome,
     savingsNum,
+    potsMonthlyTotal,
+    totalSavingsInCalc,
     totalExpenses,
     leftover,
     pieData,

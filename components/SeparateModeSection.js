@@ -8,6 +8,7 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import PersonSection from './PersonSection';
 import PieChartCard from './PieChartCard';
 import ExpenseCategoryGrid from './ExpenseCategoryGrid';
+import DonutChart from './DonutChart';
 
 export default function SeparateModeSection({
   person1Name,
@@ -28,6 +29,8 @@ export default function SeparateModeSection({
   setPerson2Expenses,
   sharedExpenses,
   setSharedExpenses,
+  includeSavingsInCalculations,
+  setIncludeSavingsInCalculations,
   getSymbol,
   t,
   person1Contribution,
@@ -36,14 +39,31 @@ export default function SeparateModeSection({
   person2Ratio,
   person1PersonalExpenses,
   person2PersonalExpenses,
-  person1SavingsNum,
-  person2SavingsNum,
-  sharedExpensesTotal,
+  person1PotsMonthly,
+  person2PotsMonthly,
+  person1SavingsInCalc,
+  person2SavingsInCalc,
+  totalIncome,
+  totalHouseholdExpenses,
+  householdLeftover,
+  pieData,
+  person1SavingsPots,
+  addPerson1SavingsPot,
+  updatePerson1SavingsPot,
+  removePerson1SavingsPot,
+  person2SavingsPots,
+  addPerson2SavingsPot,
+  updatePerson2SavingsPot,
+  removePerson2SavingsPot,
 }) {
   const isMobile = useIsMobile();
+  const totalPieValue = pieData.reduce((sum, item) => sum + item.value, 0);
+
+  const person1Income = person1Incomes.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
+  const person2Income = person2Incomes.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
+    <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
         {/* Person 1 Section */}
         <div>
@@ -65,6 +85,14 @@ export default function SeparateModeSection({
             t={t}
             contribution={person1Contribution}
             showContribution={true}
+            potsMonthlyTotal={person1PotsMonthly}
+            savingsPots={person1SavingsPots}
+            addSavingsPot={addPerson1SavingsPot}
+            updateSavingsPot={updatePerson1SavingsPot}
+            removeSavingsPot={removePerson1SavingsPot}
+            includeSavingsInCalculations={includeSavingsInCalculations}
+            setIncludeSavingsInCalculations={setIncludeSavingsInCalculations}
+            showIncludeSavingsToggle={true}
           />
         </div>
 
@@ -88,12 +116,20 @@ export default function SeparateModeSection({
             t={t}
             contribution={person2Contribution}
             showContribution={true}
+            potsMonthlyTotal={person2PotsMonthly}
+            savingsPots={person2SavingsPots}
+            addSavingsPot={addPerson2SavingsPot}
+            updateSavingsPot={updatePerson2SavingsPot}
+            removeSavingsPot={removePerson2SavingsPot}
+            includeSavingsInCalculations={includeSavingsInCalculations}
+            setIncludeSavingsInCalculations={setIncludeSavingsInCalculations}
+            showIncludeSavingsToggle={true}
           />
         </div>
       </div>
 
       {/* Shared Account Section */}
-      <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
+      <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.sharedAccount')}</h2>
 
         {/* Shared Expenses */}
@@ -142,8 +178,8 @@ export default function SeparateModeSection({
             data={[
               { name: t('dashboard.totalExpenses'), value: person1PersonalExpenses },
               { name: t('dashboard.contribution'), value: person1Contribution },
-              { name: t('dashboard.savingsAmount'), value: person1SavingsNum },
-              { name: t('dashboard.remaining'), value: Math.max(person1Incomes.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0) - person1PersonalExpenses - person1SavingsNum - person1Contribution, 0) }
+              { name: t('dashboard.savingsAmount'), value: person1SavingsInCalc },
+              { name: t('dashboard.remaining'), value: Math.max(person1Income - person1PersonalExpenses - person1SavingsInCalc - person1Contribution, 0) }
             ]}
             getSymbol={getSymbol}
             isMobile={isMobile}
@@ -155,8 +191,8 @@ export default function SeparateModeSection({
             data={[
               { name: t('dashboard.totalExpenses'), value: person2PersonalExpenses },
               { name: t('dashboard.contribution'), value: person2Contribution },
-              { name: t('dashboard.savingsAmount'), value: person2SavingsNum },
-              { name: t('dashboard.remaining'), value: Math.max(person2Incomes.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0) - person2PersonalExpenses - person2SavingsNum - person2Contribution, 0) }
+              { name: t('dashboard.savingsAmount'), value: person2SavingsInCalc },
+              { name: t('dashboard.remaining'), value: Math.max(person2Income - person2PersonalExpenses - person2SavingsInCalc - person2Contribution, 0) }
             ]}
             getSymbol={getSymbol}
             isMobile={isMobile}
@@ -174,6 +210,36 @@ export default function SeparateModeSection({
           />
         </div>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="card p-6">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.totalIncome')}</p>
+          <p className="font-mono text-3xl font-bold text-brand-primary">{getSymbol()}{Math.floor(totalIncome).toLocaleString('en-US')}</p>
+        </div>
+        <div className="card p-6">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.totalExpenses')}</p>
+          <p className="font-mono text-3xl font-bold text-red-600 dark:text-red-400">-{getSymbol()}{Math.floor(totalHouseholdExpenses).toLocaleString('en-US')}</p>
+        </div>
+        <div className="card p-6">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{t('dashboard.remaining')}</p>
+          <p className={`font-mono text-3xl font-bold ${householdLeftover >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+            {getSymbol()}{Math.floor(householdLeftover).toLocaleString('en-US')}
+          </p>
+        </div>
+      </div>
+
+      {totalPieValue > 0 && (
+        <div className="card p-8">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('dashboard.expenseBreakdown')}</h2>
+          <DonutChart
+            data={pieData}
+            totalAmount={totalPieValue}
+            getSymbol={getSymbol}
+            height={300}
+            title="BREAKDOWN"
+          />
+        </div>
+      )}
     </div>
   );
 }

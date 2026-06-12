@@ -10,6 +10,7 @@ import { useCurrency, useLanguage } from '../context/UserPreferencesContext';
 import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useSharedDashboard } from '../hooks/useSharedDashboard';
 import { useSeparateDashboard } from '../hooks/useSeparateDashboard';
+import { useSavingsPots } from '../hooks/useSavingsPots';
 import PageHeader from '../components/PageHeader';
 import ModeToggle from '../components/ModeToggle';
 import SharedModeSection from '../components/SharedModeSection';
@@ -40,9 +41,21 @@ export default function Dashboard() {
 
   // Only activate the hook for the current calculation mode
   const isShared = calculationType === 'shared';
-  const sharedMode = useSharedDashboard(isInitialized, isShared);
-  const separateMode = useSeparateDashboard(isInitialized, !isShared);
-  const isLoading = !isInitialized || (isShared ? sharedMode.isLoading : separateMode.isLoading);
+  const sharedPots = useSavingsPots(isInitialized, isShared ? 'shared' : null);
+  const person1Pots = useSavingsPots(isInitialized, !isShared ? 'person1' : null);
+  const person2Pots = useSavingsPots(isInitialized, !isShared ? 'person2' : null);
+  const sharedMode = useSharedDashboard(isInitialized, isShared, sharedPots.savingsPots);
+  const separateMode = useSeparateDashboard(
+    isInitialized,
+    !isShared,
+    person1Pots.savingsPots,
+    person2Pots.savingsPots
+  );
+  const isLoading = !isInitialized || (
+    isShared
+      ? sharedPots.isLoading || sharedMode.isLoading
+      : person1Pots.isLoading || person2Pots.isLoading || separateMode.isLoading
+  );
 
   if (isLoading) {
     return <div className="min-h-screen bg-white pb-32 lg:ml-64 md:pb-0" />;
@@ -86,6 +99,11 @@ export default function Dashboard() {
           leftover={sharedMode.leftover}
           totalExpenses={sharedMode.totalExpenses}
           totalIncome={sharedMode.totalIncome}
+          potsMonthlyTotal={sharedMode.potsMonthlyTotal}
+          savingsPots={sharedPots.savingsPots}
+          addSavingsPot={sharedPots.addPot}
+          updateSavingsPot={sharedPots.updatePot}
+          removeSavingsPot={sharedPots.removePot}
         />
       )}
 
@@ -110,6 +128,8 @@ export default function Dashboard() {
           setPerson2Expenses={separateMode.setPerson2Expenses}
           sharedExpenses={separateMode.sharedExpenses}
           setSharedExpenses={separateMode.setSharedExpenses}
+          includeSavingsInCalculations={separateMode.includeSavingsInCalculations}
+          setIncludeSavingsInCalculations={separateMode.setIncludeSavingsInCalculations}
           getSymbol={getSymbol}
           t={t}
           person1Contribution={separateMode.person1Contribution}
@@ -118,9 +138,22 @@ export default function Dashboard() {
           person2Ratio={separateMode.person2Ratio}
           person1PersonalExpenses={separateMode.person1PersonalExpenses}
           person2PersonalExpenses={separateMode.person2PersonalExpenses}
-          person1SavingsNum={separateMode.person1SavingsNum}
-          person2SavingsNum={separateMode.person2SavingsNum}
-          sharedExpensesTotal={separateMode.sharedExpensesTotal}
+          person1PotsMonthly={separateMode.person1PotsMonthly}
+          person2PotsMonthly={separateMode.person2PotsMonthly}
+          person1SavingsInCalc={separateMode.person1SavingsInCalc}
+          person2SavingsInCalc={separateMode.person2SavingsInCalc}
+          totalIncome={separateMode.totalIncome}
+          totalHouseholdExpenses={separateMode.totalHouseholdExpenses}
+          householdLeftover={separateMode.householdLeftover}
+          pieData={separateMode.pieData}
+          person1SavingsPots={person1Pots.savingsPots}
+          addPerson1SavingsPot={person1Pots.addPot}
+          updatePerson1SavingsPot={person1Pots.updatePot}
+          removePerson1SavingsPot={person1Pots.removePot}
+          person2SavingsPots={person2Pots.savingsPots}
+          addPerson2SavingsPot={person2Pots.addPot}
+          updatePerson2SavingsPot={person2Pots.updatePot}
+          removePerson2SavingsPot={person2Pots.removePot}
         />
       )}
     </div>

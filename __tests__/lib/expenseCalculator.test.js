@@ -151,6 +151,39 @@ describe('Expense Calculator', () => {
       expect(result.totalExpenses).toBe(1900);
     });
 
+    it('should include savings pots monthly contributions in savings amount', () => {
+      const result = parseDashboardData({
+        calculationType: 'shared',
+        incomes: [{ amount: '3000' }],
+        savings: '500',
+        expenses: { housing: 1000 },
+        sharedSavingsPots: [
+          { monthlyContribution: '200' },
+          { monthlyContribution: '100' },
+        ],
+      });
+
+      expect(result.savingsAmount).toBe(800);
+    });
+
+    it('should use per-person savings pots in separate mode', () => {
+      const result = parseDashboardData({
+        calculationType: 'separate',
+        person1Incomes: [{ amount: '3000' }],
+        person1Savings: '500',
+        person1Expenses: {},
+        person2Incomes: [],
+        person2Savings: '100',
+        person2Expenses: {},
+        sharedExpenses: {},
+        sharedSavingsPots: [{ monthlyContribution: '999' }],
+        person1SavingsPots: [{ monthlyContribution: '100' }],
+        person2SavingsPots: [{ monthlyContribution: '50' }],
+      });
+
+      expect(result.savingsAmount).toBe(750);
+    });
+
     it('should return null for missing data', () => {
       expect(parseDashboardData(null)).toBeNull();
     });

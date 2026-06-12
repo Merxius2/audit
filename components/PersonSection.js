@@ -5,8 +5,10 @@
 
 import { PiggyBank } from 'lucide-react';
 import { PERSONAL_EXPENSE_CATEGORIES } from '../lib/constants';
+import { sanitizeNonNegativeInput, parseNonNegativeAmount } from '../lib/amountInput';
 import IncomeSourceList from './IncomeSourceList';
 import ExpenseCategoryGrid from './ExpenseCategoryGrid';
+import SavingsPotsList from './SavingsPotsList';
 
 export default function PersonSection({
   personLabel,
@@ -20,6 +22,14 @@ export default function PersonSection({
   t,
   contribution = 0,
   showContribution = false,
+  potsMonthlyTotal = 0,
+  savingsPots = [],
+  addSavingsPot,
+  updateSavingsPot,
+  removeSavingsPot,
+  includeSavingsInCalculations = true,
+  setIncludeSavingsInCalculations,
+  showIncludeSavingsToggle = false,
 }) {
   const addIncome = () => {
     setIncomes([...incomes, { id: Date.now().toString(), label: `${personLabel} Income ${incomes.length + 1}`, amount: '' }]);
@@ -35,8 +45,10 @@ export default function PersonSection({
 
   const totalIncome = incomes.reduce((sum, income) => sum + (parseFloat(income.amount) || 0), 0);
   const totalExpenses = Object.values(expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
-  const savingsNum = parseFloat(savings) || 0;
-  const balance = totalIncome - savingsNum - totalExpenses;
+  const savingsNum = parseNonNegativeAmount(savings);
+  const totalSavings = savingsNum + potsMonthlyTotal;
+  const savingsInCalc = includeSavingsInCalculations ? totalSavings : 0;
+  const balance = totalIncome - savingsInCalc - totalExpenses;
 
   return (
     <div className="space-y-6">
@@ -57,11 +69,39 @@ export default function PersonSection({
         </label>
         <input
           type="number"
+          min="0"
           value={savings}
-          onChange={(e) => setSavings(e.target.value)}
+          onChange={(e) => setSavings(sanitizeNonNegativeInput(e.target.value))}
           placeholder={t('dashboard.placeholder.amount')}
           className="mt-3 amount-large w-full border-0 bg-transparent text-gray-900 focus:ring-0"
         />
+        {showIncludeSavingsToggle && setIncludeSavingsInCalculations && (
+          <label className="flex items-center gap-2 mt-4 text-sm text-gray-700 dark:text-gray-100">
+            <input
+              type="checkbox"
+              checked={includeSavingsInCalculations}
+              onChange={(e) => setIncludeSavingsInCalculations(e.target.checked)}
+              className="rounded border-gray-300"
+            />
+            {t('dashboard.includeSavingsInCalc')}
+          </label>
+        )}
+        {includeSavingsInCalculations && potsMonthlyTotal > 0 && (
+          <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+            {t('dashboard.savingsPots.inCalcTotal')}: +{getSymbol()}{Math.floor(potsMonthlyTotal).toLocaleString('en-US')}
+          </p>
+        )}
+        {addSavingsPot && (
+          <SavingsPotsList
+            pots={savingsPots}
+            onAdd={addSavingsPot}
+            onUpdate={updateSavingsPot}
+            onRemove={removeSavingsPot}
+            getSymbol={getSymbol}
+            t={t}
+            embedded
+          />
+        )}
       </div>
 
       <div className="card-expenses p-8">
@@ -88,8 +128,14 @@ export default function PersonSection({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-700 dark:text-gray-300">{t('dashboard.savingsAmount')}</span>
-            <span className="font-mono font-bold text-gray-900 dark:text-gray-100">-{getSymbol()}{Math.floor(savingsNum).toLocaleString('en-US')}</span>
+            <span className="font-mono font-bold text-gray-900 dark:text-gray-100">-{getSymbol()}{Math.floor(totalSavings).toLocaleString('en-US')}</span>
           </div>
+          {potsMonthlyTotal > 0 && (
+            <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 pl-2">
+              <span>{t('dashboard.savingsPots.inCalcBreakdown')}</span>
+              <span className="font-mono">-{getSymbol()}{Math.floor(potsMonthlyTotal).toLocaleString('en-US')}</span>
+            </div>
+          )}
           <div className="border-t border-gray-300 dark:border-gray-600 pt-2 mt-2 flex justify-between items-center text-sm font-medium">
             <span className="text-gray-700 dark:text-gray-300">{t('dashboard.balance')}</span>
             <span className={`font-mono ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{getSymbol()}{Math.floor(balance).toLocaleString('en-US')}</span>
