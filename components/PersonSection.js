@@ -6,6 +6,7 @@
 import { PiggyBank } from 'lucide-react';
 import { PERSONAL_EXPENSE_CATEGORIES } from '../lib/constants';
 import { sanitizeNonNegativeInput, parseNonNegativeAmount } from '../lib/amountInput';
+import { syncExpenseCategoryFromLineItems } from '../lib/expenseLineItems';
 import IncomeSourceList from './IncomeSourceList';
 import ExpenseCategoryGrid from './ExpenseCategoryGrid';
 import SavingsPotsList from './SavingsPotsList';
@@ -30,6 +31,11 @@ export default function PersonSection({
   includeSavingsInCalculations = true,
   setIncludeSavingsInCalculations,
   showIncludeSavingsToggle = false,
+  expenseLineItems = {},
+  manageableExpenseCategories = [],
+  onAddExpenseLineItem,
+  onUpdateExpenseLineItem,
+  onRemoveExpenseLineItem,
 }) {
   const addIncome = () => {
     setIncomes([...incomes, { id: Date.now().toString(), label: `${personLabel} Income ${incomes.length + 1}`, amount: '' }]);
@@ -110,6 +116,15 @@ export default function PersonSection({
           categories={PERSONAL_EXPENSE_CATEGORIES}
           expenses={expenses}
           onChange={(category, value) => setExpenses({ ...expenses, [category]: value })}
+          manageableCategories={manageableExpenseCategories}
+          lineItems={expenseLineItems}
+          onLineItemsChange={(category, items) => {
+            setExpenses(syncExpenseCategoryFromLineItems(expenses, category, items));
+          }}
+          onAddLineItem={onAddExpenseLineItem}
+          onUpdateLineItem={onUpdateExpenseLineItem}
+          onRemoveLineItem={onRemoveExpenseLineItem}
+          getSymbol={getSymbol}
           t={t}
           gridClass="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2"
         />

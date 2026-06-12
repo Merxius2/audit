@@ -9,6 +9,7 @@ import { sanitizeNonNegativeInput } from '../lib/amountInput';
 import DonutChart from './DonutChart';
 import IncomeSourceList from './IncomeSourceList';
 import ExpenseCategoryGrid from './ExpenseCategoryGrid';
+import { syncExpenseCategoryFromLineItems } from '../lib/expenseLineItems';
 import SavingsPotsList from './SavingsPotsList';
 
 export default function SharedModeSection({
@@ -33,6 +34,11 @@ export default function SharedModeSection({
   addSavingsPot,
   updateSavingsPot,
   removeSavingsPot,
+  expenseLineItems,
+  manageableExpenseCategories,
+  onAddExpenseLineItem,
+  onUpdateExpenseLineItem,
+  onRemoveExpenseLineItem,
 }) {
   const totalPieValue = pieData.reduce((sum, item) => sum + item.value, 0);
 
@@ -91,6 +97,15 @@ export default function SharedModeSection({
           categories={EXPENSE_CATEGORIES}
           expenses={expenses}
           onChange={(category, value) => setExpenses({ ...expenses, [category]: value })}
+          manageableCategories={manageableExpenseCategories}
+          lineItems={expenseLineItems}
+          onLineItemsChange={(category, items) => {
+            setExpenses(syncExpenseCategoryFromLineItems(expenses, category, items));
+          }}
+          onAddLineItem={onAddExpenseLineItem}
+          onUpdateLineItem={onUpdateExpenseLineItem}
+          onRemoveLineItem={onRemoveExpenseLineItem}
+          getSymbol={getSymbol}
           t={t}
         />
       </div>

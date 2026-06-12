@@ -4,6 +4,7 @@
  */
 
 import { SHARED_EXPENSE_CATEGORIES } from '../lib/constants';
+import { syncExpenseCategoryFromLineItems } from '../lib/expenseLineItems';
 import { useIsMobile } from '../hooks/useIsMobile';
 import PersonSection from './PersonSection';
 import PieChartCard from './PieChartCard';
@@ -55,6 +56,21 @@ export default function SeparateModeSection({
   addPerson2SavingsPot,
   updatePerson2SavingsPot,
   removePerson2SavingsPot,
+  person1ExpenseLineItems,
+  person1ManageableExpenseCategories,
+  onAddPerson1ExpenseLineItem,
+  onUpdatePerson1ExpenseLineItem,
+  onRemovePerson1ExpenseLineItem,
+  person2ExpenseLineItems,
+  person2ManageableExpenseCategories,
+  onAddPerson2ExpenseLineItem,
+  onUpdatePerson2ExpenseLineItem,
+  onRemovePerson2ExpenseLineItem,
+  sharedExpenseLineItems,
+  sharedManageableExpenseCategories,
+  onAddSharedExpenseLineItem,
+  onUpdateSharedExpenseLineItem,
+  onRemoveSharedExpenseLineItem,
 }) {
   const isMobile = useIsMobile();
   const totalPieValue = pieData.reduce((sum, item) => sum + item.value, 0);
@@ -93,6 +109,11 @@ export default function SeparateModeSection({
             includeSavingsInCalculations={includeSavingsInCalculations}
             setIncludeSavingsInCalculations={setIncludeSavingsInCalculations}
             showIncludeSavingsToggle={true}
+            expenseLineItems={person1ExpenseLineItems}
+            manageableExpenseCategories={person1ManageableExpenseCategories}
+            onAddExpenseLineItem={onAddPerson1ExpenseLineItem}
+            onUpdateExpenseLineItem={onUpdatePerson1ExpenseLineItem}
+            onRemoveExpenseLineItem={onRemovePerson1ExpenseLineItem}
           />
         </div>
 
@@ -124,6 +145,11 @@ export default function SeparateModeSection({
             includeSavingsInCalculations={includeSavingsInCalculations}
             setIncludeSavingsInCalculations={setIncludeSavingsInCalculations}
             showIncludeSavingsToggle={true}
+            expenseLineItems={person2ExpenseLineItems}
+            manageableExpenseCategories={person2ManageableExpenseCategories}
+            onAddExpenseLineItem={onAddPerson2ExpenseLineItem}
+            onUpdateExpenseLineItem={onUpdatePerson2ExpenseLineItem}
+            onRemoveExpenseLineItem={onRemovePerson2ExpenseLineItem}
           />
         </div>
       </div>
@@ -139,6 +165,15 @@ export default function SeparateModeSection({
             categories={SHARED_EXPENSE_CATEGORIES}
             expenses={sharedExpenses}
             onChange={(category, value) => setSharedExpenses({ ...sharedExpenses, [category]: value })}
+            manageableCategories={sharedManageableExpenseCategories}
+            lineItems={sharedExpenseLineItems}
+            onLineItemsChange={(category, items) => {
+              setSharedExpenses(syncExpenseCategoryFromLineItems(sharedExpenses, category, items));
+            }}
+            onAddLineItem={onAddSharedExpenseLineItem}
+            onUpdateLineItem={onUpdateSharedExpenseLineItem}
+            onRemoveLineItem={onRemoveSharedExpenseLineItem}
+            getSymbol={getSymbol}
             t={t}
           />
         </div>

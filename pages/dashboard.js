@@ -11,6 +11,7 @@ import { loadFromCookie, saveToCookie } from '../lib/cookieStorage';
 import { useSharedDashboard } from '../hooks/useSharedDashboard';
 import { useSeparateDashboard } from '../hooks/useSeparateDashboard';
 import { useSavingsPots } from '../hooks/useSavingsPots';
+import { useExpenseLineItems } from '../hooks/useExpenseLineItems';
 import PageHeader from '../components/PageHeader';
 import ModeToggle from '../components/ModeToggle';
 import SharedModeSection from '../components/SharedModeSection';
@@ -44,6 +45,10 @@ export default function Dashboard() {
   const sharedPots = useSavingsPots(isInitialized, isShared ? 'shared' : null);
   const person1Pots = useSavingsPots(isInitialized, !isShared ? 'person1' : null);
   const person2Pots = useSavingsPots(isInitialized, !isShared ? 'person2' : null);
+  const sharedExpenseItems = useExpenseLineItems(isInitialized, 'shared', isShared);
+  const person1ExpenseItems = useExpenseLineItems(isInitialized, 'person1', !isShared);
+  const person2ExpenseItems = useExpenseLineItems(isInitialized, 'person2', !isShared);
+  const separateSharedExpenseItems = useExpenseLineItems(isInitialized, 'separateShared', !isShared);
   const sharedMode = useSharedDashboard(isInitialized, isShared, sharedPots.savingsPots);
   const separateMode = useSeparateDashboard(
     isInitialized,
@@ -53,8 +58,10 @@ export default function Dashboard() {
   );
   const isLoading = !isInitialized || (
     isShared
-      ? sharedPots.isLoading || sharedMode.isLoading
-      : person1Pots.isLoading || person2Pots.isLoading || separateMode.isLoading
+      ? sharedPots.isLoading || sharedExpenseItems.isLoading || sharedMode.isLoading
+      : person1Pots.isLoading || person2Pots.isLoading
+        || person1ExpenseItems.isLoading || person2ExpenseItems.isLoading
+        || separateSharedExpenseItems.isLoading || separateMode.isLoading
   );
 
   if (isLoading) {
@@ -104,6 +111,11 @@ export default function Dashboard() {
           addSavingsPot={sharedPots.addPot}
           updateSavingsPot={sharedPots.updatePot}
           removeSavingsPot={sharedPots.removePot}
+          expenseLineItems={sharedExpenseItems.lineItems}
+          manageableExpenseCategories={sharedExpenseItems.manageableCategories}
+          onAddExpenseLineItem={sharedExpenseItems.addItem}
+          onUpdateExpenseLineItem={sharedExpenseItems.updateItem}
+          onRemoveExpenseLineItem={sharedExpenseItems.removeItem}
         />
       )}
 
@@ -154,6 +166,21 @@ export default function Dashboard() {
           addPerson2SavingsPot={person2Pots.addPot}
           updatePerson2SavingsPot={person2Pots.updatePot}
           removePerson2SavingsPot={person2Pots.removePot}
+          person1ExpenseLineItems={person1ExpenseItems.lineItems}
+          person1ManageableExpenseCategories={person1ExpenseItems.manageableCategories}
+          onAddPerson1ExpenseLineItem={person1ExpenseItems.addItem}
+          onUpdatePerson1ExpenseLineItem={person1ExpenseItems.updateItem}
+          onRemovePerson1ExpenseLineItem={person1ExpenseItems.removeItem}
+          person2ExpenseLineItems={person2ExpenseItems.lineItems}
+          person2ManageableExpenseCategories={person2ExpenseItems.manageableCategories}
+          onAddPerson2ExpenseLineItem={person2ExpenseItems.addItem}
+          onUpdatePerson2ExpenseLineItem={person2ExpenseItems.updateItem}
+          onRemovePerson2ExpenseLineItem={person2ExpenseItems.removeItem}
+          sharedExpenseLineItems={separateSharedExpenseItems.lineItems}
+          sharedManageableExpenseCategories={separateSharedExpenseItems.manageableCategories}
+          onAddSharedExpenseLineItem={separateSharedExpenseItems.addItem}
+          onUpdateSharedExpenseLineItem={separateSharedExpenseItems.updateItem}
+          onRemoveSharedExpenseLineItem={separateSharedExpenseItems.removeItem}
         />
       )}
     </div>
