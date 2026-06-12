@@ -13,11 +13,11 @@ export default function ImportExportPanel() {
   const [showImportConfirm, setShowImportConfirm] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
 
-  const handleExport = () => {
+  const handleExport = async () => {
     try {
       const dashboardData = loadFromCookie('AUDIT_DASHBOARD_DATA');
       const retirementData = loadFromCookie('AUDIT_RETIREMENT_DATA');
-      setExportString(generateExportString(dashboardData, retirementData));
+      setExportString(await generateExportString(dashboardData, retirementData));
       setImportMessage('');
     } catch (error) {
       setImportMessage(`Export error: ${error.message}`);
@@ -31,9 +31,9 @@ export default function ImportExportPanel() {
     });
   };
 
-  const handleImportClick = () => {
+  const handleImportClick = async () => {
     try {
-      parseImportString(importString);
+      await parseImportString(importString);
       setShowImportConfirm(true);
       setImportMessage('');
     } catch (error) {
@@ -41,9 +41,9 @@ export default function ImportExportPanel() {
     }
   };
 
-  const confirmImport = () => {
+  const confirmImport = async () => {
     try {
-      const result = parseImportString(importString);
+      const result = await parseImportString(importString);
       if (result.dashboardData && Object.keys(result.dashboardData).length > 0) {
         saveToCookie('AUDIT_DASHBOARD_DATA', result.dashboardData, 365);
       }
