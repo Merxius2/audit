@@ -12,6 +12,7 @@ import { LANGUAGE_ICON_MAP } from '../lib/appConstants';
 import PageHeader from '../components/PageHeader';
 import LanguageSettings from '../components/settings/LanguageSettings';
 import CurrencySettings from '../components/settings/CurrencySettings';
+import ThemeSettings from '../components/settings/ThemeSettings';
 import DarkModeSettings from '../components/settings/DarkModeSettings';
 import TaxSettingsPanel from '../components/settings/TaxSettingsPanel';
 import ImportExportPanel from '../components/settings/ImportExportPanel';
@@ -41,6 +42,7 @@ export default function SettingsPage() {
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-8 md:px-8">
         <LanguageSettings />
         <CurrencySettings />
+        <ThemeSettings />
         <DarkModeSettings />
         <TaxSettingsPanel />
         <ImportExportPanel />

@@ -7,6 +7,7 @@
  */
 
 import { useLanguage } from '../context/UserPreferencesContext';
+import { ThemedPageIcon } from './ThemedIcon';
 
 // titleKey → small label that sits above the heading
 const EYEBROW = {
@@ -25,11 +26,7 @@ export default function PageHeader({ icon: IconComponent, titleKey, eyebrow }) {
   return (
     <div className="px-4 md:px-8 pt-5 md:pt-7 pb-2 max-w-7xl mx-auto">
       <div className="flex items-center gap-3">
-        {IconComponent && (
-          <span className="inline-flex w-9 h-9 items-center justify-center rounded-full glass">
-            <IconComponent size={18} className="text-[#2A45CC]" />
-          </span>
-        )}
+        {IconComponent && <ThemedPageIcon icon={IconComponent} />}
         <h1 className="display-2 text-[32px] md:text-[40px] text-ink dark:text-[#FAFAFA]">
           {t(titleKey)}
         </h1>

@@ -1,6 +1,7 @@
 import { Globe } from 'lucide-react';
 import { useLanguage } from '../../context/UserPreferencesContext';
 import { LANGUAGES } from '../../lib/appConstants';
+import ThemedIcon from '../ThemedIcon';
 
 export default function LanguageSettings() {
   const { t, language, changeLanguage } = useLanguage();
@@ -8,7 +9,7 @@ export default function LanguageSettings() {
   return (
     <div className="card p-8">
       <div className="flex items-center gap-3 mb-6">
-        <Globe size={28} className="text-brand-primary" />
+        <ThemedIcon icon={Globe} variant="section" />
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.language')}</h2>
       </div>
       <p className="text-gray-600 dark:text-gray-300 mb-6">{t('settings.languageDesc')}</p>

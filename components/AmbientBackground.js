@@ -4,7 +4,7 @@
  * Liquid-glass surfaces above pick up tint from this layer through backdrop-filter.
  * Rendered once at the app root.
  */
-import { useLanguage } from '../context/UserPreferencesContext';
+import { useLanguage, useTheme } from '../context/UserPreferencesContext';
 
 const DEFAULT_BLOBS = [
   { width: '60vw', height: '60vw', left: '-8vw', top: '-10vh', color: '#B8C4FF', opacity: 0.85 },
@@ -22,7 +22,14 @@ const MURICA_BLOBS = [
 
 export default function AmbientBackground() {
   const { language } = useLanguage();
-  const blobs = language === 'mu' ? MURICA_BLOBS : DEFAULT_BLOBS;
+  const { theme } = useTheme();
+
+  let blobs = DEFAULT_BLOBS;
+  if (language === 'mu') {
+    blobs = MURICA_BLOBS;
+  } else if (theme === 'gen-z') {
+    blobs = [];
+  }
 
   return (
     <div aria-hidden className="pointer-events-none fixed -inset-x-[20vw] -inset-y-[20vh] -z-10 overflow-hidden">

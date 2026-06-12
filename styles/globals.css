@@ -720,3 +720,5 @@ html.dark svg text { fill: #A1A1AA; }
 [style*="rgba(239, 68, 68"] {
   background: linear-gradient(135deg, rgba(255,106,92,0.10) 0%, rgba(255,255,255,0.4) 100%) !important;
 }
+
+@import './themes/gen-z.css';

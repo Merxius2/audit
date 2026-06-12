@@ -1,13 +1,13 @@
 /**
  * User Preferences Context
- * Consolidated context combining: DarkMode, Language, Currency, RainbowMode
+ * Consolidated context combining: DarkMode, Language, Currency, RainbowMode, Theme
  * Reduces provider nesting and centralizes user preference management
  */
 
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { saveToCookie, loadFromCookie } from '../lib/cookieStorage';
 import translations from '../lib/i18n';
-import { CURRENCIES, DEFAULT_LANGUAGE } from '../lib/appConstants';
+import { CURRENCIES, DEFAULT_LANGUAGE, DEFAULT_THEME, THEMES } from '../lib/appConstants';
 
 const UserPreferencesContext = createContext();
 
@@ -39,6 +39,9 @@ export function UserPreferencesProvider({ children }) {
 
   // Rainbow Mode State
   const [isRainbow, setIsRainbow] = useState(false);
+
+  // Theme State
+  const [theme, setTheme] = useState(DEFAULT_THEME);
 
   // Loading State
   const [isLoading, setIsLoading] = useState(true);
@@ -80,6 +83,12 @@ export function UserPreferencesProvider({ children }) {
     const savedRainbow = loadFromCookie('AUDIT_RAINBOW_MODE_PREFERENCE');
     if (savedRainbow !== null) {
       setIsRainbow(savedRainbow);
+    }
+
+    // Load theme preference
+    const savedTheme = loadFromCookie('AUDIT_THEME_PREFERENCE');
+    if (savedTheme?.theme && THEMES.some((item) => item.code === savedTheme.theme)) {
+      setTheme(savedTheme.theme);
     }
 
     setIsLoading(false);
@@ -180,6 +189,13 @@ export function UserPreferencesProvider({ children }) {
     saveToCookie('AUDIT_RAINBOW_MODE_PREFERENCE', newValue, 365);
   };
 
+  // Theme Methods
+  const changeTheme = (nextTheme) => {
+    if (!THEMES.some((item) => item.code === nextTheme)) return;
+    setTheme(nextTheme);
+    saveToCookie('AUDIT_THEME_PREFERENCE', { theme: nextTheme }, 365);
+  };
+
   const value = {
     // Dark Mode
     isDarkMode,
@@ -202,6 +218,11 @@ export function UserPreferencesProvider({ children }) {
     // Rainbow Mode
     isRainbow,
     toggleRainbow,
+
+    // Theme
+    theme,
+    changeTheme,
+    THEMES,
 
     // Loading
     isLoading,
@@ -274,6 +295,19 @@ export function useRainbowMode() {
   return {
     isRainbow: context.isRainbow,
     toggleRainbow: context.toggleRainbow,
+    isLoading: context.isLoading,
+  };
+}
+
+export function useTheme() {
+  const context = useContext(UserPreferencesContext);
+  if (!context) {
+    throw new Error('useTheme must be used within UserPreferencesProvider');
+  }
+  return {
+    theme: context.theme,
+    changeTheme: context.changeTheme,
+    THEMES: context.THEMES,
     isLoading: context.isLoading,
   };
 }

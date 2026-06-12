@@ -10,6 +10,7 @@ import { syncExpenseCategoryFromLineItems } from '../lib/expenseLineItems';
 import IncomeSourceList from './IncomeSourceList';
 import ExpenseCategoryGrid from './ExpenseCategoryGrid';
 import SavingsPotsList from './SavingsPotsList';
+import { ThemedInlineIcon } from './ThemedIcon';
 
 export default function PersonSection({
   personLabel,
@@ -70,7 +71,7 @@ export default function PersonSection({
 
       <div className="card-savings p-6">
         <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">
-          <PiggyBank size={18} className="text-brand-primary" />
+          <ThemedInlineIcon icon={PiggyBank} />
           {t('dashboard.savingsAmount')}
         </label>
         <input

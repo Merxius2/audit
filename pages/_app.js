@@ -8,7 +8,7 @@ import '../styles/globals.css';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-import { UserPreferencesProvider, useLanguage } from '../context/UserPreferencesContext';
+import { UserPreferencesProvider, useLanguage, useTheme } from '../context/UserPreferencesContext';
 import { FeatureProvider } from '../context/FeatureContext';
 import { TaxProvider } from '../context/TaxContext';
 import { LANGUAGE_FAVICON_MAP } from '../lib/appConstants';
@@ -22,6 +22,7 @@ import AmbientBackground from '../components/AmbientBackground';
 function AppContent({ Component, pageProps }) {
   const router = useRouter();
   const { language } = useLanguage();
+  const { theme } = useTheme();
   const isHomePage = router.pathname === '/' || router.pathname === '/index';
 
   // Desktop users skip the marketing landing — go straight to the app.
@@ -40,6 +41,15 @@ function AppContent({ Component, pageProps }) {
     document.documentElement.classList.toggle('lang-mu', language === 'mu');
     return () => document.documentElement.classList.remove('lang-mu');
   }, [language]);
+
+  // Apply the selected visual theme to the document root.
+  useEffect(() => {
+    const root = document.documentElement;
+    const themeClasses = Array.from(root.classList).filter((className) => className.startsWith('theme-'));
+    themeClasses.forEach((className) => root.classList.remove(className));
+    root.classList.add(`theme-${theme}`);
+    return () => root.classList.remove(`theme-${theme}`);
+  }, [theme]);
 
   // Favicon swaps with the selected language (monkey icon e/n/r/t).
   useEffect(() => {

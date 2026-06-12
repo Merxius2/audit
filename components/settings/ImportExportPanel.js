@@ -4,6 +4,7 @@ import { loadFromCookie, saveToCookie } from '../../lib/cookieStorage';
 import { generateExportString, parseImportString } from '../../lib/importExport';
 import { useLanguage } from '../../context/UserPreferencesContext';
 import ConfirmModal from '../ConfirmModal';
+import ThemedIcon from '../ThemedIcon';
 
 export default function ImportExportPanel() {
   const { t } = useLanguage();
@@ -67,7 +68,7 @@ export default function ImportExportPanel() {
     <>
       <div className="card p-8">
         <div className="flex items-center gap-3 mb-6">
-          <Download size={28} className="text-brand-primary" />
+          <ThemedIcon icon={Download} variant="section" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.exportTitle')}</h2>
         </div>
         <p className="text-gray-600 dark:text-gray-300 mb-6">{t('settings.exportDesc')}</p>
@@ -100,7 +101,7 @@ export default function ImportExportPanel() {
 
       <div className="card p-8">
         <div className="flex items-center gap-3 mb-6">
-          <Upload size={28} className="text-brand-primary" />
+          <ThemedIcon icon={Upload} variant="section" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('settings.importTitle')}</h2>
         </div>
         <p className="text-gray-600 dark:text-gray-300 mb-6">{t('settings.importDesc')}</p>

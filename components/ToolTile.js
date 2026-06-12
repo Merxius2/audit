@@ -3,18 +3,13 @@
  */
 
 import Link from 'next/link';
-import { useLanguage } from '../context/UserPreferencesContext';
+import { useLanguage, useTheme } from '../context/UserPreferencesContext';
+import { getThemeTileIconStyles } from '../lib/themeIconStyles';
 
 export default function ToolTile({ href, icon: Icon, titleKey, idx, tint }) {
   const { t } = useLanguage();
-  const tintMap = {
-    tint:   { bg: 'bg-tint-soft',   fg: 'text-[#2A45CC]' },
-    violet: { bg: 'bg-violet-soft', fg: 'text-[#4F3FA0]' },
-    mint:   { bg: 'bg-mint-soft',   fg: 'text-[#1F8E6E]' },
-    amber:  { bg: 'bg-amber-soft',  fg: 'text-[#8B5E20]' },
-    coral:  { bg: 'bg-coral-soft',  fg: 'text-[#A8302A]' },
-  };
-  const c = tintMap[tint] || tintMap.tint;
+  const { theme } = useTheme();
+  const c = getThemeTileIconStyles(theme, tint);
 
   return (
     <Link href={href}>

@@ -4,6 +4,7 @@
 
 import { Plus, Target, Trash2 } from 'lucide-react';
 import { sanitizeNonNegativeInput, parseNonNegativeAmount } from '../lib/amountInput';
+import { ThemedInlineIcon } from './ThemedIcon';
 
 function getPotMetrics(pot) {
   const goal = parseNonNegativeAmount(pot.goalAmount);
@@ -30,7 +31,7 @@ export default function SavingsPotsList({
     <div className={embedded ? 'mt-6 pt-6 border-t border-brand-primary/20' : ''}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <h3 className="flex items-center gap-2 text-base font-semibold text-gray-800 dark:text-gray-100">
-          <Target size={18} className="text-brand-primary" />
+          <ThemedInlineIcon icon={Target} />
           {t('dashboard.savingsPots.title')}
         </h3>
         <button

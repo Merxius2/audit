@@ -7,6 +7,7 @@ import { Settings2 } from 'lucide-react';
 import { CATEGORY_ICONS } from '../lib/constants';
 import { calculateLineItemsTotal } from '../lib/expenseLineItems';
 import ExpenseLineItemsModal from './ExpenseLineItemsModal';
+import { ThemedInlineIcon } from './ThemedIcon';
 
 export default function ExpenseCategoryGrid({
   categories,
@@ -51,7 +52,7 @@ export default function ExpenseCategoryGrid({
           return (
             <div key={category} className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-100">
-                <IconComponent size={16} className="text-brand-primary" />
+                <ThemedInlineIcon icon={IconComponent} />
                 {t(`dashboard.expenseCategories.${category}`)}
               </label>
               {managed ? (
@@ -73,7 +74,7 @@ export default function ExpenseCategoryGrid({
                     onClick={() => setOpenCategory(category)}
                     className="flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-white/15 dark:bg-[rgba(20,20,23,0.75)] dark:text-gray-100 dark:hover:bg-[rgba(32,32,40,0.95)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-colors shrink-0"
                   >
-                    <Settings2 size={16} className="text-brand-primary" />
+                    <ThemedInlineIcon icon={Settings2} />
                     {t('dashboard.expenseLineItems.manage')}
                   </button>
                 </div>
