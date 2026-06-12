@@ -42,6 +42,9 @@ export default function ThemeSettings() {
                   <>
                     <span className="flex-1" style={{ background: item.preview.from }} />
                     <span className="flex-1" style={{ background: item.preview.via }} />
+                    {item.preview.quaternary && (
+                      <span className="flex-1" style={{ background: item.preview.quaternary }} />
+                    )}
                     <span className="flex-1" style={{ background: item.preview.to }} />
                   </>
                 )}

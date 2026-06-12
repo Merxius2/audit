@@ -27,7 +27,7 @@ export default function AmbientBackground() {
   let blobs = DEFAULT_BLOBS;
   if (language === 'mu') {
     blobs = MURICA_BLOBS;
-  } else if (theme === 'gen-z') {
+  } else if (theme === 'gen-z' || theme === 'classic') {
     blobs = [];
   }
 

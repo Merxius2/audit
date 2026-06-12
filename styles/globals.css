@@ -722,3 +722,4 @@ html.dark svg text { fill: #A1A1AA; }
 }
 
 @import './themes/gen-z.css';
+@import './themes/classic.css';
